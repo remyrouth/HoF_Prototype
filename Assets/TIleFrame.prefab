@@ -81,6 +81,8 @@ MonoBehaviour:
   borderHovering: {r: 0.77254903, g: 0.77254903, b: 0.77254903, a: 0.3529412}
   centerWalkable: {r: 0.84803516, g: 0, b: 0.8867924, a: 1}
   borderWalkable: {r: 0.70597124, g: 0, b: 1, a: 1}
+  centerAttackable: {r: 1, g: 0.5208503, b: 0.11792451, a: 1}
+  borderAttackable: {r: 0.77254903, g: 0.77254903, b: 0.77254903, a: 1}
   currentState: 0
 --- !u!1 &1361386838970574185
 GameObject:

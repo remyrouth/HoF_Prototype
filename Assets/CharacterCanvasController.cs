@@ -56,6 +56,7 @@ public class CharacterCanvasController : MonoBehaviour
 
     public void BeginAttackSystem () {
         Debug.Log("Button Triggered Attack Method");
+        sm.ChangeToAttackingState();
 
         moveButtonBackground.SetActive(false);
         attackButtonBackground.SetActive(true);

@@ -19,13 +19,17 @@ public class TileGraphicsController : MonoBehaviour
     public Color centerWalkable;
     public Color borderWalkable;
 
+    public Color centerAttackable;
+    public Color borderAttackable;
+
     public TileState currentState = TileState.Default;
 
     public enum TileState {
         Default,
         Selected,
         Hovering,
-        Walkable
+        Walkable,
+        Attackable
     }
 
     private void Start() {
@@ -45,6 +49,13 @@ public class TileGraphicsController : MonoBehaviour
         currentState = TileState.Selected;
         ChangeColors(centerWalkable, borderWalkable);
     }
+
+    public void ChangeToAttackableState() {
+        Debug.Log("Attacking Tile Activated");
+        currentState = TileState.Attackable;
+        ChangeColors(centerAttackable, borderAttackable);
+    }
+
 
     public void ChangeToHoveringState() {
 

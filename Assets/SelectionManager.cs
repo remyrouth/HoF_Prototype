@@ -110,6 +110,8 @@ public class SelectionManager : MonoBehaviour
                         Cleanup();
                     }
                     ccc.MenuCleanup();
+                } else if (selectionState == CurrentCharacterSelectionStatus.Attacking) {
+
                 }
                 
 
@@ -124,6 +126,17 @@ public class SelectionManager : MonoBehaviour
         tileRangeList = reachableTiles;
         foreach (GameObject tile in reachableTiles) {
             tile.GetComponent<TileGraphicsController>().ChangeToWalkableState();
+        }
+    }
+
+    public void ChangeToAttackingState() {
+        selectionState = CurrentCharacterSelectionStatus.Attacking;
+        PlayerController playerScript = currentSelectCharacter.GetComponent<PlayerController>();
+        List<GameObject> reachableTiles = playerScript.GetReachableTiles(playerScript.characterInfo.attackRange);
+        ClearTileRange();
+        tileRangeList = reachableTiles;
+        foreach (GameObject tile in reachableTiles) {
+            tile.GetComponent<TileGraphicsController>().ChangeToAttackableState();
         }
     }
 
@@ -198,6 +211,10 @@ public class SelectionManager : MonoBehaviour
         currentSelectCharacter = null;
         currentSelectedTile = null;
 
+        ClearTileRange();
+    }
+
+    private void ClearTileRange() {
         if (tileRangeList != null) {
             if (tileRangeList.Count != 0) {
 
