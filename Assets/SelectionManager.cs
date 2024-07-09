@@ -75,8 +75,14 @@ public class SelectionManager : MonoBehaviour
                     // SelectTile(hit.point);
                     SelectNewTile(hit.point);
                 } else {
-
-                    MoveSelectedCharacter(hit.point);
+                    
+                    if (currentSelectCharacter.GetComponent<PlayerController>().isPlayerEntity) {
+                        MoveSelectedCharacter(hit.point);
+                    } else {
+                        currentSelectedTile.GetComponent<TileGraphicsController>().ChangeToDefaultState();
+                        currentSelectCharacter = null;
+                        currentSelectedTile = null;
+                    }
                     ccc.MenuCleanup();
                 }
 

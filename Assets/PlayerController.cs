@@ -90,6 +90,41 @@ public class PlayerController : MonoBehaviour
         return new List<GameObject>(); // No path found
     }
 
+    public List<GameObject> GetReachableTiles(int maxDistance = 3)
+    {
+        GameObject startTile = FindClosestTile(transform.position);
+        List<GameObject> reachableTiles = new List<GameObject>();
+        Queue<(GameObject tile, int distance)> queue = new Queue<(GameObject, int)>();
+        HashSet<GameObject> visited = new HashSet<GameObject>();
+
+        queue.Enqueue((startTile, 0));
+        visited.Add(startTile);
+
+        while (queue.Count > 0)
+        {
+            var (currentTile, currentDistance) = queue.Dequeue();
+
+            if (currentDistance <= maxDistance)
+            {
+                reachableTiles.Add(currentTile);
+
+                if (currentDistance < maxDistance)
+                {
+                    foreach (GameObject neighbor in GetNeighbors(currentTile))
+                    {
+                        if (!visited.Contains(neighbor) && !IsTileOccupied(neighbor))
+                        {
+                            queue.Enqueue((neighbor, currentDistance + 1));
+                            visited.Add(neighbor);
+                        }
+                    }
+                }
+            }
+        }
+
+        return reachableTiles;
+    }
+
     private List<GameObject> ReconstructPath(Dictionary<GameObject, GameObject> cameFrom, GameObject current)
     {
         List<GameObject> path = new List<GameObject> { current };
