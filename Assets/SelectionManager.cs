@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class SelectionManager : MonoBehaviour
 {
@@ -10,7 +11,10 @@ public class SelectionManager : MonoBehaviour
     public GameObject currentSelectedTile;
     public GameObject currentHoverableTile;
     public GameObject currentSelectCharacter;
+    public List<GameObject> tileRangeList;
     private CharacterCanvasController ccc;
+
+    private EventSystem eventSystem;
 
     public enum CurrentCharacterSelectionStatus {
         Viewing,
@@ -23,6 +27,8 @@ public class SelectionManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        eventSystem = EventSystem.current;
+
         // Initialize the list
         tiles = new List<GameObject>();
         ccc = FindObjectOfType<CharacterCanvasController>();
@@ -64,7 +70,7 @@ public class SelectionManager : MonoBehaviour
             // Debug.Log("hitpoint: " + hit.point);
             if (currentHoverableTile != null) {
                currentHoverableTile.GetComponent<TileGraphicsController>().UnHoverState();
-               Debug.Log("called unhover from main");
+            //    Debug.Log("called unhover from main");
             }
             currentHoverableTile = FindClosestTile(hit.point);
             if (currentHoverableTile != null) {
@@ -85,15 +91,18 @@ public class SelectionManager : MonoBehaviour
             // Perform the raycast
             if (Physics.Raycast(ray, out hit))
             {
-                
 
-                // if currentSelectCharacter is null we just do selection, because means we're not moving a character
-                if (currentSelectCharacter == null) {
+                // Check if the mouse is over a UI element
+                if (eventSystem.IsPointerOverGameObject())
+                {
+                    // Mouse is over UI, don't process tile selection
+                    return;
+                }
 
-                    // SelectTile(hit.point);
+
+                if (selectionState == CurrentCharacterSelectionStatus.Viewing) {
                     SelectNewTile(hit.point);
-                } else {
-                    
+                } else if (selectionState == CurrentCharacterSelectionStatus.Moving) {
                     if (currentSelectCharacter.GetComponent<PlayerController>().isPlayerEntity) {
                         MoveSelectedCharacter(hit.point);
                     } else {
@@ -102,8 +111,19 @@ public class SelectionManager : MonoBehaviour
                     }
                     ccc.MenuCleanup();
                 }
+                
 
             }
+        }
+    }
+
+    public void ChangeToMovingState() {
+        selectionState = CurrentCharacterSelectionStatus.Moving;
+        PlayerController playerScript = currentSelectCharacter.GetComponent<PlayerController>();
+        List<GameObject> reachableTiles = playerScript.GetReachableTiles(playerScript.characterInfo.speed);
+        tileRangeList = reachableTiles;
+        foreach (GameObject tile in reachableTiles) {
+            tile.GetComponent<TileGraphicsController>().ChangeToWalkableState();
         }
     }
 
@@ -174,8 +194,20 @@ public class SelectionManager : MonoBehaviour
         if (currentSelectedTile != null) {
             currentSelectedTile.GetComponent<TileGraphicsController>().ChangeToDefaultState();
         }
+        selectionState = CurrentCharacterSelectionStatus.Viewing;
         currentSelectCharacter = null;
         currentSelectedTile = null;
+
+        if (tileRangeList != null) {
+            if (tileRangeList.Count != 0) {
+
+                foreach (GameObject tile in tileRangeList) {
+                    tile.GetComponent<TileGraphicsController>().ChangeToDefaultState();
+                }
+            }
+        }
+
+        tileRangeList = new List<GameObject>();
     }
 
     private GameObject FindClosestTile(Vector3 point)

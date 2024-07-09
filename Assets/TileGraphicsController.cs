@@ -59,7 +59,7 @@ public class TileGraphicsController : MonoBehaviour
     public void UnHoverState() {
         if (currentState == TileState.Hovering) {
             ChangeToDefaultState();
-            Debug.Log("called unhover from helper script");
+            // Debug.Log("called unhover from helper script");
         }
     }
 

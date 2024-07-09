@@ -26,7 +26,12 @@ public class PlayerController : MonoBehaviour
     public void MoveToNewTile(GameObject newTile)
     {
         TileMapSetup();
-        StartCoroutine(MoveAlongTiles(newTile));
+        // is new tile in range? 
+        List<GameObject> reachableTiles = GetReachableTiles(characterInfo.speed);
+        if (reachableTiles.Contains(newTile)) {
+            StartCoroutine(MoveAlongTiles(newTile));
+        }
+        // StartCoroutine(MoveAlongTiles(newTile));
     }
 
     private IEnumerator MoveAlongTiles(GameObject destinationTile)
@@ -90,8 +95,10 @@ public class PlayerController : MonoBehaviour
         return new List<GameObject>(); // No path found
     }
 
-    public List<GameObject> GetReachableTiles(int maxDistance = 3)
+    public List<GameObject> GetReachableTiles(int maxDistance)
     {
+        TileMapSetup();
+
         GameObject startTile = FindClosestTile(transform.position);
         List<GameObject> reachableTiles = new List<GameObject>();
         Queue<(GameObject tile, int distance)> queue = new Queue<(GameObject, int)>();

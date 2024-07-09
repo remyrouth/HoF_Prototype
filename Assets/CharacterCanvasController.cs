@@ -31,6 +31,21 @@ public class CharacterCanvasController : MonoBehaviour
 
     }
 
+    public void BeginMoveSystem () {
+        Debug.Log("Button Triggered Move Method");
+        sm.ChangeToMovingState();
+
+        moveButtonBackground.SetActive(true);
+        attackButtonBackground.SetActive(false);
+    }
+
+    public void BeginAttackSystem () {
+        Debug.Log("Button Triggered Attack Method");
+
+        moveButtonBackground.SetActive(false);
+        attackButtonBackground.SetActive(true);
+    }
+
     public void MenuCleanup() {
         moveButtonBackground.SetActive(false);
         attackButtonBackground.SetActive(false);
