@@ -81,8 +81,9 @@ public class PlayerController : MonoBehaviour
         return null;
     }
 
-    private GameObject FindClosestTile(Vector3 point)
+    public GameObject FindClosestTile(Vector3 point)
     {
+        TileMapSetup();
         GameObject closestTile = null;
         float closestDistanceSqr = Mathf.Infinity;
 
@@ -305,4 +306,73 @@ public class PlayerController : MonoBehaviour
 
         return neighbors;
     }
+
+    // AI Pathing Methods
+    public int GetTileDistance(GameObject startTile, GameObject endTile)
+    {
+        TileMapSetup();
+        Vector3 start = startTile.transform.position;
+        Vector3 end = endTile.transform.position;
+        
+        // Calculate the Manhattan distance
+        int dx = Mathf.Abs(Mathf.RoundToInt(end.x - start.x));
+        int dz = Mathf.Abs(Mathf.RoundToInt(end.z - start.z));
+        
+        return dx + dz;
+    }
+
+    public int GetTileDistanceWithObstacles(GameObject startTile, GameObject endTile)
+    {
+        Queue<(GameObject tile, int distance)> queue = new Queue<(GameObject, int)>();
+        HashSet<GameObject> visited = new HashSet<GameObject>();
+
+        queue.Enqueue((startTile, 0));
+        visited.Add(startTile);
+
+        while (queue.Count > 0)
+        {
+            var (currentTile, currentDistance) = queue.Dequeue();
+
+            if (currentTile == endTile)
+            {
+                return currentDistance;
+            }
+
+            foreach (GameObject neighbor in GetNeighbors(currentTile))
+            {
+                if (!visited.Contains(neighbor) && !IsTileOccupied(neighbor))
+                {
+                    queue.Enqueue((neighbor, currentDistance + 1));
+                    visited.Add(neighbor);
+                }
+            }
+        }
+
+        // If no path is found, return a very large number or -1 to indicate impossibility
+        return int.MaxValue;
+    }
+
+    // Method to find the best reachable tile closest to the target
+    public GameObject GetBestReachableTileTowardsTarget(GameObject targetTile, int maxDistance)
+    {
+        TileMapSetup();
+        List<GameObject> reachableTiles = GetReachableTiles(maxDistance);
+        GameObject currentTile = FindClosestTile(transform.position);
+        GameObject bestTile = currentTile;
+        int shortestDistance = GetTileDistance(currentTile, targetTile);
+
+        foreach (GameObject tile in reachableTiles)
+        {
+            int distance = GetTileDistance(tile, targetTile);
+            // int distance = GetTileDistanceWithObstacles(tile, targetTile);
+            if (distance < shortestDistance)
+            {
+                shortestDistance = distance;
+                bestTile = tile;
+            }
+        }
+
+        return bestTile;
+    }
+
 }
