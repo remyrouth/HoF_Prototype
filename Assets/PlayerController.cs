@@ -5,11 +5,16 @@ using UnityEngine.AI;
 
 public class PlayerController : MonoBehaviour
 {
+
+    [Header("")]
     public CharacterStats characterInfo;
     public List<GameObject> tiles;
     public float yOffset = 1f;
     private NavMeshAgent agent;
     public bool isPlayerEntity = true;
+
+
+    public int playerHealth = 0;
 
 
 
@@ -23,6 +28,11 @@ public class PlayerController : MonoBehaviour
         PositionalCorrectionSetup();
     }
 
+
+    private void SetupInfoToScript() {
+        playerHealth = characterInfo.health;
+    }
+
     public void MoveToNewTile(GameObject newTile)
     {
         TileMapSetup();
@@ -32,6 +42,27 @@ public class PlayerController : MonoBehaviour
             StartCoroutine(MoveAlongTiles(newTile));
         }
         // StartCoroutine(MoveAlongTiles(newTile));
+    }
+
+    public bool AttackTile(GameObject newTile) {
+        GameObject objectOnAttackedTile = FindMatchingObjectToTile(newTile);
+        if (objectOnAttackedTile != null) {
+            Debug.Log("Attackable entity found");
+
+            objectOnAttackedTile.GetComponent<PlayerController>().TakeDamage(characterInfo.strength);
+
+            return true;
+        }
+        return false;
+    }
+
+    public void TakeDamage(int damage) {
+        playerHealth -= damage;
+        playerHealth = Mathf.Max(0, playerHealth);
+
+        if (playerHealth == 0) {
+            Destroy(gameObject);
+        }
     }
 
     private IEnumerator MoveAlongTiles(GameObject destinationTile)
@@ -93,6 +124,43 @@ public class PlayerController : MonoBehaviour
         }
 
         return new List<GameObject>(); // No path found
+    }
+
+    public List<GameObject> GetAttackableTiles(int maxDistance)
+    {
+        TileMapSetup();
+
+        GameObject startTile = FindClosestTile(transform.position);
+        List<GameObject> reachableTiles = new List<GameObject>();
+        Queue<(GameObject tile, int distance)> queue = new Queue<(GameObject, int)>();
+        HashSet<GameObject> visited = new HashSet<GameObject>();
+
+        queue.Enqueue((startTile, 0));
+        visited.Add(startTile);
+
+        while (queue.Count > 0)
+        {
+            var (currentTile, currentDistance) = queue.Dequeue();
+
+            if (currentDistance <= maxDistance)
+            {
+                reachableTiles.Add(currentTile);
+
+                if (currentDistance < maxDistance)
+                {
+                    foreach (GameObject neighbor in GetNeighbors(currentTile))
+                    {
+                        if (!visited.Contains(neighbor))
+                        {
+                            queue.Enqueue((neighbor, currentDistance + 1));
+                            visited.Add(neighbor);
+                        }
+                    }
+                }
+            }
+        }
+
+        return reachableTiles;
     }
 
     public List<GameObject> GetReachableTiles(int maxDistance)
@@ -198,6 +266,20 @@ public class PlayerController : MonoBehaviour
         gameObject.transform.position = new Vector3(positionalCorrection.x, positionalCorrection.y + yOffset, positionalCorrection.z);
     }
 
+    private GameObject FindMatchingObjectToTile(GameObject newTile) {
+        GameObject[] playerObjectPiecesArray = GameObject.FindGameObjectsWithTag("Player");
+
+        foreach (GameObject character in playerObjectPiecesArray)
+        {
+            bool matchingX = (character.transform.position.x == newTile.transform.position.x);
+            bool matchingZ = (character.transform.position.z == newTile.transform.position.z);
+            if (matchingX && matchingZ) {
+                return character;
+            }
+        }
+
+        return null;
+    }
 
     private bool IsTileOccupied(GameObject newTile) {
         GameObject[] playerObjectPiecesArray = GameObject.FindGameObjectsWithTag("Player");

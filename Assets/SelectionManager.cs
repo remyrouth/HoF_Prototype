@@ -112,6 +112,7 @@ public class SelectionManager : MonoBehaviour
                     ccc.MenuCleanup();
                 } else if (selectionState == CurrentCharacterSelectionStatus.Attacking) {
 
+                    HavePlayerAttack(hit.point);
                 }
                 
 
@@ -119,10 +120,33 @@ public class SelectionManager : MonoBehaviour
         }
     }
 
+    private void HavePlayerAttack(Vector3 targetPosition) {
+
+        GameObject newTile = FindClosestTile(targetPosition);
+        if (newTile == null) {
+            return;
+        } else {
+            // pre clean up
+            currentSelectedTile.GetComponent<TileGraphicsController>().ChangeToDefaultState();
+
+            bool AttackSuccessful = currentSelectCharacter.GetComponent<PlayerController>().AttackTile(newTile);
+
+            if (AttackSuccessful) {
+                Cleanup();
+                ccc.MenuCleanup();
+            }
+
+            
+        }
+
+
+    }
+
     public void ChangeToMovingState() {
         selectionState = CurrentCharacterSelectionStatus.Moving;
         PlayerController playerScript = currentSelectCharacter.GetComponent<PlayerController>();
         List<GameObject> reachableTiles = playerScript.GetReachableTiles(playerScript.characterInfo.speed);
+        ClearTileRange();
         tileRangeList = reachableTiles;
         foreach (GameObject tile in reachableTiles) {
             tile.GetComponent<TileGraphicsController>().ChangeToWalkableState();
@@ -132,7 +156,7 @@ public class SelectionManager : MonoBehaviour
     public void ChangeToAttackingState() {
         selectionState = CurrentCharacterSelectionStatus.Attacking;
         PlayerController playerScript = currentSelectCharacter.GetComponent<PlayerController>();
-        List<GameObject> reachableTiles = playerScript.GetReachableTiles(playerScript.characterInfo.attackRange);
+        List<GameObject> reachableTiles = playerScript.GetAttackableTiles(playerScript.characterInfo.attackRange);
         ClearTileRange();
         tileRangeList = reachableTiles;
         foreach (GameObject tile in reachableTiles) {
