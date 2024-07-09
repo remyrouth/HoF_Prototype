@@ -69,6 +69,8 @@ public class PlayerController : MonoBehaviour
             openSet.Remove(current);
             foreach (GameObject neighbor in GetNeighbors(current))
             {
+                if (IsTileOccupied(neighbor) && neighbor != endTile) continue; // Skip occupied tiles
+
                 float tentativeGScore = gScore[current] + Vector3.Distance(current.transform.position, neighbor.transform.position);
 
                 if (!gScore.ContainsKey(neighbor) || tentativeGScore < gScore[neighbor])
