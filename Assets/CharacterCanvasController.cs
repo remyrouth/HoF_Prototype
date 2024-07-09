@@ -6,12 +6,16 @@ using UnityEngine.UI;
 public class CharacterCanvasController : MonoBehaviour
 {
     public PlayerController currentCharacter;
-
-
     public Image characterPortrait;
     private Canvas canvasComponent;
 
+    public GameObject moveButtonBackground;
+    public GameObject attackButtonBackground;
+
+    private SelectionManager sm;
+
     private void Start() {
+        sm = FindObjectOfType<SelectionManager>();
         canvasComponent = GetComponent<Canvas>();
         canvasComponent.enabled = false;
     }
@@ -28,6 +32,11 @@ public class CharacterCanvasController : MonoBehaviour
     }
 
     public void MenuCleanup() {
+        moveButtonBackground.SetActive(false);
+        attackButtonBackground.SetActive(false);
+
+
+
         currentCharacter = null;
         characterPortrait.sprite = null;
         characterPortrait.gameObject.SetActive(false);

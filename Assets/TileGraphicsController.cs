@@ -16,6 +16,9 @@ public class TileGraphicsController : MonoBehaviour
     public Color centerHovering;
     public Color borderHovering;
 
+    public Color centerWalkable;
+    public Color borderWalkable;
+
     public TileState currentState = TileState.Default;
 
     public enum TileState {
@@ -31,17 +34,16 @@ public class TileGraphicsController : MonoBehaviour
 
     public void ChangeToDefaultState() {
         currentState = TileState.Default;
-        foreach (GameObject border in tileBorders) {
-            border.GetComponent<SpriteRenderer>().color = borderOriginal;
-        }
-        tileCenter.GetComponent<SpriteRenderer>().color = centerOriginal;
+        ChangeColors(centerOriginal, borderOriginal);
     }
     public void ChangeToSelectedState() {
         currentState = TileState.Selected;
-        foreach (GameObject border in tileBorders) {
-            border.GetComponent<SpriteRenderer>().color = borderSelected;
-        }
-        tileCenter.GetComponent<SpriteRenderer>().color = centerSelected;
+        ChangeColors(centerSelected, borderSelected);
+    }
+
+    public void ChangeToWalkableState() {
+        currentState = TileState.Selected;
+        ChangeColors(centerWalkable, borderWalkable);
     }
 
     public void ChangeToHoveringState() {
@@ -51,10 +53,7 @@ public class TileGraphicsController : MonoBehaviour
         }
 
         currentState = TileState.Hovering;
-        foreach (GameObject border in tileBorders) {
-            border.GetComponent<SpriteRenderer>().color = centerHovering;
-        }
-        tileCenter.GetComponent<SpriteRenderer>().color = borderHovering;
+        ChangeColors(centerHovering, borderHovering);
     }
 
     public void UnHoverState() {
@@ -62,6 +61,14 @@ public class TileGraphicsController : MonoBehaviour
             ChangeToDefaultState();
             Debug.Log("called unhover from helper script");
         }
+    }
+
+
+    private void ChangeColors(Color centerColor, Color borderColor) {
+        foreach (GameObject border in tileBorders) {
+            border.GetComponent<SpriteRenderer>().color = centerColor;
+        }
+        tileCenter.GetComponent<SpriteRenderer>().color = borderColor;
     }
 
 

@@ -12,6 +12,14 @@ public class SelectionManager : MonoBehaviour
     public GameObject currentSelectCharacter;
     private CharacterCanvasController ccc;
 
+    public enum CurrentCharacterSelectionStatus {
+        Viewing,
+        Moving,
+        Attacking
+    }
+
+    public CurrentCharacterSelectionStatus selectionState = CurrentCharacterSelectionStatus.Viewing;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -35,6 +43,16 @@ public class SelectionManager : MonoBehaviour
     {
         MouseSelect();
         HoverSelect();
+
+        EscapeButtonControls();
+    }
+
+    private void EscapeButtonControls() {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            Cleanup();
+            ccc.MenuCleanup();
+        }
     }
 
     private void HoverSelect() {
@@ -80,8 +98,7 @@ public class SelectionManager : MonoBehaviour
                         MoveSelectedCharacter(hit.point);
                     } else {
                         currentSelectedTile.GetComponent<TileGraphicsController>().ChangeToDefaultState();
-                        currentSelectCharacter = null;
-                        currentSelectedTile = null;
+                        Cleanup();
                     }
                     ccc.MenuCleanup();
                 }
@@ -135,8 +152,7 @@ public class SelectionManager : MonoBehaviour
 
         // clean up even if we just chose an occupied tile
         // if you want to change this, move it into the if statement above
-        currentSelectCharacter = null;
-        currentSelectedTile = null;
+        Cleanup();
     }
 
     private GameObject FindMatchingObjectToTile() {
@@ -154,30 +170,15 @@ public class SelectionManager : MonoBehaviour
         return null;
     }
 
-    private void ChangeChildrenColor(GameObject parentObject, Color newColor) {
-        List<GameObject> children = GetAllChildren(parentObject);
-        foreach (GameObject child in children)
-        {
-            // Debug.Log("Child: " + child.name);
-            SpriteRenderer sr = child.GetComponent<SpriteRenderer>();
-            if (sr != null) {
-                sr.color = newColor;
-            }
+    private void Cleanup () {
+        if (currentSelectedTile != null) {
+            currentSelectedTile.GetComponent<TileGraphicsController>().ChangeToDefaultState();
         }
+        currentSelectCharacter = null;
+        currentSelectedTile = null;
     }
 
-    private List<GameObject> GetAllChildren(GameObject parent)
-    {
-        List<GameObject> children = new List<GameObject>();
-        foreach (Transform child in parent.transform)
-        {
-            children.Add(child.gameObject);
-            children.AddRange(GetAllChildren(child.gameObject)); // Recursively add all children
-        }
-        return children;
-    }
-
-    GameObject FindClosestTile(Vector3 point)
+    private GameObject FindClosestTile(Vector3 point)
     {
         GameObject closestTile = null;
         float closestDistanceSqr = Mathf.Infinity;
