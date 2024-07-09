@@ -9,7 +9,9 @@ public class CharacterCanvasController : MonoBehaviour
     public Image characterPortrait;
     private Canvas canvasComponent;
 
+    public GameObject moveButtonMain;
     public GameObject moveButtonBackground;
+    public GameObject attackButtonMain;
     public GameObject attackButtonBackground;
 
     private SelectionManager sm;
@@ -24,6 +26,19 @@ public class CharacterCanvasController : MonoBehaviour
 
     public void DisplayCharacter(PlayerController newCharacterScript){
         currentCharacter = newCharacterScript;
+
+
+        if (newCharacterScript.isPlayerEntity) {
+            attackButtonMain.SetActive(true);
+            moveButtonMain.SetActive(true);
+        } else {
+            attackButtonMain.SetActive(false);
+            moveButtonMain.SetActive(false);
+        }
+
+        moveButtonBackground.SetActive(false);
+        attackButtonBackground.SetActive(false);
+
 
         characterPortrait.gameObject.SetActive(true);
         canvasComponent.enabled = true;

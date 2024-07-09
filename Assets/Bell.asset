@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Bell
   m_EditorClassIdentifier: 
   strength: 2
+  attackRange: 2
   speed: 4
   health: 1
   characterSprite: {fileID: 21300000, guid: 08a87e20a6d6349819bd8945c3820fb3, type: 3}
