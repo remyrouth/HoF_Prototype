@@ -244,6 +244,9 @@ public class SelectionManager : MonoBehaviour
         currentSelectCharacter = null;
         currentSelectedTile = null;
 
+        currentHoverableTile.GetComponent<TileGraphicsController>().ChangeToDefaultState();
+        currentHoverableTile = null;
+
         ClearTileRange();
     }
 

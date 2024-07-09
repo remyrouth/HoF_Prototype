@@ -29,8 +29,19 @@ public class CharacterCanvasController : MonoBehaviour
 
 
         if (newCharacterScript.isPlayerEntity) {
-            attackButtonMain.SetActive(true);
-            moveButtonMain.SetActive(true);
+            
+            if (newCharacterScript.hasAttackedYet) {
+                attackButtonMain.SetActive(false);
+            } else {
+                attackButtonMain.SetActive(true);
+            }
+
+            if (newCharacterScript.hasMovedYet) {
+                moveButtonMain.SetActive(false);
+            } else {
+                moveButtonMain.SetActive(true);
+            }            
+
         } else {
             attackButtonMain.SetActive(false);
             moveButtonMain.SetActive(false);

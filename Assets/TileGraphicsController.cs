@@ -51,7 +51,7 @@ public class TileGraphicsController : MonoBehaviour
     }
 
     public void ChangeToAttackableState() {
-        Debug.Log("Attacking Tile Activated");
+        // Debug.Log("Attacking Tile Activated");
         currentState = TileState.Attackable;
         ChangeColors(centerAttackable, borderAttackable);
     }

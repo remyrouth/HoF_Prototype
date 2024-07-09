@@ -33,8 +33,14 @@ public class PlayerController : MonoBehaviour
         playerHealth = characterInfo.health;
     }
 
+    public void ResetMoveAndAttackStates() {
+        hasMovedYet = false;
+        hasAttackedYet = false;
+    }
+
     public void MoveToNewTile(GameObject newTile)
     {
+        hasMovedYet = true;
         TileMapSetup();
         // is new tile in range? 
         List<GameObject> reachableTiles = GetReachableTiles(characterInfo.speed);
@@ -45,6 +51,7 @@ public class PlayerController : MonoBehaviour
     }
 
     public bool AttackTile(GameObject newTile) {
+        hasAttackedYet = true;
         GameObject objectOnAttackedTile = FindMatchingObjectToTile(newTile);
         if (objectOnAttackedTile != null) {
             Debug.Log("Attackable entity found");
