@@ -13,6 +13,7 @@ public class SelectionManager : MonoBehaviour
     public GameObject currentSelectCharacter;
     public List<GameObject> tileRangeList;
     private CharacterCanvasController ccc;
+    private TurnManager tm;
 
     private EventSystem eventSystem;
 
@@ -32,6 +33,7 @@ public class SelectionManager : MonoBehaviour
         // Initialize the list
         tiles = new List<GameObject>();
         ccc = FindObjectOfType<CharacterCanvasController>();
+        tm = FindObjectOfType<TurnManager>();
 
         // Find all GameObjects with the tag "Tile" and add them to the list
         GameObject[] tilesArray = GameObject.FindGameObjectsWithTag("Tile");
@@ -41,7 +43,7 @@ public class SelectionManager : MonoBehaviour
         }
 
         // Optional: Output the number of tiles found
-        Debug.Log("Number of tiles found: " + tiles.Count);
+        // Debug.Log("Number of tiles found: " + tiles.Count);
     }
 
 
@@ -198,18 +200,25 @@ public class SelectionManager : MonoBehaviour
             return;
         }
 
+        bool shouldUseTurnManager = false;
 
         GameObject possibleTileOccupyingObject = FindMatchingObjectToTile();
         if (possibleTileOccupyingObject == null) {
             // move player
             PlayerController pc = currentSelectCharacter.GetComponent<PlayerController>();
             pc.MoveToNewTile(currentSelectedTile);
+            shouldUseTurnManager = true;
         }
 
+        if (shouldUseTurnManager) {
+            tm.BeginWait(currentSelectCharacter, currentSelectedTile);
+
+        }
 
         // clean up even if we just chose an occupied tile
         // if you want to change this, move it into the if statement above
         Cleanup();
+
     }
 
     private GameObject FindMatchingObjectToTile() {
