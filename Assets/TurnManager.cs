@@ -18,7 +18,7 @@ public class TurnManager : MonoBehaviour
     }
 
     private void Update() {
-        Debug.Log("completeWaitChecks boolean: " + completeWaitChecks);
+        // Debug.Log("completeWaitChecks boolean: " + completeWaitChecks);
         if (completeWaitChecks) {
             reachedDestinationCheck();
         }
@@ -26,7 +26,7 @@ public class TurnManager : MonoBehaviour
 
     public void BeginWait(GameObject entity, GameObject tile) {
         bool someNull = (movingPiece == null || targetedTile == null);
-        Debug.Log("someNull" + someNull);
+        // Debug.Log("someNull" + someNull);
         movingPiece = entity;
         targetedTile = tile;
         sm.enabled = false;

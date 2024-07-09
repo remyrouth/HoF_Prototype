@@ -28,15 +28,7 @@ public class PlayerController : MonoBehaviour
         PositionalCorrectionSetup();
     }
 
-
-    private void SetupInfoToScript() {
-        playerHealth = characterInfo.health;
-    }
-
-    public void ResetMoveAndAttackStates() {
-        hasMovedYet = false;
-        hasAttackedYet = false;
-    }
+    // Main Action Methods
 
     public void MoveToNewTile(GameObject newTile)
     {
@@ -72,6 +64,87 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    // Helper Methods
+
+    private GameObject FindMatchingObjectToTile(GameObject newTile) {
+        GameObject[] playerObjectPiecesArray = GameObject.FindGameObjectsWithTag("Player");
+
+        foreach (GameObject character in playerObjectPiecesArray)
+        {
+            bool matchingX = (character.transform.position.x == newTile.transform.position.x);
+            bool matchingZ = (character.transform.position.z == newTile.transform.position.z);
+            if (matchingX && matchingZ) {
+                return character;
+            }
+        }
+
+        return null;
+    }
+
+    private GameObject FindClosestTile(Vector3 point)
+    {
+        GameObject closestTile = null;
+        float closestDistanceSqr = Mathf.Infinity;
+
+        foreach (GameObject tile in tiles)
+        {
+            Vector3 directionToTile = tile.transform.position - point;
+            float dSqrToTile = directionToTile.sqrMagnitude;
+
+            if (dSqrToTile < closestDistanceSqr)
+            {
+                closestDistanceSqr = dSqrToTile;
+                closestTile = tile;
+            }
+        }
+
+        return closestTile;
+    }
+
+    private bool IsTileOccupied(GameObject newTile) {
+        GameObject[] playerObjectPiecesArray = GameObject.FindGameObjectsWithTag("Player");
+
+        foreach (GameObject character in playerObjectPiecesArray)
+        {
+            bool matchingX = (character.transform.position.x == newTile.transform.position.x);
+            bool matchingZ = (character.transform.position.z == newTile.transform.position.z);
+            if (matchingX && matchingZ) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public void ResetMoveAndAttackStates() {
+        hasMovedYet = false;
+        hasAttackedYet = false;
+    }
+    // Setup Methods 
+    private void PositionalCorrectionSetup()
+    {
+        Vector3 positionalCorrection = FindClosestTile(gameObject.transform.position).transform.position;
+        gameObject.transform.position = new Vector3(positionalCorrection.x, positionalCorrection.y + yOffset, positionalCorrection.z);
+    }
+
+    private void TileMapSetup()
+    {
+        // Initialize the list
+        tiles = new List<GameObject>();
+
+        // Find all GameObjects with the tag "Tile" and add them to the list
+        GameObject[] tilesArray = GameObject.FindGameObjectsWithTag("Tile");
+        foreach (GameObject tile in tilesArray)
+        {
+            tiles.Add(tile);
+        }
+    }
+
+    private void SetupInfoToScript() {
+        playerHealth = characterInfo.health;
+    }
+
+    // Pathing Methods
     private IEnumerator MoveAlongTiles(GameObject destinationTile)
     {
         List<GameObject> path = FindPath(FindClosestTile(transform.position), destinationTile);
@@ -217,7 +290,6 @@ public class PlayerController : MonoBehaviour
         }
         return path;
     }
-
     private List<GameObject> GetNeighbors(GameObject tile)
     {
         List<GameObject> neighbors = new List<GameObject>();
@@ -232,74 +304,5 @@ public class PlayerController : MonoBehaviour
         }
 
         return neighbors;
-    }
-
-    private void TileMapSetup()
-    {
-        // Initialize the list
-        tiles = new List<GameObject>();
-
-        // Find all GameObjects with the tag "Tile" and add them to the list
-        GameObject[] tilesArray = GameObject.FindGameObjectsWithTag("Tile");
-        foreach (GameObject tile in tilesArray)
-        {
-            tiles.Add(tile);
-        }
-    }
-
-    private GameObject FindClosestTile(Vector3 point)
-    {
-        GameObject closestTile = null;
-        float closestDistanceSqr = Mathf.Infinity;
-
-        foreach (GameObject tile in tiles)
-        {
-            Vector3 directionToTile = tile.transform.position - point;
-            float dSqrToTile = directionToTile.sqrMagnitude;
-
-            if (dSqrToTile < closestDistanceSqr)
-            {
-                closestDistanceSqr = dSqrToTile;
-                closestTile = tile;
-            }
-        }
-
-        return closestTile;
-    }
-
-    private void PositionalCorrectionSetup()
-    {
-        Vector3 positionalCorrection = FindClosestTile(gameObject.transform.position).transform.position;
-        gameObject.transform.position = new Vector3(positionalCorrection.x, positionalCorrection.y + yOffset, positionalCorrection.z);
-    }
-
-    private GameObject FindMatchingObjectToTile(GameObject newTile) {
-        GameObject[] playerObjectPiecesArray = GameObject.FindGameObjectsWithTag("Player");
-
-        foreach (GameObject character in playerObjectPiecesArray)
-        {
-            bool matchingX = (character.transform.position.x == newTile.transform.position.x);
-            bool matchingZ = (character.transform.position.z == newTile.transform.position.z);
-            if (matchingX && matchingZ) {
-                return character;
-            }
-        }
-
-        return null;
-    }
-
-    private bool IsTileOccupied(GameObject newTile) {
-        GameObject[] playerObjectPiecesArray = GameObject.FindGameObjectsWithTag("Player");
-
-        foreach (GameObject character in playerObjectPiecesArray)
-        {
-            bool matchingX = (character.transform.position.x == newTile.transform.position.x);
-            bool matchingZ = (character.transform.position.z == newTile.transform.position.z);
-            if (matchingX && matchingZ) {
-                return true;
-            }
-        }
-
-        return false;
     }
 }
