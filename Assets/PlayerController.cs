@@ -118,6 +118,7 @@ public class PlayerController : MonoBehaviour
     }
 
     public void ResetMoveAndAttackStates() {
+        Debug.Log("reset");
         hasMovedYet = false;
         hasAttackedYet = false;
     }

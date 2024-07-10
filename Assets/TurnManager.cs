@@ -12,6 +12,7 @@ public class TurnManager : MonoBehaviour
     public GameObject targetedTile;
     private SelectionManager sm;
     private bool completeWaitChecks = false;
+    public GameObject EndTurnCanvas;
 
     private void Start() {
         sm = FindObjectOfType<SelectionManager>();
@@ -25,8 +26,6 @@ public class TurnManager : MonoBehaviour
     }
 
     public void BeginWait(GameObject entity, GameObject tile) {
-        bool someNull = (movingPiece == null || targetedTile == null);
-        // Debug.Log("someNull" + someNull);
         movingPiece = entity;
         targetedTile = tile;
         sm.enabled = false;
@@ -34,11 +33,6 @@ public class TurnManager : MonoBehaviour
     }
 
     private void reachedDestinationCheck() {
-        // if ((movingPiece == null || targetedTile == null) && completeWaitChecks) {
-        //     Debug.LogError("Moving piece and/or tile not given, and therefore null");
-        //     return;
-        // }
-
         Vector3 tilePos = targetedTile.transform.position;
         Vector3 piecePos = movingPiece.transform.position;
         bool reachedDestination = (piecePos.x == tilePos.x && piecePos.z == tilePos.z);
@@ -54,12 +48,67 @@ public class TurnManager : MonoBehaviour
 
                 movingPiece = null;
                 targetedTile = null;
+                StartIndividualEnemyAction();
             }
 
         }
 
+    }
+
+    private void StartIndividualEnemyAction() {
+        // Collect all enemies. if no enemies available, end enemy turn
+        GameObject[] playerObjectPiecesArray = GameObject.FindGameObjectsWithTag("Player");
+        List<GameObject> enemyControlled = new List<GameObject>();
+
+        foreach (GameObject piece in playerObjectPiecesArray) {
+            AIPlayerController apc = piece.GetComponent<AIPlayerController>();
+
+            if (apc != null) {
+                if (!piece.GetComponent<PlayerController>().hasMovedYet) {
+                    enemyControlled.Add(piece);
+                }
+            }
+        }
+
+        if (enemyControlled.Count <= 0) {
+            StartPlayerTurn();
+            return;
+        }
+
+        // choose random enemy that has yet to move
+
+        // move piece
+        GameObject bestTileToMoveTo = enemyControlled[0].GetComponent<AIPlayerController>().Move();
+
+        // wait for piece
+        if (bestTileToMoveTo != null) {
+            BeginWait(enemyControlled[0], bestTileToMoveTo);
+        }
+
+        // attack with piece (done in reachedDestinationCheck)
+    }
+
+    private void StartPlayerTurn() {
+        GameObject[] playerObjectPiecesArray = GameObject.FindGameObjectsWithTag("Player");
+        Debug.Log("playerObjectPiecesArray length: " + playerObjectPiecesArray.size);
+
+        foreach (GameObject piece in playerObjectPiecesArray) {
+            PlayerController pc = piece.GetComponent<PlayerController>();
+
+            if (pc != null) {
+                pc.ResetMoveAndAttackStates();
+            }
+        }
 
 
+        isPlayerTurn = true;
+        sm.enabled = true;
+        EndTurnCanvas.SetActive(true);
+    }
 
+    public void EndPlayerTurn() {
+        isPlayerTurn = false;
+        EndTurnCanvas.SetActive(false);
+        StartIndividualEnemyAction();
     }
 }

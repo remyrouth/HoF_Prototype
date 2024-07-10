@@ -11,18 +11,18 @@ public class AIPlayerController : MonoBehaviour
     }
 
     private void Update() {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            Move();
-            Debug.Log("Spacebar pressed!");
-        }
+        // if (Input.GetKeyDown(KeyCode.Space))
+        // {
+        //     Move();
+        //     Debug.Log("Spacebar pressed!");
+        // }
     }
 
-    public void Move() {
-        MoveCloserToClosestPlayer();
+    public GameObject Move() {
+        return MoveCloserToClosestPlayer();
     }
 
-    private void MoveCloserToClosestPlayer() {
+    private GameObject MoveCloserToClosestPlayer() {
         // collect all vaible player targets
         GameObject[] playerObjectPiecesArray = GameObject.FindGameObjectsWithTag("Player");
         List<GameObject> playerControlled = new List<GameObject>();
@@ -63,8 +63,11 @@ public class AIPlayerController : MonoBehaviour
             GameObject bestTile = pc.GetBestReachableTileTowardsTarget(pc.FindClosestTile(closestTarget.transform.position), pc.characterInfo.speed);
             pc.MoveToNewTile(bestTile);
 
+            return bestTile;
+
         }
 
+        return null;
         
     }
 
