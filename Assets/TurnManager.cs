@@ -90,7 +90,7 @@ public class TurnManager : MonoBehaviour
 
     private void StartPlayerTurn() {
         GameObject[] playerObjectPiecesArray = GameObject.FindGameObjectsWithTag("Player");
-        Debug.Log("playerObjectPiecesArray length: " + playerObjectPiecesArray.size);
+        // Debug.Log("playerObjectPiecesArray length: " + playerObjectPiecesArray.size);
 
         foreach (GameObject piece in playerObjectPiecesArray) {
             PlayerController pc = piece.GetComponent<PlayerController>();
