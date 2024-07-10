@@ -63,6 +63,7 @@ public class SelectionManager : MonoBehaviour
         }
     }
 
+    // Interaction Methods
     private void HoverSelect() {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
@@ -122,6 +123,25 @@ public class SelectionManager : MonoBehaviour
         }
     }
 
+    private void SelectNewTile(Vector3 selectionPoint) {
+        // SelectTile(hit.point);
+        if (currentSelectedTile != null) {
+            currentSelectedTile.GetComponent<TileGraphicsController>().ChangeToDefaultState();
+        }
+        currentSelectedTile = FindClosestTile(selectionPoint);
+        if (currentSelectedTile == null) {
+            return;
+        }
+        currentSelectedTile.GetComponent<TileGraphicsController>().ChangeToSelectedState();
+
+        if (currentSelectedTile != null) {
+            currentSelectCharacter = FindMatchingObjectToTile();
+            DisplayerInfoToUI();
+        }
+    }
+
+
+    // Action Type Methods
     private void HavePlayerAttack(Vector3 targetPosition) {
 
         GameObject newTile = FindClosestTile(targetPosition);
@@ -142,52 +162,6 @@ public class SelectionManager : MonoBehaviour
         }
 
 
-    }
-
-    public void ChangeToMovingState() {
-        selectionState = CurrentCharacterSelectionStatus.Moving;
-        PlayerController playerScript = currentSelectCharacter.GetComponent<PlayerController>();
-        List<GameObject> reachableTiles = playerScript.GetReachableTiles(playerScript.RetrievePilotInfo().speed);
-        ClearTileRange();
-        tileRangeList = reachableTiles;
-        foreach (GameObject tile in reachableTiles) {
-            tile.GetComponent<TileGraphicsController>().ChangeToWalkableState();
-        }
-    }
-
-    public void ChangeToAttackingState() {
-        selectionState = CurrentCharacterSelectionStatus.Attacking;
-        PlayerController playerScript = currentSelectCharacter.GetComponent<PlayerController>();
-        List<GameObject> reachableTiles = playerScript.GetAttackableTiles(playerScript.RetrievePilotInfo().attackRange);
-        ClearTileRange();
-        tileRangeList = reachableTiles;
-        foreach (GameObject tile in reachableTiles) {
-            tile.GetComponent<TileGraphicsController>().ChangeToAttackableState();
-        }
-    }
-
-    private void SelectNewTile(Vector3 selectionPoint) {
-        // SelectTile(hit.point);
-        if (currentSelectedTile != null) {
-            currentSelectedTile.GetComponent<TileGraphicsController>().ChangeToDefaultState();
-        }
-        currentSelectedTile = FindClosestTile(selectionPoint);
-        if (currentSelectedTile == null) {
-            return;
-        }
-        currentSelectedTile.GetComponent<TileGraphicsController>().ChangeToSelectedState();
-
-        if (currentSelectedTile != null) {
-            currentSelectCharacter = FindMatchingObjectToTile();
-            DisplayerInfoToUI();
-        }
-    }
-
-    private void DisplayerInfoToUI() {
-        if (currentSelectCharacter != null) {
-            PlayerController characterScript = currentSelectCharacter.GetComponent<PlayerController>();
-            ccc.DisplayCharacter(characterScript);
-        }
     }
 
     private void MoveSelectedCharacter(Vector3 selectionPoint) {
@@ -221,6 +195,38 @@ public class SelectionManager : MonoBehaviour
 
     }
 
+
+    // State Machine Altering Methods
+    public void ChangeToMovingState() {
+        selectionState = CurrentCharacterSelectionStatus.Moving;
+        PlayerController playerScript = currentSelectCharacter.GetComponent<PlayerController>();
+        List<GameObject> reachableTiles = playerScript.GetReachableTiles(playerScript.RetrievePilotInfo().speed);
+        ClearTileRange();
+        tileRangeList = reachableTiles;
+        foreach (GameObject tile in reachableTiles) {
+            tile.GetComponent<TileGraphicsController>().ChangeToWalkableState();
+        }
+    }
+
+    public void ChangeToAttackingState() {
+        selectionState = CurrentCharacterSelectionStatus.Attacking;
+        PlayerController playerScript = currentSelectCharacter.GetComponent<PlayerController>();
+        List<GameObject> reachableTiles = playerScript.GetAttackableTiles(playerScript.RetrievePilotInfo().attackRange);
+        ClearTileRange();
+        tileRangeList = reachableTiles;
+        foreach (GameObject tile in reachableTiles) {
+            tile.GetComponent<TileGraphicsController>().ChangeToAttackableState();
+        }
+    }
+
+
+    private void DisplayerInfoToUI() {
+        if (currentSelectCharacter != null) {
+            PlayerController characterScript = currentSelectCharacter.GetComponent<PlayerController>();
+            ccc.DisplayCharacter(characterScript);
+        }
+    }
+
     private GameObject FindMatchingObjectToTile() {
         GameObject[] playerObjectPiecesArray = GameObject.FindGameObjectsWithTag("Player");
 
@@ -236,6 +242,7 @@ public class SelectionManager : MonoBehaviour
         return null;
     }
 
+    // Cleanup Methods
     private void Cleanup () {
         if (currentSelectedTile != null) {
             currentSelectedTile.GetComponent<TileGraphicsController>().ChangeToDefaultState();
@@ -263,6 +270,9 @@ public class SelectionManager : MonoBehaviour
         tileRangeList = new List<GameObject>();
     }
 
+
+
+    // Helper Methods
     private GameObject FindClosestTile(Vector3 point)
     {
         GameObject closestTile = null;

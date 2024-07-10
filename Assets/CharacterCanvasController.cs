@@ -5,10 +5,14 @@ using UnityEngine.UI;
 
 public class CharacterCanvasController : MonoBehaviour
 {
+    [Header("Display Variables")]
     public PlayerController currentCharacter;
-    public Image characterPortrait;
+    public Image pilotPortait;
+    public Image mechPortrait;
     private Canvas canvasComponent;
 
+
+    [Header("Button Variables")]
     public GameObject moveButtonMain;
     public GameObject moveButtonBackground;
     public GameObject attackButtonMain;
@@ -22,12 +26,29 @@ public class CharacterCanvasController : MonoBehaviour
         canvasComponent.enabled = false;
     }
 
-
-
     public void DisplayCharacter(PlayerController newCharacterScript){
         currentCharacter = newCharacterScript;
 
 
+        DetermineButtonAvailability(newCharacterScript);
+
+        moveButtonBackground.SetActive(false);
+        attackButtonBackground.SetActive(false);
+
+
+        pilotPortait.gameObject.SetActive(true);
+        mechPortrait.gameObject.SetActive(true);
+        canvasComponent.enabled = true;
+        pilotPortait.sprite = currentCharacter.RetrievePilotInfo().characterSprite;
+        mechPortrait.sprite = currentCharacter.RetrieveMechInfo().characterSprite;
+
+    }
+
+    // Determines what buttons are available based on : 
+    // if the entity is player controlled
+    // if they've moved, attack, etc 
+    // (basically if actions have not been used up)
+    private void DetermineButtonAvailability(PlayerController newCharacterScript) {
         if (newCharacterScript.isPlayerEntity) {
             
             if (newCharacterScript.hasAttackedYet) {
@@ -46,17 +67,10 @@ public class CharacterCanvasController : MonoBehaviour
             attackButtonMain.SetActive(false);
             moveButtonMain.SetActive(false);
         }
-
-        moveButtonBackground.SetActive(false);
-        attackButtonBackground.SetActive(false);
-
-
-        characterPortrait.gameObject.SetActive(true);
-        canvasComponent.enabled = true;
-        characterPortrait.sprite = currentCharacter.RetrievePilotInfo().characterSprite;
-
     }
 
+
+    // Turn order interaction methods
     public void BeginMoveSystem () {
         // Debug.Log("Button Triggered Move Method");
         sm.ChangeToMovingState();
@@ -73,6 +87,7 @@ public class CharacterCanvasController : MonoBehaviour
         attackButtonBackground.SetActive(true);
     }
 
+    // Clean up Method
     public void MenuCleanup() {
         moveButtonBackground.SetActive(false);
         attackButtonBackground.SetActive(false);
@@ -80,8 +95,8 @@ public class CharacterCanvasController : MonoBehaviour
 
 
         currentCharacter = null;
-        characterPortrait.sprite = null;
-        characterPortrait.gameObject.SetActive(false);
+        pilotPortait.sprite = null;
+        pilotPortait.gameObject.SetActive(false);
         canvasComponent.enabled = false;
     }
 }

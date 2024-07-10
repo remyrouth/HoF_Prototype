@@ -79,7 +79,6 @@ public class TurnManager : MonoBehaviour
         }
 
         // choose random enemy that has yet to move
-
         // move piece
         GameObject bestTileToMoveTo = enemyControlled[0].GetComponent<AIPlayerController>().Move();
 

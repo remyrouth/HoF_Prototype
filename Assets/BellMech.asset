@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: BellMech
   m_EditorClassIdentifier: 
   mechHealth: 5
-  characterSprite: {fileID: 0}
+  characterSprite: {fileID: 21300000, guid: f377da51488dc4249b7329b86c9ed5ac, type: 3}
   maximumClarity: 10
   mechAbilityClass: 10

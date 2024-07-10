@@ -87,6 +87,9 @@ public class PlayerController : MonoBehaviour
     public CharacterStats RetrievePilotInfo() {
         return pilotInfo;
     }
+    public MechStats RetrieveMechInfo() {
+        return mechInfo;
+    }
 
     private GameObject FindMatchingObjectToTile(GameObject newTile) {
         GameObject[] playerObjectPiecesArray = GameObject.FindGameObjectsWithTag("Player");
