@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "NewCharacterStats", menuName = "Character/Stats")]
+[CreateAssetMenu(fileName = "NewCharacterStats", menuName = "Character/NewPilot")]
 public class CharacterStats : ScriptableObject
 {
     public int strength;

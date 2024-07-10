@@ -6,23 +6,26 @@ using UnityEngine.AI;
 public class PlayerController : MonoBehaviour
 {
 
-    [Header("")]
-    public CharacterStats characterInfo;
-    public List<GameObject> tiles;
-    public float yOffset = 1f;
-    private NavMeshAgent agent;
+    [Header("Player Settings")]
+    public CharacterStats pilotInfo;
+    public MechStats mechInfo;
     public bool isPlayerEntity = true;
-
-
-    public int playerHealth = 0;
+    public int currentPlayerHealth = 0;
+    public int currentMechHealth = 0;
 
 
 
     public bool hasAttackedYet = false;
     public bool hasMovedYet = false;
 
+    // moving variables
+    public float yOffset = 1f;
+    private List<GameObject> tiles;
+    private NavMeshAgent agent;
+
     private void Start()
     {
+        currentPlayerHealth = pilotInfo.health;
         agent = GetComponent<NavMeshAgent>();
         TileMapSetup();
         PositionalCorrectionSetup();
@@ -35,7 +38,7 @@ public class PlayerController : MonoBehaviour
         hasMovedYet = true;
         TileMapSetup();
         // is new tile in range? 
-        List<GameObject> reachableTiles = GetReachableTiles(characterInfo.speed);
+        List<GameObject> reachableTiles = GetReachableTiles(pilotInfo.speed);
         if (reachableTiles.Contains(newTile)) {
             StartCoroutine(MoveAlongTiles(newTile));
         }
@@ -48,7 +51,7 @@ public class PlayerController : MonoBehaviour
         if (objectOnAttackedTile != null) {
             Debug.Log("Attackable entity found");
 
-            objectOnAttackedTile.GetComponent<PlayerController>().TakeDamage(characterInfo.strength);
+            objectOnAttackedTile.GetComponent<PlayerController>().TakeDamage(pilotInfo.strength);
 
             return true;
         }
@@ -56,15 +59,19 @@ public class PlayerController : MonoBehaviour
     }
 
     public void TakeDamage(int damage) {
-        playerHealth -= damage;
-        playerHealth = Mathf.Max(0, playerHealth);
+        currentPlayerHealth -= damage;
+        currentPlayerHealth = Mathf.Max(0, currentPlayerHealth);
 
-        if (playerHealth == 0) {
+        if (currentPlayerHealth == 0) {
             Destroy(gameObject);
         }
     }
 
     // Helper Methods
+
+    public CharacterStats RetrievePilotInfo() {
+        return pilotInfo;
+    }
 
     private GameObject FindMatchingObjectToTile(GameObject newTile) {
         GameObject[] playerObjectPiecesArray = GameObject.FindGameObjectsWithTag("Player");
@@ -143,7 +150,7 @@ public class PlayerController : MonoBehaviour
     }
 
     private void SetupInfoToScript() {
-        playerHealth = characterInfo.health;
+        currentPlayerHealth = pilotInfo.health;
     }
 
     // Pathing Methods

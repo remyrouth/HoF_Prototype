@@ -53,7 +53,7 @@ public class CharacterCanvasController : MonoBehaviour
 
         characterPortrait.gameObject.SetActive(true);
         canvasComponent.enabled = true;
-        characterPortrait.sprite = currentCharacter.characterInfo.characterSprite;
+        characterPortrait.sprite = currentCharacter.RetrievePilotInfo().characterSprite;
 
     }
 

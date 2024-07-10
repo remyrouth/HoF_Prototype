@@ -11,11 +11,13 @@ public class TurnManager : MonoBehaviour
     public GameObject movingPiece;
     public GameObject targetedTile;
     private SelectionManager sm;
+    private CharacterCanvasController ccc;
     private bool completeWaitChecks = false;
     public GameObject EndTurnCanvas;
 
     private void Start() {
         sm = FindObjectOfType<SelectionManager>();
+        ccc = FindObjectOfType<CharacterCanvasController>();
     }
 
     private void Update() {
@@ -109,6 +111,7 @@ public class TurnManager : MonoBehaviour
     public void EndPlayerTurn() {
         isPlayerTurn = false;
         EndTurnCanvas.SetActive(false);
+        ccc.MenuCleanup();
         StartIndividualEnemyAction();
     }
 }

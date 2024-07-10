@@ -147,7 +147,7 @@ public class SelectionManager : MonoBehaviour
     public void ChangeToMovingState() {
         selectionState = CurrentCharacterSelectionStatus.Moving;
         PlayerController playerScript = currentSelectCharacter.GetComponent<PlayerController>();
-        List<GameObject> reachableTiles = playerScript.GetReachableTiles(playerScript.characterInfo.speed);
+        List<GameObject> reachableTiles = playerScript.GetReachableTiles(playerScript.RetrievePilotInfo().speed);
         ClearTileRange();
         tileRangeList = reachableTiles;
         foreach (GameObject tile in reachableTiles) {
@@ -158,7 +158,7 @@ public class SelectionManager : MonoBehaviour
     public void ChangeToAttackingState() {
         selectionState = CurrentCharacterSelectionStatus.Attacking;
         PlayerController playerScript = currentSelectCharacter.GetComponent<PlayerController>();
-        List<GameObject> reachableTiles = playerScript.GetAttackableTiles(playerScript.characterInfo.attackRange);
+        List<GameObject> reachableTiles = playerScript.GetAttackableTiles(playerScript.RetrievePilotInfo().attackRange);
         ClearTileRange();
         tileRangeList = reachableTiles;
         foreach (GameObject tile in reachableTiles) {
