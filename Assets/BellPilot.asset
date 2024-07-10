@@ -15,5 +15,8 @@ MonoBehaviour:
   strength: 2
   attackRange: 2
   speed: 4
-  health: 1
+  health: 3
+  currentExperiencePoint: 0
   characterSprite: {fileID: 21300000, guid: 08a87e20a6d6349819bd8945c3820fb3, type: 3}
+  clarityGainedFromMovements: 1
+  clarityGainedFromAttacks: 1

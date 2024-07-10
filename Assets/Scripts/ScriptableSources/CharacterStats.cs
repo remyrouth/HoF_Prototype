@@ -7,5 +7,11 @@ public class CharacterStats : ScriptableObject
     public int attackRange;
     public int speed;
     public int health;
+    public int currentExperiencePoint = 0;
     public Sprite characterSprite;
+
+
+
+    public int clarityGainedFromMovements = 1;
+    public int clarityGainedFromAttacks = 1;
 }

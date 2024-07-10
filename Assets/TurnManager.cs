@@ -48,6 +48,7 @@ public class TurnManager : MonoBehaviour
                 sm.enabled = true;
             } else {
 
+                movingPiece.GetComponent<AIPlayerController>().Attack();
                 movingPiece = null;
                 targetedTile = null;
                 StartIndividualEnemyAction();

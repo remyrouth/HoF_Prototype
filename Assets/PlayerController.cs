@@ -6,17 +6,24 @@ using UnityEngine.AI;
 public class PlayerController : MonoBehaviour
 {
 
-    [Header("Player Settings")]
+    [Header("Player Sources")]
     public CharacterStats pilotInfo;
     public MechStats mechInfo;
     public bool isPlayerEntity = true;
+
+
+    [Header("Current Stats")]
     public int currentPlayerHealth = 0;
     public int currentMechHealth = 0;
+    public int currentClarityLevel = 0;
 
 
-
+    [Header("Action variables")]
     public bool hasAttackedYet = false;
     public bool hasMovedYet = false;
+    public bool hasUsedAbilityYet = false;
+
+
 
     // moving variables
     public float yOffset = 1f;
@@ -40,6 +47,9 @@ public class PlayerController : MonoBehaviour
         // is new tile in range? 
         List<GameObject> reachableTiles = GetReachableTiles(pilotInfo.speed);
         if (reachableTiles.Contains(newTile)) {
+
+            currentClarityLevel += pilotInfo.clarityGainedFromMovements;
+            currentClarityLevel = Mathf.Min(mechInfo.maximumClarity, currentClarityLevel);
             StartCoroutine(MoveAlongTiles(newTile));
         }
         // StartCoroutine(MoveAlongTiles(newTile));
@@ -53,12 +63,17 @@ public class PlayerController : MonoBehaviour
 
             objectOnAttackedTile.GetComponent<PlayerController>().TakeDamage(pilotInfo.strength);
 
+            currentClarityLevel += pilotInfo.clarityGainedFromAttacks;
+            currentClarityLevel = Mathf.Min(mechInfo.maximumClarity, currentClarityLevel);
             return true;
         }
         return false;
     }
 
     public void TakeDamage(int damage) {
+        if (isPlayerEntity) {
+            Debug.Log("Player took damage: " + damage);
+        }
         currentPlayerHealth -= damage;
         currentPlayerHealth = Mathf.Max(0, currentPlayerHealth);
 
