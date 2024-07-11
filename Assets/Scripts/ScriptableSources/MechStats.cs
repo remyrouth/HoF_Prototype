@@ -8,6 +8,16 @@ public class MechStats : ScriptableObject
     public int maximumClarity;
     public MechClass mechAbilityClass = MechClass.StandardSoldier;
 
+    public Ability AbilitySlot1 = new Ability();
+    public Ability AbilitySlot2 = new Ability();
+    public Ability AbilitySlot3 = new Ability();
+
+    // returns true if we can successfully trigger the ability
+    public bool UseAbility(GameObject TargetSquare) {
+        return true;
+
+    }
+
     public enum MechClass {
         StandardSoldier, // this has no abilities
         Titan,
@@ -35,11 +45,42 @@ public class MechStats : ScriptableObject
     // Give an ally 30% chance to ignore next damage taken
     /// <Ability List>
 
+    [System.Serializable]
     public class Ability {
-
-        public enum AbilityType {
-
-            
-        }
+        public AbilityType type = AbilityType.None;
+        public int intPower;
+        public int clarityCost = 2;
+        public int minmumRange = 0;
+        public int maximumRange = 1;
     }
+    public enum AbilityType {
+        None,
+        Heal,
+        RocketSummon,
+        Teleport,
+        ConvertEnemy,
+        RefillAttackAction,
+        Sprint,
+        LightningStrike,
+        ScareEnemy
+    }
+
+    public string RetreiveAbilityTypeDescription(Ability abilityClassInput) {
+        AbilityType type = abilityClassInput.type;
+        switch (type)
+        {
+            case AbilityType.None:
+                return "Empty Ability Slot";
+                // break;
+            case AbilityType.Heal:
+                return "Healing ability boosts both a mechs and pilots HP";
+                // break;
+            default:
+                Debug.LogError("Ability Description not implemented yet. Look Into MechStats.cs file.\nThe method RetreiveAbilityTypeDescription is resonsible for this");
+                return "Enum type is unknown";
+                // break;
+        }
+        
+    }
+
 }

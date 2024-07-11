@@ -57,6 +57,8 @@ public class PlayerController : MonoBehaviour
 
     public bool AttackTile(GameObject newTile) {
         hasAttackedYet = true;
+        hasMovedYet = true;
+
         GameObject objectOnAttackedTile = FindMatchingObjectToTile(newTile);
         if (objectOnAttackedTile != null) {
             Debug.Log("Attackable entity found");
@@ -74,6 +76,7 @@ public class PlayerController : MonoBehaviour
         if (isPlayerEntity) {
             Debug.Log("Player took damage: " + damage);
         }
+
         currentPlayerHealth -= damage;
         currentPlayerHealth = Mathf.Max(0, currentPlayerHealth);
 
@@ -81,6 +84,14 @@ public class PlayerController : MonoBehaviour
             Destroy(gameObject);
         }
     }
+
+    public void ResetMoveAndAttackStates() {
+        Debug.Log("reset");
+        hasMovedYet = false;
+        hasAttackedYet = false;
+    }
+
+
 
     // Helper Methods
 
@@ -142,11 +153,6 @@ public class PlayerController : MonoBehaviour
         return false;
     }
 
-    public void ResetMoveAndAttackStates() {
-        Debug.Log("reset");
-        hasMovedYet = false;
-        hasAttackedYet = false;
-    }
     // Setup Methods 
     private void PositionalCorrectionSetup()
     {
@@ -168,7 +174,8 @@ public class PlayerController : MonoBehaviour
     }
 
     private void SetupInfoToScript() {
-        currentPlayerHealth = pilotInfo.health;
+        currentPlayerHealth = RetrievePilotInfo().health;
+        currentMechHealth =  RetrieveMechInfo().mechHealth;
     }
 
     // Pathing Methods

@@ -8,9 +8,10 @@ public class SelectionManager : MonoBehaviour
     // List to store all the GameObjects with the "Tile" tag
     public List<GameObject> tiles;
     public float minSelectDistance;
-    public GameObject currentSelectedTile;
     public GameObject currentHoverableTile;
+    public GameObject currentSelectedTile;
     public GameObject currentSelectCharacter;
+    public GameObject currentSelectAbility; // UPDATE THIS TO MECHSTAT ABILITY CLASS
     public List<GameObject> tileRangeList;
     private CharacterCanvasController ccc;
     private TurnManager tm;
@@ -20,7 +21,8 @@ public class SelectionManager : MonoBehaviour
     public enum CurrentCharacterSelectionStatus {
         Viewing,
         Moving,
-        Attacking
+        Attacking,
+        UsingAbility
     }
 
     public CurrentCharacterSelectionStatus selectionState = CurrentCharacterSelectionStatus.Viewing;
@@ -49,6 +51,7 @@ public class SelectionManager : MonoBehaviour
 
     void Update()
     {
+        // Change to MouseClick instead, more descriptive method name
         MouseSelect();
         HoverSelect();
 
@@ -136,7 +139,11 @@ public class SelectionManager : MonoBehaviour
 
         if (currentSelectedTile != null) {
             currentSelectCharacter = FindMatchingObjectToTile();
-            DisplayerInfoToUI();
+            if (currentSelectCharacter != null) {
+                DisplayerInfoToUI();
+            } else {
+                ccc.MenuCleanup();
+            }
         }
     }
 
@@ -208,6 +215,11 @@ public class SelectionManager : MonoBehaviour
         }
     }
 
+    public void ChangeToViewingState() {
+        selectionState = CurrentCharacterSelectionStatus.Viewing;
+    }
+
+
     public void ChangeToAttackingState() {
         selectionState = CurrentCharacterSelectionStatus.Attacking;
         PlayerController playerScript = currentSelectCharacter.GetComponent<PlayerController>();
@@ -218,6 +230,31 @@ public class SelectionManager : MonoBehaviour
             tile.GetComponent<TileGraphicsController>().ChangeToAttackableState();
         }
     }
+
+    public void ChangeToAbilityState(int abilitySlot) {
+        selectionState = CurrentCharacterSelectionStatus.UsingAbility;
+        PlayerController playerScript = currentSelectCharacter.GetComponent<PlayerController>();
+        List<GameObject> reachableTiles = new List<GameObject>();
+        ClearTileRange();
+        if (abilitySlot == 1) {
+            reachableTiles = playerScript.GetReachableTiles(playerScript.RetrieveMechInfo().AbilitySlot1.maximumRange);
+            tileRangeList = reachableTiles;
+        } else if (abilitySlot == 2) {
+            reachableTiles = playerScript.GetReachableTiles(playerScript.RetrieveMechInfo().AbilitySlot2.maximumRange);
+            tileRangeList = reachableTiles;
+        } else if (abilitySlot == 3) {
+            reachableTiles = playerScript.GetReachableTiles(playerScript.RetrieveMechInfo().AbilitySlot3.maximumRange);
+            tileRangeList = reachableTiles;
+        } else {
+            Debug.LogError("ChangeToAbilityState method given a number not matchable to an ability slot");
+        }
+
+        foreach (GameObject tile in reachableTiles) {
+            tile.GetComponent<TileGraphicsController>().ChangeToAbilityState();
+        }
+    }
+
+
 
 
     private void DisplayerInfoToUI() {

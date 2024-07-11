@@ -22,6 +22,9 @@ public class TileGraphicsController : MonoBehaviour
     public Color centerAttackable;
     public Color borderAttackable;
 
+    public Color centerAbilityUsable;
+    public Color borderAbilityUsable;
+
     public TileState currentState = TileState.Default;
 
     public enum TileState {
@@ -29,11 +32,17 @@ public class TileGraphicsController : MonoBehaviour
         Selected,
         Hovering,
         Walkable,
-        Attackable
+        Attackable,
+        AbilityUsable
     }
 
     private void Start() {
         ChangeToDefaultState();
+    }
+    
+    public void ChangeToAbilityState() {
+        currentState = TileState.AbilityUsable;
+        ChangeColors(centerAbilityUsable, borderAbilityUsable);
     }
 
     public void ChangeToDefaultState() {
