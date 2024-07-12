@@ -5,8 +5,10 @@ using UnityEngine.UI;
 
 public class CharacterCanvasController : MonoBehaviour
 {
-    [Header("Display Variables")]
+    [Header("Current Character")]
     public PlayerController currentCharacter;
+
+    [Header("Display Variables")]
     public Image pilotPortait;
     public Image mechPortrait;
     public Image mechAbilityPortrait;
@@ -26,15 +28,6 @@ public class CharacterCanvasController : MonoBehaviour
     public AbilityButtonClass abilityUIClass1;
     public AbilityButtonClass abilityUIClass2;
     public AbilityButtonClass abilityUIClass3;
-    public GameObject AbilityButton1;
-    public GameObject AbilityButton1Background;
-    public Text AbilityText1;
-    public GameObject AbilityButton2;
-    public GameObject AbilityButton2Background;
-    public Text AbilityText2;
-    public GameObject AbilityButton3;
-    public GameObject AbilityButton3Background;
-    public Text AbilityText3;
 
     private SelectionManager sm;
 
@@ -89,6 +82,26 @@ public class CharacterCanvasController : MonoBehaviour
         DisplayCharacter(currentCharacter);
     }
 
+    // this was triggered by UI buttons
+    public void SelectAbility(int abilitySlotNumber) {
+        if (abilitySlotNumber == 1) {
+            abilityUIClass1.SelectButton();
+            abilityUIClass2.CleanupButton();
+            abilityUIClass3.CleanupButton();
+            sm.ChangeToAbilityState(abilityUIClass1.getCurretAbilityOfButton());
+        } else if (abilitySlotNumber == 2) {
+            abilityUIClass1.CleanupButton();
+            abilityUIClass2.SelectButton();
+            abilityUIClass3.CleanupButton();
+            sm.ChangeToAbilityState(abilityUIClass2.getCurretAbilityOfButton());
+        } else if (abilitySlotNumber == 3) {
+            abilityUIClass1.CleanupButton();
+            abilityUIClass2.CleanupButton();
+            abilityUIClass3.SelectButton();
+            sm.ChangeToAbilityState(abilityUIClass3.getCurretAbilityOfButton());
+        } 
+    }
+
     // Determines what buttons are available based on : 
     // if the entity is player controlled
     // if they've moved, attack, etc 
@@ -123,25 +136,24 @@ public class CharacterCanvasController : MonoBehaviour
 
     private void DetermineAbilityAvailability(PlayerController newCharacterScript) {
         MechStats mechInfo = newCharacterScript.RetrieveMechInfo();
+        MechStats.AbilityMechSlot slot1 = mechInfo.AbilitySlot1;
+        MechStats.AbilityMechSlot slot2 = mechInfo.AbilitySlot2;
+        MechStats.AbilityMechSlot slot3 = mechInfo.AbilitySlot3;
 
-        if (newCharacterScript.RetrieveMechInfo().AbilitySlot1.type != MechStats.AbilityType.None) {
-            // abilityUIClass1
-            AbilityButton1.SetActive(true);
-            AbilityText1.text = mechInfo.AbilitySlot1.type.ToString();
+        if (slot1.IsNotNoneType()) {
+            abilityUIClass1.DisplayAbilityInfo(slot1);
         } else {
-            AbilityButton1.SetActive(false);
+            abilityUIClass1.DisableAbilityButton();
         }
-        if (newCharacterScript.RetrieveMechInfo().AbilitySlot2.type != MechStats.AbilityType.None) {
-            AbilityButton2.SetActive(true);
-            AbilityText2.text = mechInfo.AbilitySlot2.type.ToString();
+        if (slot2.IsNotNoneType()) {
+            abilityUIClass2.DisplayAbilityInfo(slot2);
         } else {
-            AbilityButton2.SetActive(false);
+            abilityUIClass2.DisableAbilityButton();
         }
-        if (newCharacterScript.RetrieveMechInfo().AbilitySlot3.type != MechStats.AbilityType.None) {
-            AbilityButton3.SetActive(true);
-            AbilityText3.text = mechInfo.AbilitySlot3.type.ToString();
+        if (slot3.IsNotNoneType()) {
+            abilityUIClass3.DisplayAbilityInfo(slot3);
         } else {
-            AbilityButton3.SetActive(true);
+            abilityUIClass3.DisableAbilityButton();
         }
     }
 
@@ -152,20 +164,38 @@ public class CharacterCanvasController : MonoBehaviour
         public Text abilityTitleText;
         public Text descriptionText;
         public Text clarityCostText;
+        public Text rangeText;
+        private MechStats.AbilityMechSlot currentAbility;
 
-        public void ChangeActiveStatus(bool newStatus) {
-            parentObject.SetActive(newStatus);
+        public void DisableAbilityButton() {
+            parentObject.SetActive(false);
         }
 
-        public void DisplayAbilityInfo() {
-
+        public void DisplayAbilityInfo(MechStats.AbilityMechSlot slot) {
+            currentAbility = slot;
+            parentObject.SetActive(true);
+            abilityTitleText.text = slot.GetAbilityType().ToString();
+            descriptionText.text = slot.GetAbilityTypeDescription();
+            clarityCostText.text = "Clarity Cost: " + slot.GetClarityCost();
+            rangeText.text = "Range: " + slot.GetMinimumRange().ToString() + "/" + slot.GetMaximumRange().ToString();
+            if (slot.GetMaximumRange() == 0) {
+                rangeText.text = "Range: Self targeting";
+            }
+        }
+        
+        // triggered and called by canvas controller which was triggered by UI Button
+        public void SelectButton() {
+            buttonBackground.SetActive(true);
         }
 
-        public void ChooseSpecificAbility() {
-            // parentObject.SetActive(newStatus);
+        public void CleanupButton() {
+            buttonBackground.SetActive(false);
+        }
+
+        public MechStats.AbilityMechSlot getCurretAbilityOfButton() {
+            return currentAbility;
         }
     }
-
 
     // Turn order interaction methods
     public void BeginMoveSystem () {
@@ -192,10 +222,15 @@ public class CharacterCanvasController : MonoBehaviour
         attackButtonBackground.SetActive(false);
 
 
-
+        // Main Action Menu
         currentCharacter = null;
         pilotPortait.sprite = null;
         pilotPortait.gameObject.SetActive(false);
+
+        // Ability Menu
+        abilityUIClass1.CleanupButton();
+        abilityUIClass2.CleanupButton();
+        abilityUIClass3.CleanupButton();
 
         actionMenu.SetActive(false);
         abilityMenu.SetActive(false);

@@ -29,11 +29,13 @@ public class PlayerController : MonoBehaviour
     public float yOffset = 1f;
     private List<GameObject> tiles;
     private NavMeshAgent agent;
+    private AbilityExecutionManager aem;
 
     private void Start()
     {
         currentPlayerHealth = pilotInfo.health;
         agent = GetComponent<NavMeshAgent>();
+        aem = FindObjectOfType<AbilityExecutionManager>();
         TileMapSetup();
         PositionalCorrectionSetup();
     }
@@ -72,6 +74,13 @@ public class PlayerController : MonoBehaviour
         return false;
     }
 
+    public void UseAbility(MechStats.AbilityMechSlot ability, GameObject targetedTile) {
+        bool abilityUsedCheck = aem.InputAbilityInformationSources(ability, this, targetedTile);
+    }
+    
+
+    // public bool ActivatePlayerAbility()
+
     public void TakeDamage(int damage) {
         if (isPlayerEntity) {
             Debug.Log("Player took damage: " + damage);
@@ -93,7 +102,7 @@ public class PlayerController : MonoBehaviour
 
 
 
-    // Helper Methods
+    // Getter Methods
 
     public CharacterStats RetrievePilotInfo() {
         return pilotInfo;

@@ -21,7 +21,7 @@ MonoBehaviour:
     intPower: 0
     clarityCost: 2
     minmumRange: 0
-    maximumRange: 1
+    maximumRange: 0
   AbilitySlot2:
     type: 0
     intPower: 0

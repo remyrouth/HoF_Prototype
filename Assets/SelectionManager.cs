@@ -11,7 +11,7 @@ public class SelectionManager : MonoBehaviour
     public GameObject currentHoverableTile;
     public GameObject currentSelectedTile;
     public GameObject currentSelectCharacter;
-    public GameObject currentSelectAbility; // UPDATE THIS TO MECHSTAT ABILITY CLASS
+    public GameObject currentSelectAbility; // UPDATE THIS TO MECHSTAT ABILITY
     public List<GameObject> tileRangeList;
     private CharacterCanvasController ccc;
     private TurnManager tm;
@@ -119,6 +119,9 @@ public class SelectionManager : MonoBehaviour
                 } else if (selectionState == CurrentCharacterSelectionStatus.Attacking) {
 
                     HavePlayerAttack(hit.point);
+                } else if (selectionState == CurrentCharacterSelectionStatus.UsingAbility) {
+                    HavePlayerUseAbility(hit.point);
+                    Cleanup();
                 }
                 
 
@@ -202,7 +205,9 @@ public class SelectionManager : MonoBehaviour
 
     }
 
+    private void HavePlayerUseAbility(Vector3 SelectionPoint) {
 
+    }
     // State Machine Altering Methods
     public void ChangeToMovingState() {
         selectionState = CurrentCharacterSelectionStatus.Moving;
@@ -216,6 +221,7 @@ public class SelectionManager : MonoBehaviour
     }
 
     public void ChangeToViewingState() {
+        ClearTileRange();
         selectionState = CurrentCharacterSelectionStatus.Viewing;
     }
 
@@ -231,23 +237,14 @@ public class SelectionManager : MonoBehaviour
         }
     }
 
-    public void ChangeToAbilityState(int abilitySlot) {
+    public void ChangeToAbilityState(MechStats.AbilityMechSlot abilityClass) {
         selectionState = CurrentCharacterSelectionStatus.UsingAbility;
         PlayerController playerScript = currentSelectCharacter.GetComponent<PlayerController>();
         List<GameObject> reachableTiles = new List<GameObject>();
         ClearTileRange();
-        if (abilitySlot == 1) {
-            reachableTiles = playerScript.GetReachableTiles(playerScript.RetrieveMechInfo().AbilitySlot1.maximumRange);
-            tileRangeList = reachableTiles;
-        } else if (abilitySlot == 2) {
-            reachableTiles = playerScript.GetReachableTiles(playerScript.RetrieveMechInfo().AbilitySlot2.maximumRange);
-            tileRangeList = reachableTiles;
-        } else if (abilitySlot == 3) {
-            reachableTiles = playerScript.GetReachableTiles(playerScript.RetrieveMechInfo().AbilitySlot3.maximumRange);
-            tileRangeList = reachableTiles;
-        } else {
-            Debug.LogError("ChangeToAbilityState method given a number not matchable to an ability slot");
-        }
+        reachableTiles = playerScript.GetReachableTiles(abilityClass.GetMaximumRange());
+        tileRangeList = reachableTiles;
+        // Debug.Log("MaximumRange: " + abilityClass.GetMaximumRange() + "   rangeList Count: " + reachableTiles.Count);
 
         foreach (GameObject tile in reachableTiles) {
             tile.GetComponent<TileGraphicsController>().ChangeToAbilityState();
@@ -280,13 +277,14 @@ public class SelectionManager : MonoBehaviour
     }
 
     // Cleanup Methods
-    private void Cleanup () {
+    private void Cleanup () { // This is just used for going back to a default state
         if (currentSelectedTile != null) {
             currentSelectedTile.GetComponent<TileGraphicsController>().ChangeToDefaultState();
         }
         selectionState = CurrentCharacterSelectionStatus.Viewing;
         currentSelectCharacter = null;
         currentSelectedTile = null;
+        currentSelectAbility = null;
 
         currentHoverableTile.GetComponent<TileGraphicsController>().ChangeToDefaultState();
         currentHoverableTile = null;
@@ -297,7 +295,6 @@ public class SelectionManager : MonoBehaviour
     private void ClearTileRange() {
         if (tileRangeList != null) {
             if (tileRangeList.Count != 0) {
-
                 foreach (GameObject tile in tileRangeList) {
                     tile.GetComponent<TileGraphicsController>().ChangeToDefaultState();
                 }

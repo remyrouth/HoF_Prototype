@@ -8,9 +8,9 @@ public class MechStats : ScriptableObject
     public int maximumClarity;
     public MechClass mechAbilityClass = MechClass.StandardSoldier;
 
-    public Ability AbilitySlot1 = new Ability();
-    public Ability AbilitySlot2 = new Ability();
-    public Ability AbilitySlot3 = new Ability();
+    public AbilityMechSlot AbilitySlot1 = new AbilityMechSlot();
+    public AbilityMechSlot AbilitySlot2 = new AbilityMechSlot();
+    public AbilityMechSlot AbilitySlot3 = new AbilityMechSlot();
 
     // returns true if we can successfully trigger the ability
     public bool UseAbility(GameObject TargetSquare) {
@@ -46,12 +46,67 @@ public class MechStats : ScriptableObject
     /// <Ability List>
 
     [System.Serializable]
-    public class Ability {
-        public AbilityType type = AbilityType.None;
-        public int intPower;
-        public int clarityCost = 2;
-        public int minmumRange = 0;
-        public int maximumRange = 1;
+    public class AbilityMechSlot {
+        [SerializeField]
+        private AbilityType type = AbilityType.None;
+        [SerializeField]
+        private int intPower;
+        [SerializeField]
+        private int clarityCost = 2;
+        [SerializeField]
+        private int minmumRange = 1;
+        [SerializeField]
+        private int maximumRange = 1;
+
+
+        // Getters for Ability class properties
+        public AbilityType GetAbilityType() {
+            return type;
+        }
+
+        public bool IsNotNoneType() {
+            return type == AbilityType.None;
+        }
+
+        public int GetIntPower() {
+            return intPower;
+        }
+
+        public int GetClarityCost() {
+            return clarityCost;
+        }
+
+        public int GetMinimumRange() {
+            return minmumRange;
+        }
+
+        public int GetMaximumRange() {
+            return maximumRange;
+        }
+
+        // These methods are here because its neccessary for the character canvas 
+        // controller script to access the mechs abilities.
+        // So they should live here.
+        // A ability mamanger script would just execute how these abilities are handled
+        public string GetAbilityTypeDescription() {
+            AbilityType classInput = type;
+            switch (classInput)
+            {
+                case AbilityType.None:
+                    return "Empty Ability Slot";
+                    // break;
+                case AbilityType.Heal:
+                    return "Healing ability boosts both a mechs and pilots HP";
+                    // break;
+                default:
+                    // Debug.LogError("Ability Description not implemented yet. Look Into MechStats.cs file.\nThe method RetreiveAbilityTypeDescription is resonsible for this");
+                    // return "Enum type is unknown";
+                    return "Ability Description not \nwritten yet. \nLook Into MechStats.cs file." + 
+                    "\nThe method RetreiveAbilityTypeDescription is resonsible for this";
+                    // break;
+            }
+        }
+
     }
     public enum AbilityType {
         None,
@@ -65,22 +120,5 @@ public class MechStats : ScriptableObject
         ScareEnemy
     }
 
-    public string RetreiveAbilityTypeDescription(Ability abilityClassInput) {
-        AbilityType type = abilityClassInput.type;
-        switch (type)
-        {
-            case AbilityType.None:
-                return "Empty Ability Slot";
-                // break;
-            case AbilityType.Heal:
-                return "Healing ability boosts both a mechs and pilots HP";
-                // break;
-            default:
-                Debug.LogError("Ability Description not implemented yet. Look Into MechStats.cs file.\nThe method RetreiveAbilityTypeDescription is resonsible for this");
-                return "Enum type is unknown";
-                // break;
-        }
-        
-    }
 
 }
