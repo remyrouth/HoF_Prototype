@@ -111,7 +111,7 @@ public class PlayerController : MonoBehaviour
         return mechInfo;
     }
 
-    private GameObject FindMatchingObjectToTile(GameObject newTile) {
+    public GameObject FindMatchingObjectToTile(GameObject newTile) {
         GameObject[] playerObjectPiecesArray = GameObject.FindGameObjectsWithTag("Player");
 
         foreach (GameObject character in playerObjectPiecesArray)
@@ -147,7 +147,7 @@ public class PlayerController : MonoBehaviour
         return closestTile;
     }
 
-    private bool IsTileOccupied(GameObject newTile) {
+    public bool IsTileOccupied(GameObject newTile) {
         GameObject[] playerObjectPiecesArray = GameObject.FindGameObjectsWithTag("Player");
 
         foreach (GameObject character in playerObjectPiecesArray)
