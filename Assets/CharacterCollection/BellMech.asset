@@ -18,16 +18,16 @@ MonoBehaviour:
   mechAbilityClass: 10
   AbilitySlot1:
     type: 1
-    intPower: 0
+    intPower: 4
     clarityCost: 2
     minmumRange: 0
     maximumRange: 0
   AbilitySlot2:
-    type: 0
-    intPower: 0
-    clarityCost: 2
+    type: 7
+    intPower: 5
+    clarityCost: 1
     minmumRange: 0
-    maximumRange: 1
+    maximumRange: 6
   AbilitySlot3:
     type: 3
     intPower: 0

@@ -11,7 +11,7 @@ public class SelectionManager : MonoBehaviour
     public GameObject currentHoverableTile;
     public GameObject currentSelectedTile;
     public GameObject currentSelectCharacter;
-    public GameObject currentSelectAbility; // UPDATE THIS TO MECHSTAT ABILITY
+    public MechStats.AbilityMechSlot currentSelectAbility;
     public List<GameObject> tileRangeList;
     private CharacterCanvasController ccc;
     private TurnManager tm;
@@ -206,7 +206,10 @@ public class SelectionManager : MonoBehaviour
     }
 
     private void HavePlayerUseAbility(Vector3 SelectionPoint) {
-
+        // Debug.Log("HavePlayerUseAbility method used");
+        PlayerController pc = currentSelectCharacter.GetComponent<PlayerController>();
+        GameObject targetTile = pc.FindClosestTile(SelectionPoint);
+        pc.UseAbility(currentSelectAbility, targetTile);
     }
     // State Machine Altering Methods
     public void ChangeToMovingState() {
@@ -238,11 +241,12 @@ public class SelectionManager : MonoBehaviour
     }
 
     public void ChangeToAbilityState(MechStats.AbilityMechSlot abilityClass) {
+        currentSelectAbility = abilityClass;
         selectionState = CurrentCharacterSelectionStatus.UsingAbility;
         PlayerController playerScript = currentSelectCharacter.GetComponent<PlayerController>();
         List<GameObject> reachableTiles = new List<GameObject>();
         ClearTileRange();
-        reachableTiles = playerScript.GetReachableTiles(abilityClass.GetMaximumRange());
+        reachableTiles = playerScript.GetAttackableTiles(abilityClass.GetMaximumRange());
         tileRangeList = reachableTiles;
         // Debug.Log("MaximumRange: " + abilityClass.GetMaximumRange() + "   rangeList Count: " + reachableTiles.Count);
 

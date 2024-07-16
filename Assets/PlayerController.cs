@@ -75,6 +75,7 @@ public class PlayerController : MonoBehaviour
     }
 
     public void UseAbility(MechStats.AbilityMechSlot ability, GameObject targetedTile) {
+        Debug.Log("UseAbility method used in player controller class");
         bool abilityUsedCheck = aem.InputAbilityInformationSources(ability, this, targetedTile);
     }
     
@@ -82,12 +83,14 @@ public class PlayerController : MonoBehaviour
     // public bool ActivatePlayerAbility()
 
     public void TakeDamage(int damage) {
+        Debug.Log("Take damage method called");
         if (isPlayerEntity) {
             Debug.Log("Player took damage: " + damage);
         }
 
         currentPlayerHealth -= damage;
         currentPlayerHealth = Mathf.Max(0, currentPlayerHealth);
+        currentPlayerHealth = Mathf.Min(currentPlayerHealth, RetrievePilotInfo().health);
 
         if (currentPlayerHealth == 0) {
             Destroy(gameObject);

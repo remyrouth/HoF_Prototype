@@ -65,7 +65,7 @@ public class MechStats : ScriptableObject
         }
 
         public bool IsNotNoneType() {
-            return type == AbilityType.None;
+            return type != AbilityType.None;
         }
 
         public int GetIntPower() {

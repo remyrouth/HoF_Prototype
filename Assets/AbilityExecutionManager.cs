@@ -11,7 +11,15 @@ public class AbilityExecutionManager : MonoBehaviour
         AbilityRules.ScalingType.Singular,
         AbilityRules.TileTargetType.Ally, 
         AbilityRules.PrefabSummoningPlacement.None, 
-        AbilityRules.MovementImpactType.None);
+        AbilityRules.MovementImpactType.None, true);
+
+    [Header("Lightning Strike Ability")]
+    public AbilityRules LightningStrikeAbilityRules =  new AbilityRules(MechStats.AbilityType.LightningStrike,
+        AbilityRules.DamageType.Damages,
+        AbilityRules.ScalingType.Singular,
+        AbilityRules.TileTargetType.Enemy, 
+        AbilityRules.PrefabSummoningPlacement.None, 
+        AbilityRules.MovementImpactType.None, false);
 
 
     // Ability method inputs : int power, target tile, min / max ranges, current clarity
@@ -19,8 +27,10 @@ public class AbilityExecutionManager : MonoBehaviour
 
     // returns true if the ability executed
     public bool InputAbilityInformationSources(MechStats.AbilityMechSlot ability, PlayerController character, GameObject tileTarget) {
-
+        // Debug.Log("InputAbilityInformationSources ability used, " + ability.GetAbilityType().ToString());
         bool legal = ClarityCheck(ability, character) && RangeCheck(ability, character, tileTarget);
+        // Debug.Log("Clarity Check = " + ClarityCheck(ability, character));
+        // Debug.Log("RangeCheck Check = " + RangeCheck(ability, character, tileTarget));
 
         // activate ability here
         if (legal) {
@@ -31,15 +41,19 @@ public class AbilityExecutionManager : MonoBehaviour
     }
 
     private void ActivateAbility(PlayerController character, MechStats.AbilityMechSlot abilityClass, GameObject tileTarget) {
+        // Debug.Log("Actived the ActivateAbility method, which calls the UseAbility method on class");
         MechStats.AbilityType abilityType = abilityClass.GetAbilityType();
         switch(abilityType) {
             case MechStats.AbilityType.None:
                     // return "Empty Ability Slot";
                     // 
-                    HealingAbilityRules.UseAbility(character, abilityClass, tileTarget);
+                    // HealingAbilityRules.UseAbility(character, abilityClass, tileTarget);
                 break;
             case MechStats.AbilityType.Heal:
-
+                HealingAbilityRules.UseAbility(character, abilityClass, tileTarget);
+                break;
+            case MechStats.AbilityType.LightningStrike:
+                LightningStrikeAbilityRules.UseAbility(character, abilityClass, tileTarget);
                 break;
             default:
 
@@ -58,13 +72,14 @@ public class AbilityExecutionManager : MonoBehaviour
     }
 
     private bool RangeCheck(MechStats.AbilityMechSlot ability, PlayerController character, GameObject tileTarget) {
-        int minRange = Mathf.Max(ability.GetMinimumRange() - 1, 0);
+        int minRange = Mathf.Max(ability.GetMinimumRange(), 0);
         List<GameObject> subtractableTiles = character.GetAttackableTiles(minRange);
         List<GameObject> maxTiles = character.GetAttackableTiles(ability.GetMaximumRange());
         List<GameObject> targetableTiles = RemoveGameObjects(maxTiles, subtractableTiles);
 
         // we should not care if its an ally or enemy right now
-        return targetableTiles.Contains(tileTarget);
+        // return targetableTiles.Contains(tileTarget);
+        return maxTiles.Contains(tileTarget);
     }
 
     // Helper Methods
@@ -87,6 +102,26 @@ public class AbilityExecutionManager : MonoBehaviour
         return updatedList;
     }
 
+    bool CanSeeEachOther(Transform objA, Transform objB)
+    {
+        Vector3 direction = objB.position - objA.position;
+        float distance = direction.magnitude;
+
+        Ray ray = new Ray(objA.position, direction);
+        RaycastHit hit;
+
+        if (Physics.Raycast(ray, out hit, distance))
+        {
+            // Check if the object hit by the ray is the intended target
+            if (hit.transform == objB)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     [System.Serializable]
     public class AbilityRules {
         private MechStats.AbilityType abilityChosen;
@@ -96,11 +131,12 @@ public class AbilityExecutionManager : MonoBehaviour
         public TileTargetType tileTargetingMethod;
         public PrefabSummoningPlacement prefabPlacementMethod;
         public MovementImpactType movementEffect;
+        public bool requiresLineOfSight = true;
 
         // Constructor
         public AbilityRules(MechStats.AbilityType abilityChosen, DamageType healthEffect,
             ScalingType scalingMethod, TileTargetType tileTargetingMethod, 
-            PrefabSummoningPlacement prefabPlacementMethod, MovementImpactType movementEffect) 
+            PrefabSummoningPlacement prefabPlacementMethod, MovementImpactType movementEffect, bool requiresLineOfSight) 
         {
             this.abilityChosen = abilityChosen;
             this.healthEffect = healthEffect;
@@ -108,13 +144,21 @@ public class AbilityExecutionManager : MonoBehaviour
             this.tileTargetingMethod = tileTargetingMethod;
             this.prefabPlacementMethod = prefabPlacementMethod;
             this.movementEffect = movementEffect;
+            this.requiresLineOfSight = requiresLineOfSight;
 
         }
 
         public void UseAbility(PlayerController character, MechStats.AbilityMechSlot slot, GameObject tileTarget) {
+            // Debug.Log("Actived the UseAbility method");
+            // return true;
+
             if (CheckTileUsage(character, tileTarget)) {
-                UseHealthEffect(slot, tileTarget);
+                Debug.Log("Passed the CheckTileUsage method check");
+                UseHealthEffect(character, slot, tileTarget);
                 SummonPrefabAtLocation(character, tileTarget);
+                // return true;
+            } else {
+                // return false;
             }
 
         }
@@ -153,8 +197,32 @@ public class AbilityExecutionManager : MonoBehaviour
             }
         }
 
-        private void UseHealthEffect(MechStats.AbilityMechSlot slot, GameObject tileTarget) {
+        private void UseHealthEffect(PlayerController character, MechStats.AbilityMechSlot slot, GameObject tileTarget) {
+            Debug.Log("UseHealthEffect used");
+            if (requiresLineOfSight) {
+                if (!CanSeeEachOther(character.gameObject.transform, tileTarget.transform)) {
+                    return;
+                }
+            }
 
+            switch(healthEffect) {
+                case DamageType.Heals:
+                        GameObject targetHealingCharacter = character.FindMatchingObjectToTile(tileTarget);
+                        targetHealingCharacter.GetComponent<PlayerController>().TakeDamage(0 - slot.GetIntPower());
+                    break;
+                case DamageType.Damages:
+                        GameObject targetDamageCharacter = character.FindMatchingObjectToTile(tileTarget);
+                        targetDamageCharacter.GetComponent<PlayerController>().TakeDamage(slot.GetIntPower());
+                    break;
+                case DamageType.None:
+                        // we do nothing here, we skip
+                    break;
+                default:
+                        Debug.LogError("Switch statement wasn't prepped for this new DamageType type\n"+
+                        " which is DamageType:" + healthEffect.ToString());
+                    // return false;
+                    break;
+            }
         }
 
         private bool CheckTileUsage(PlayerController character, GameObject tileTarget) {
@@ -170,9 +238,10 @@ public class AbilityExecutionManager : MonoBehaviour
                             AIPlayerController aipcSource = character.gameObject.GetComponent<AIPlayerController>();
                             GameObject targetCharacter = character.FindMatchingObjectToTile(tileTarget);
                             AIPlayerController aipcTarget = targetCharacter.GetComponent<AIPlayerController>();
+
+                            bool enemyCheck = ((aipcTarget == null && aipcSource != null) || (aipcTarget != null && aipcSource == null));
                             
-                            if ((aipcTarget == null && aipcSource != null) ||
-                             (aipcTarget != null && aipcSource == null)) {
+                            if (enemyCheck)  {
                                 return true;
                             }
                             // if Character.GameObject
@@ -208,7 +277,7 @@ public class AbilityExecutionManager : MonoBehaviour
         // Abilities
         // effect alliance --> convert
         // effect pathing --> Scare enemy
-        // effect Status --> Give ally 30% chance to ignore next attack, refill main action
+        // effect Status --> Give ally 30% chance to ignore next attack, refill main action, ability null field
         // effect physical position --> Shove / kick / groundpound / shockwave / teleport / Swap with friendly
         // effect health/damage --> lightning strike / 
         // effect map --> Bear trap / Pillar Barrier / FireWall / Fission Mine
@@ -245,6 +314,27 @@ public class AbilityExecutionManager : MonoBehaviour
             PushAwayFromTarget,
             PullTowardsTarget,
             TeleportToTile
+        }
+
+
+        bool CanSeeEachOther(Transform objA, Transform objB)
+        {
+            Vector3 direction = objB.position - objA.position;
+            float distance = direction.magnitude;
+
+            Ray ray = new Ray(objA.position, direction);
+            RaycastHit hit;
+
+            if (Physics.Raycast(ray, out hit, distance))
+            {
+                // Check if the object hit by the ray is the intended target
+                if (hit.transform == objB)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
     }
