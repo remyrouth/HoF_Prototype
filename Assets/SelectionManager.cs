@@ -120,8 +120,13 @@ public class SelectionManager : MonoBehaviour
 
                     HavePlayerAttack(hit.point);
                 } else if (selectionState == CurrentCharacterSelectionStatus.UsingAbility) {
-                    HavePlayerUseAbility(hit.point);
-                    Cleanup();
+                    bool wasAbilityUsed = HavePlayerUseAbility(hit.point);
+                    if (wasAbilityUsed) {
+                        Cleanup();
+                    }
+
+                    // Debug.Log("HavePlayerUseAbility(hit.point) = " + wasAbilityUsed);
+                    // Cleanup();
                 }
                 
 
@@ -205,11 +210,13 @@ public class SelectionManager : MonoBehaviour
 
     }
 
-    private void HavePlayerUseAbility(Vector3 SelectionPoint) {
+    private bool HavePlayerUseAbility(Vector3 SelectionPoint) {
         // Debug.Log("HavePlayerUseAbility method used");
         PlayerController pc = currentSelectCharacter.GetComponent<PlayerController>();
         GameObject targetTile = pc.FindClosestTile(SelectionPoint);
-        pc.UseAbility(currentSelectAbility, targetTile);
+        bool abilityUsedCheck = pc.UseAbility(currentSelectAbility, targetTile);
+        // Debug.Log("pc.UseAbility(currentSelectAbility, targetTile) = " + abilityUsedCheck);
+        return abilityUsedCheck;
     }
     // State Machine Altering Methods
     public void ChangeToMovingState() {

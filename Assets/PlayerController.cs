@@ -74,16 +74,17 @@ public class PlayerController : MonoBehaviour
         return false;
     }
 
-    public void UseAbility(MechStats.AbilityMechSlot ability, GameObject targetedTile) {
-        Debug.Log("UseAbility method used in player controller class");
+    public bool UseAbility(MechStats.AbilityMechSlot ability, GameObject targetedTile) {
+        // Debug.Log("UseAbility method used in player controller class");
         bool abilityUsedCheck = aem.InputAbilityInformationSources(ability, this, targetedTile);
+        return abilityUsedCheck;
     }
     
 
     // public bool ActivatePlayerAbility()
 
     public void TakeDamage(int damage) {
-        Debug.Log("Take damage method called");
+        // Debug.Log("Take damage method called");
         if (isPlayerEntity) {
             Debug.Log("Player took damage: " + damage);
         }

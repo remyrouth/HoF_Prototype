@@ -21,6 +21,13 @@ public class AbilityExecutionManager : MonoBehaviour
         AbilityRules.PrefabSummoningPlacement.None, 
         AbilityRules.MovementImpactType.None, false);
 
+    public AbilityRules TeleportAbilityRules =  new AbilityRules(MechStats.AbilityType.Teleport,
+        AbilityRules.DamageType.None,
+        AbilityRules.ScalingType.Singular,
+        AbilityRules.TileTargetType.Empty, 
+        AbilityRules.PrefabSummoningPlacement.None, 
+        AbilityRules.MovementImpactType.TeleportToTile, false);
+
 
     // Ability method inputs : int power, target tile, min / max ranges, current clarity
 
@@ -34,31 +41,33 @@ public class AbilityExecutionManager : MonoBehaviour
 
         // activate ability here
         if (legal) {
-            ActivateAbility(character, ability, tileTarget);
+            bool abilityUseCheck = ActivateAbility(character, ability, tileTarget);
+            Debug.Log("ActivateAbility(character, ability, tileTarget) = " + abilityUseCheck);
+            return abilityUseCheck;
         }
 
         return legal;
     }
 
-    private void ActivateAbility(PlayerController character, MechStats.AbilityMechSlot abilityClass, GameObject tileTarget) {
+    private bool ActivateAbility(PlayerController character, MechStats.AbilityMechSlot abilityClass, GameObject tileTarget) {
         // Debug.Log("Actived the ActivateAbility method, which calls the UseAbility method on class");
         MechStats.AbilityType abilityType = abilityClass.GetAbilityType();
         switch(abilityType) {
             case MechStats.AbilityType.None:
-                    // return "Empty Ability Slot";
-                    // 
-                    // HealingAbilityRules.UseAbility(character, abilityClass, tileTarget);
-                break;
+                    return false;
             case MechStats.AbilityType.Heal:
-                HealingAbilityRules.UseAbility(character, abilityClass, tileTarget);
-                break;
+                bool healPassCheck = HealingAbilityRules.UseAbility(character, abilityClass, tileTarget);
+                return HealingAbilityRules.UseAbility(character, abilityClass, tileTarget);
             case MechStats.AbilityType.LightningStrike:
-                LightningStrikeAbilityRules.UseAbility(character, abilityClass, tileTarget);
-                break;
+                return LightningStrikeAbilityRules.UseAbility(character, abilityClass, tileTarget);
+            case MechStats.AbilityType.Teleport:
+                return TeleportAbilityRules.UseAbility(character, abilityClass, tileTarget);
             default:
-
-                break;
+                return false;
+                // break;
         }
+
+        // return false;
     }
 
 
@@ -148,17 +157,21 @@ public class AbilityExecutionManager : MonoBehaviour
 
         }
 
-        public void UseAbility(PlayerController character, MechStats.AbilityMechSlot slot, GameObject tileTarget) {
+        public bool UseAbility(PlayerController character, MechStats.AbilityMechSlot slot, GameObject tileTarget) {
             // Debug.Log("Actived the UseAbility method");
-            // return true;
+            bool tileUseCheck = CheckTileUsage(character, tileTarget);
+            bool sightCheck = !requiresLineOfSight || 
+                (requiresLineOfSight && CanSeeEachOther(character.gameObject.transform, tileTarget.transform));
+            // Debug.Log("(tileUseCheck && sightCheck): " + (tileUseCheck && sightCheck));
 
-            if (CheckTileUsage(character, tileTarget)) {
-                Debug.Log("Passed the CheckTileUsage method check");
+            if (tileUseCheck && sightCheck) {
+                // Debug.Log("Passed the CheckTileUsage method check");
                 UseHealthEffect(character, slot, tileTarget);
                 SummonPrefabAtLocation(character, tileTarget);
-                // return true;
+                UseMovementEffect(character, slot, tileTarget);
+                return true;
             } else {
-                // return false;
+                return false;
             }
 
         }
@@ -198,7 +211,7 @@ public class AbilityExecutionManager : MonoBehaviour
         }
 
         private void UseHealthEffect(PlayerController character, MechStats.AbilityMechSlot slot, GameObject tileTarget) {
-            Debug.Log("UseHealthEffect used");
+            // Debug.Log("UseHealthEffect used");
             if (requiresLineOfSight) {
                 if (!CanSeeEachOther(character.gameObject.transform, tileTarget.transform)) {
                     return;
@@ -215,6 +228,27 @@ public class AbilityExecutionManager : MonoBehaviour
                         targetDamageCharacter.GetComponent<PlayerController>().TakeDamage(slot.GetIntPower());
                     break;
                 case DamageType.None:
+                        // we do nothing here, we skip
+                    break;
+                default:
+                        Debug.LogError("Switch statement wasn't prepped for this new DamageType type\n"+
+                        " which is DamageType:" + healthEffect.ToString());
+                    // return false;
+                    break;
+            }
+        }
+
+        private void UseMovementEffect(PlayerController character, MechStats.AbilityMechSlot slot, GameObject tileTarget) {
+            switch(movementEffect) {
+                case MovementImpactType.TeleportToTile:
+                        Vector3 newPos = tileTarget.transform.position;
+                        character.gameObject.transform.position = new Vector3(newPos.x, character.gameObject.transform.position.y, newPos.z);
+                    break;
+                case MovementImpactType.PullTowardsTarget:
+                    break;
+                case MovementImpactType.PushAwayFromTarget:
+                    break;
+                case MovementImpactType.None:
                         // we do nothing here, we skip
                     break;
                 default:
