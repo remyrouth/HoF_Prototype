@@ -15,6 +15,14 @@ public class CharacterCanvasController : MonoBehaviour
     public GameObject actionMenu;
     public GameObject abilityMenu;
 
+    [Header("Main Action Texts")]
+    public Text strengthText;
+    public Text attackRangeText;
+    public Text speedText;
+    public Text clarityGainMovementText;
+    public Text clarityGainActionText;
+    public Text currentClarityText;
+
 
     [Header("Main Action Button Variables")]
     public GameObject moveButtonMain;
@@ -45,6 +53,7 @@ public class CharacterCanvasController : MonoBehaviour
 
 
         DetermineActionAvailability(newCharacterScript);
+        ShowCharacterText(newCharacterScript);
 
         moveButtonBackground.SetActive(false);
         attackButtonBackground.SetActive(false);
@@ -60,6 +69,24 @@ public class CharacterCanvasController : MonoBehaviour
         // setting portraits
         pilotPortait.sprite = currentCharacter.RetrievePilotInfo().characterSprite;
         mechPortrait.sprite = currentCharacter.RetrieveMechInfo().characterSprite;
+
+    }
+
+    private void ShowCharacterText(PlayerController newCharacterScript) {
+        CharacterStats pilot = newCharacterScript.RetrievePilotInfo();
+        
+        // public Text strengthText;
+        // public Text attackRangeText;
+        // public Text speedText;
+        // public Text clarityGainMovementText;
+        // public Text clarityGainActionText;
+
+        strengthText.text = "Strength: " + pilot.strength.ToString();
+        attackRangeText.text = "Range: " + pilot.attackRange.ToString();
+        speedText.text = "Speed: " + pilot.speed.ToString();
+        clarityGainMovementText.text = "Move Clarity: " + pilot.clarityGainedFromMovements.ToString();
+        clarityGainActionText.text = "Atk Clarity: " + pilot.clarityGainedFromAttacks.ToString();
+        currentClarityText.text = "Curr Clarity: " + newCharacterScript.currentClarityLevel;
 
     }
 
@@ -133,6 +160,7 @@ public class CharacterCanvasController : MonoBehaviour
             abilityButtonMain.SetActive(false);
         }
     }
+
 
     private void DetermineAbilityAvailability(PlayerController newCharacterScript) {
         MechStats mechInfo = newCharacterScript.RetrieveMechInfo();
