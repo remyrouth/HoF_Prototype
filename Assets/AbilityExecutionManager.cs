@@ -21,12 +21,21 @@ public class AbilityExecutionManager : MonoBehaviour
         AbilityRules.PrefabSummoningPlacement.None, 
         AbilityRules.MovementImpactType.None, false);
 
+    [Header("Teleport Ability")]
     public AbilityRules TeleportAbilityRules =  new AbilityRules(MechStats.AbilityType.Teleport,
         AbilityRules.DamageType.None,
         AbilityRules.ScalingType.Singular,
         AbilityRules.TileTargetType.Empty, 
         AbilityRules.PrefabSummoningPlacement.None, 
         AbilityRules.MovementImpactType.TeleportToTile, false);
+
+    [Header("Summon Rock Ability")]
+    public AbilityRules RockSummonAbilityRules =  new AbilityRules(MechStats.AbilityType.RocketSummon,
+        AbilityRules.DamageType.None,
+        AbilityRules.ScalingType.Singular,
+        AbilityRules.TileTargetType.Empty, 
+        AbilityRules.PrefabSummoningPlacement.AtTarget, 
+        AbilityRules.MovementImpactType.None, false);
 
 
     // Ability method inputs : int power, target tile, min / max ranges, current clarity
@@ -42,7 +51,7 @@ public class AbilityExecutionManager : MonoBehaviour
         // activate ability here
         if (legal) {
             bool abilityUseCheck = ActivateAbility(character, ability, tileTarget);
-            Debug.Log("ActivateAbility(character, ability, tileTarget) = " + abilityUseCheck);
+            // Debug.Log("ActivateAbility(character, ability, tileTarget) = " + abilityUseCheck);
             return abilityUseCheck;
         }
 
@@ -52,17 +61,25 @@ public class AbilityExecutionManager : MonoBehaviour
     private bool ActivateAbility(PlayerController character, MechStats.AbilityMechSlot abilityClass, GameObject tileTarget) {
         // Debug.Log("Actived the ActivateAbility method, which calls the UseAbility method on class");
         MechStats.AbilityType abilityType = abilityClass.GetAbilityType();
+        // Debug.Log("Type: : " + abilityType.ToString());
         switch(abilityType) {
             case MechStats.AbilityType.None:
                     return false;
             case MechStats.AbilityType.Heal:
-                bool healPassCheck = HealingAbilityRules.UseAbility(character, abilityClass, tileTarget);
+                // bool healPassCheck = HealingAbilityRules.UseAbility(character, abilityClass, tileTarget);
                 return HealingAbilityRules.UseAbility(character, abilityClass, tileTarget);
             case MechStats.AbilityType.LightningStrike:
                 return LightningStrikeAbilityRules.UseAbility(character, abilityClass, tileTarget);
             case MechStats.AbilityType.Teleport:
+                    // Debug.Log("Teleport worked");
                 return TeleportAbilityRules.UseAbility(character, abilityClass, tileTarget);
+            case MechStats.AbilityType.RockSummon:
+                bool rockPassCheck = RockSummonAbilityRules.UseAbility(character, abilityClass, tileTarget);
+                // Debug.Log("rockPassCheck: " + rockPassCheck);
+                // return RockSummonAbilityRules.UseAbility(character, abilityClass, tileTarget);
+                return rockPassCheck;
             default:
+                // Debug.Log("Went To Default");
                 return false;
                 // break;
         }
@@ -147,6 +164,7 @@ public class AbilityExecutionManager : MonoBehaviour
             ScalingType scalingMethod, TileTargetType tileTargetingMethod, 
             PrefabSummoningPlacement prefabPlacementMethod, MovementImpactType movementEffect, bool requiresLineOfSight) 
         {
+            // this.prefabToSummon = prefabToSummon;
             this.abilityChosen = abilityChosen;
             this.healthEffect = healthEffect;
             this.scalingMethod = scalingMethod;
@@ -158,11 +176,15 @@ public class AbilityExecutionManager : MonoBehaviour
         }
 
         public bool UseAbility(PlayerController character, MechStats.AbilityMechSlot slot, GameObject tileTarget) {
+            if (character == null || slot == null || tileTarget == null) {
+                Debug.Log("MISSING");
+            }
+            
             // Debug.Log("Actived the UseAbility method");
             bool tileUseCheck = CheckTileUsage(character, tileTarget);
             bool sightCheck = !requiresLineOfSight || 
                 (requiresLineOfSight && CanSeeEachOther(character.gameObject.transform, tileTarget.transform));
-            // Debug.Log("(tileUseCheck && sightCheck): " + (tileUseCheck && sightCheck));
+            // Debug.Log("(tileUseCheck && sightCheck): " + (tileUseCheck && sightCheck)); 
 
             if (tileUseCheck && sightCheck) {
                 // Debug.Log("Passed the CheckTileUsage method check");
@@ -198,6 +220,10 @@ public class AbilityExecutionManager : MonoBehaviour
                             Instantiate(prefabToSummon, targetPos, sourceRotation);
 
                             break;
+                        case PrefabSummoningPlacement.None:
+                            // skip and do nothing
+
+                            break;
                         default:
                                 Debug.LogError("Switch statement wasn't prepped for this new PrefabSummoningPlacement type\n"+
                                 " which is prefabPlacementMethod:" + prefabPlacementMethod.ToString());
@@ -211,24 +237,37 @@ public class AbilityExecutionManager : MonoBehaviour
         }
 
         private void UseHealthEffect(PlayerController character, MechStats.AbilityMechSlot slot, GameObject tileTarget) {
-            // Debug.Log("UseHealthEffect used");
-            if (requiresLineOfSight) {
-                if (!CanSeeEachOther(character.gameObject.transform, tileTarget.transform)) {
-                    return;
-                }
+            GameObject matchingObject = character.FindMatchingObjectToTile(tileTarget);
+            PlayerController pcTarget = null;
+            ObstacleController obstTarget = null;
+
+            if (matchingObject != null) {
+                pcTarget = matchingObject.GetComponent<PlayerController>();
+                obstTarget = matchingObject.GetComponent<ObstacleController>();
+
             }
+            int powerInt = 0;
 
             switch(healthEffect) {
                 case DamageType.Heals:
-                        GameObject targetHealingCharacter = character.FindMatchingObjectToTile(tileTarget);
-                        targetHealingCharacter.GetComponent<PlayerController>().TakeDamage(0 - slot.GetIntPower());
+                        powerInt = 0 - slot.GetIntPower();
+                        if (pcTarget != null) {
+                            pcTarget.TakeDamage(powerInt);
+                        } else if (obstTarget != null) {
+                            obstTarget.TakeDamage(powerInt);
+                        }
                     break;
                 case DamageType.Damages:
-                        GameObject targetDamageCharacter = character.FindMatchingObjectToTile(tileTarget);
-                        targetDamageCharacter.GetComponent<PlayerController>().TakeDamage(slot.GetIntPower());
+                        powerInt = slot.GetIntPower();
+                        if (pcTarget != null) {
+                            pcTarget.TakeDamage(powerInt);
+                        } else if (obstTarget != null) {
+                            obstTarget.TakeDamage(powerInt);
+                        }
                     break;
                 case DamageType.None:
                         // we do nothing here, we skip
+                        // powerInt = 0;
                     break;
                 default:
                         Debug.LogError("Switch statement wasn't prepped for this new DamageType type\n"+
@@ -236,6 +275,12 @@ public class AbilityExecutionManager : MonoBehaviour
                     // return false;
                     break;
             }
+
+            // if (pcTarget != null) {
+            //     pcTarget.TakeDamage(powerInt);
+            // } else if (obstTarget != null) {
+            //     obstTarget.TakeDamage(powerInt);
+            // }
         }
 
         private void UseMovementEffect(PlayerController character, MechStats.AbilityMechSlot slot, GameObject tileTarget) {
@@ -272,8 +317,9 @@ public class AbilityExecutionManager : MonoBehaviour
                             AIPlayerController aipcSource = character.gameObject.GetComponent<AIPlayerController>();
                             GameObject targetCharacter = character.FindMatchingObjectToTile(tileTarget);
                             AIPlayerController aipcTarget = targetCharacter.GetComponent<AIPlayerController>();
+                            ObstacleController obstTarget = targetCharacter.GetComponent<ObstacleController>();
 
-                            bool enemyCheck = ((aipcTarget == null && aipcSource != null) || (aipcTarget != null && aipcSource == null));
+                            bool enemyCheck = ((aipcTarget == null && aipcSource != null) || (aipcTarget != null && aipcSource == null)) || obstTarget != null;
                             
                             if (enemyCheck)  {
                                 return true;
@@ -288,9 +334,10 @@ public class AbilityExecutionManager : MonoBehaviour
                             AIPlayerController aipcSource = character.gameObject.GetComponent<AIPlayerController>();
                             GameObject targetCharacter = character.FindMatchingObjectToTile(tileTarget);
                             AIPlayerController aipcTarget = targetCharacter.GetComponent<AIPlayerController>();
+                            ObstacleController obstTarget = targetCharacter.GetComponent<ObstacleController>();
                             
-                            if ((aipcTarget == null && aipcSource == null) ||
-                             (aipcTarget != null && aipcSource != null)) {
+                            if (((aipcTarget == null && aipcSource == null) ||
+                             (aipcTarget != null && aipcSource != null)) || obstTarget != null) {
                                 return true;
                             }
                             // if Character.GameObject

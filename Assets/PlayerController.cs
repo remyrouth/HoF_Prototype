@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -38,6 +39,7 @@ public class PlayerController : MonoBehaviour
         aem = FindObjectOfType<AbilityExecutionManager>();
         TileMapSetup();
         PositionalCorrectionSetup();
+        InstantiateMechObject();
     }
 
     // Main Action Methods
@@ -65,11 +67,23 @@ public class PlayerController : MonoBehaviour
         if (objectOnAttackedTile != null) {
             Debug.Log("Attackable entity found");
 
-            objectOnAttackedTile.GetComponent<PlayerController>().TakeDamage(pilotInfo.strength);
+            PlayerController pcTarget = objectOnAttackedTile.GetComponent<PlayerController>();
+            ObstacleController obstTarget = objectOnAttackedTile.GetComponent<ObstacleController>();
 
-            currentClarityLevel += pilotInfo.clarityGainedFromAttacks;
-            currentClarityLevel = Mathf.Min(mechInfo.maximumClarity, currentClarityLevel);
-            return true;
+            if (pcTarget != null) {
+                pcTarget.TakeDamage(pilotInfo.strength);
+
+                currentClarityLevel += pilotInfo.clarityGainedFromAttacks;
+                currentClarityLevel = Mathf.Min(mechInfo.maximumClarity, currentClarityLevel);
+                return true;
+            } else if (obstTarget != null) {
+                obstTarget.TakeDamage(pilotInfo.strength);
+
+                currentClarityLevel += pilotInfo.clarityGainedFromAttacks;
+                currentClarityLevel = Mathf.Min(mechInfo.maximumClarity, currentClarityLevel);
+                return true;
+            }
+
         }
         return false;
     }
@@ -77,6 +91,11 @@ public class PlayerController : MonoBehaviour
     public bool UseAbility(MechStats.AbilityMechSlot ability, GameObject targetedTile) {
         // Debug.Log("UseAbility method used in player controller class");
         bool abilityUsedCheck = aem.InputAbilityInformationSources(ability, this, targetedTile);
+        if (abilityUsedCheck) {
+            hasAttackedYet = true;
+            hasMovedYet = true;
+            hasUsedAbilityYet = true;
+        }
         return abilityUsedCheck;
     }
     
@@ -102,6 +121,7 @@ public class PlayerController : MonoBehaviour
         Debug.Log("reset");
         hasMovedYet = false;
         hasAttackedYet = false;
+        hasUsedAbilityYet = false;
     }
 
 
@@ -117,8 +137,10 @@ public class PlayerController : MonoBehaviour
 
     public GameObject FindMatchingObjectToTile(GameObject newTile) {
         GameObject[] playerObjectPiecesArray = GameObject.FindGameObjectsWithTag("Player");
+        GameObject[] obstacleObjectPiecesArray = GameObject.FindGameObjectsWithTag("Obstacle");
+        GameObject[] combinedArray = CombineArrays(playerObjectPiecesArray, obstacleObjectPiecesArray);
 
-        foreach (GameObject character in playerObjectPiecesArray)
+        foreach (GameObject character in combinedArray)
         {
             bool matchingX = (character.transform.position.x == newTile.transform.position.x);
             bool matchingZ = (character.transform.position.z == newTile.transform.position.z);
@@ -153,8 +175,10 @@ public class PlayerController : MonoBehaviour
 
     public bool IsTileOccupied(GameObject newTile) {
         GameObject[] playerObjectPiecesArray = GameObject.FindGameObjectsWithTag("Player");
+        GameObject[] obstacleObjectPiecesArray = GameObject.FindGameObjectsWithTag("Obstacle");
+        GameObject[] combinedArray = CombineArrays(playerObjectPiecesArray, obstacleObjectPiecesArray);
 
-        foreach (GameObject character in playerObjectPiecesArray)
+        foreach (GameObject character in combinedArray)
         {
             bool matchingX = (character.transform.position.x == newTile.transform.position.x);
             bool matchingZ = (character.transform.position.z == newTile.transform.position.z);
@@ -167,6 +191,17 @@ public class PlayerController : MonoBehaviour
     }
 
     // Setup Methods 
+    private void InstantiateMechObject() {
+        Vector3 selfPosition = gameObject.transform.position;
+        Quaternion selfRotation = gameObject.transform.rotation;
+        GameObject prefabToSummon = RetrieveMechInfo().GetMechGFXPrefab();
+        if (prefabToSummon != null) {
+            GameObject mech = Instantiate(prefabToSummon, selfPosition, selfRotation);
+            mech.transform.parent = gameObject.transform;
+            GetComponent<MeshRenderer>().enabled = false;
+        }
+
+    }
     private void PositionalCorrectionSetup()
     {
         Vector3 positionalCorrection = FindClosestTile(gameObject.transform.position).transform.position;
@@ -386,7 +421,8 @@ public class PlayerController : MonoBehaviour
 
             foreach (GameObject neighbor in GetNeighbors(currentTile))
             {
-                if (!visited.Contains(neighbor) && !IsTileOccupied(neighbor))
+                // if (!visited.Contains(neighbor) && !IsTileOccupied(neighbor))
+                if (!visited.Contains(neighbor) && (!IsTileOccupied(neighbor) || neighbor == endTile))
                 {
                     queue.Enqueue((neighbor, currentDistance + 1));
                     visited.Add(neighbor);
@@ -405,12 +441,12 @@ public class PlayerController : MonoBehaviour
         List<GameObject> reachableTiles = GetReachableTiles(maxDistance);
         GameObject currentTile = FindClosestTile(transform.position);
         GameObject bestTile = currentTile;
-        int shortestDistance = GetTileDistance(currentTile, targetTile);
+        int shortestDistance = GetTileDistanceWithObstacles(currentTile, targetTile);
 
         foreach (GameObject tile in reachableTiles)
         {
-            int distance = GetTileDistance(tile, targetTile);
-            // int distance = GetTileDistanceWithObstacles(tile, targetTile);
+            // int distance = GetTileDistance(tile, targetTile);
+            int distance = GetTileDistanceWithObstacles(tile, targetTile);
             if (distance < shortestDistance)
             {
                 shortestDistance = distance;
@@ -419,6 +455,22 @@ public class PlayerController : MonoBehaviour
         }
 
         return bestTile;
+    }
+
+
+    // Method to combine two GameObject arrays
+    GameObject[] CombineArrays(GameObject[] array1, GameObject[] array2)
+    {
+        // Create a new array to hold the combined elements
+        GameObject[] combinedArray = new GameObject[array1.Length + array2.Length];
+
+        // Copy elements from the first array
+        array1.CopyTo(combinedArray, 0);
+
+        // Copy elements from the second array
+        array2.CopyTo(combinedArray, array1.Length);
+
+        return combinedArray;
     }
 
 }

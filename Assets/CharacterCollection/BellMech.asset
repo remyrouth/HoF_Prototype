@@ -15,6 +15,7 @@ MonoBehaviour:
   mechHealth: 5
   characterSprite: {fileID: 21300000, guid: f377da51488dc4249b7329b86c9ed5ac, type: 3}
   maximumClarity: 10
+  mechGFXPrefab: {fileID: 0}
   mechAbilityClass: 10
   AbilitySlot1:
     type: 1
@@ -23,7 +24,7 @@ MonoBehaviour:
     minmumRange: 0
     maximumRange: 0
   AbilitySlot2:
-    type: 7
+    type: 4
     intPower: 5
     clarityCost: 1
     minmumRange: 0

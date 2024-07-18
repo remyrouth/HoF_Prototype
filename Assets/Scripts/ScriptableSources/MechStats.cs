@@ -6,6 +6,8 @@ public class MechStats : ScriptableObject
     public int mechHealth;
     public Sprite characterSprite;
     public int maximumClarity;
+    [SerializeField]
+    private GameObject mechGFXPrefab;
     public MechClass mechAbilityClass = MechClass.StandardSoldier;
 
     public AbilityMechSlot AbilitySlot1 = new AbilityMechSlot();
@@ -17,6 +19,10 @@ public class MechStats : ScriptableObject
         return true;
 
     }
+
+    public GameObject GetMechGFXPrefab() {
+        return mechGFXPrefab;
+    } 
 
     public enum MechClass {
         StandardSoldier, // this has no abilities
@@ -113,6 +119,7 @@ public class MechStats : ScriptableObject
         Heal,
         RocketSummon,
         Teleport,
+        RockSummon,
         ConvertEnemy,
         RefillAttackAction,
         Sprint,

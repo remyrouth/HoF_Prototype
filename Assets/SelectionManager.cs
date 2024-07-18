@@ -123,6 +123,7 @@ public class SelectionManager : MonoBehaviour
                     bool wasAbilityUsed = HavePlayerUseAbility(hit.point);
                     if (wasAbilityUsed) {
                         Cleanup();
+                        ccc.MenuCleanup();
                     }
 
                     // Debug.Log("HavePlayerUseAbility(hit.point) = " + wasAbilityUsed);

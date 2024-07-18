@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: BellPilot
   m_EditorClassIdentifier: 
   strength: 2
-  attackRange: 2
+  attackRange: 0
   speed: 4
   health: 3
   currentExperiencePoint: 0

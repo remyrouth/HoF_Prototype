@@ -13,7 +13,10 @@ MonoBehaviour:
   m_Name: EnemyPilot
   m_EditorClassIdentifier: 
   strength: 1
-  attackRange: 2
+  attackRange: 1
   speed: 2
   health: 5
+  currentExperiencePoint: 0
   characterSprite: {fileID: 21300000, guid: a51fbab7ef5654ef5a88061ff09b29ad, type: 3}
+  clarityGainedFromMovements: 1
+  clarityGainedFromAttacks: 1
