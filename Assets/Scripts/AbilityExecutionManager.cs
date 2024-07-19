@@ -288,6 +288,7 @@ public class AbilityExecutionManager : MonoBehaviour
                 case MovementImpactType.TeleportToTile:
                         Vector3 newPos = tileTarget.transform.position;
                         character.gameObject.transform.position = new Vector3(newPos.x, character.gameObject.transform.position.y, newPos.z);
+                        character.MoveToNewTile(tileTarget);
                     break;
                 case MovementImpactType.PullTowardsTarget:
                     break;

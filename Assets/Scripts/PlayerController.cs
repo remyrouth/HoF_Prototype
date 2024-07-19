@@ -227,7 +227,7 @@ public class PlayerController : MonoBehaviour
     }
 
     // Pathing Methods
-    private IEnumerator MoveAlongTiles(GameObject destinationTile)
+    private IEnumerator MoveAlongTiles(GameObject destinationTile) // IF YOU MOVE AND THEN TELEPORT THIS STILL OPERATES.... 
     {
         List<GameObject> path = FindPath(FindClosestTile(transform.position), destinationTile);
 
