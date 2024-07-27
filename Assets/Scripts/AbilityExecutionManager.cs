@@ -4,6 +4,32 @@ using UnityEngine;
 
 public class AbilityExecutionManager : MonoBehaviour
 {
+    [Header("Regular Lazer Attack")]
+    public AbilityRules LazerAttackRules =  new AbilityRules(MechStats.AbilityType.Heal,
+        AbilityRules.DamageType.Damages,
+        AbilityRules.ScalingType.Singular,
+        AbilityRules.TileTargetType.Enemy, 
+        AbilityRules.PrefabSummoningPlacement.None, 
+        AbilityRules.MovementImpactType.None, false,
+        AbilityRules.EntityHealthTargetType.Pilot);
+
+    [Header("Regular Ballistic Attack")]
+    public AbilityRules BallisticAttackRules =  new AbilityRules(MechStats.AbilityType.Heal,
+        AbilityRules.DamageType.Heals,
+        AbilityRules.ScalingType.Singular,
+        AbilityRules.TileTargetType.Ally, 
+        AbilityRules.PrefabSummoningPlacement.None, 
+        AbilityRules.MovementImpactType.None, true,
+        AbilityRules.EntityHealthTargetType.Pilot);
+
+    [Header("Regular Ballistic Attack")]
+    public AbilityRules ComboAttackRules =  new AbilityRules(MechStats.AbilityType.Heal,
+        AbilityRules.DamageType.Heals,
+        AbilityRules.ScalingType.Singular,
+        AbilityRules.TileTargetType.Ally, 
+        AbilityRules.PrefabSummoningPlacement.None, 
+        AbilityRules.MovementImpactType.None, true,
+        AbilityRules.EntityHealthTargetType.Both);
 
     [Header("Healing Ability")]
     public AbilityRules HealingAbilityRules =  new AbilityRules(MechStats.AbilityType.Heal,
@@ -11,7 +37,8 @@ public class AbilityExecutionManager : MonoBehaviour
         AbilityRules.ScalingType.Singular,
         AbilityRules.TileTargetType.Ally, 
         AbilityRules.PrefabSummoningPlacement.None, 
-        AbilityRules.MovementImpactType.None, true);
+        AbilityRules.MovementImpactType.None, true,
+        AbilityRules.EntityHealthTargetType.Pilot);
 
     [Header("Lightning Strike Ability")]
     public AbilityRules LightningStrikeAbilityRules =  new AbilityRules(MechStats.AbilityType.LightningStrike,
@@ -19,7 +46,8 @@ public class AbilityExecutionManager : MonoBehaviour
         AbilityRules.ScalingType.Singular,
         AbilityRules.TileTargetType.Enemy, 
         AbilityRules.PrefabSummoningPlacement.None, 
-        AbilityRules.MovementImpactType.None, false);
+        AbilityRules.MovementImpactType.None, false,
+        AbilityRules.EntityHealthTargetType.Pilot);
 
     [Header("Teleport Ability")]
     public AbilityRules TeleportAbilityRules =  new AbilityRules(MechStats.AbilityType.Teleport,
@@ -27,7 +55,8 @@ public class AbilityExecutionManager : MonoBehaviour
         AbilityRules.ScalingType.Singular,
         AbilityRules.TileTargetType.Empty, 
         AbilityRules.PrefabSummoningPlacement.None, 
-        AbilityRules.MovementImpactType.TeleportToTile, false);
+        AbilityRules.MovementImpactType.TeleportToTile, false,
+        AbilityRules.EntityHealthTargetType.Pilot);
 
     [Header("Summon Rock Ability")]
     public AbilityRules RockSummonAbilityRules =  new AbilityRules(MechStats.AbilityType.RocketSummon,
@@ -35,7 +64,8 @@ public class AbilityExecutionManager : MonoBehaviour
         AbilityRules.ScalingType.Singular,
         AbilityRules.TileTargetType.Empty, 
         AbilityRules.PrefabSummoningPlacement.AtTarget, 
-        AbilityRules.MovementImpactType.None, false);
+        AbilityRules.MovementImpactType.None, false,
+        AbilityRules.EntityHealthTargetType.Pilot);
 
 
     // Ability method inputs : int power, target tile, min / max ranges, current clarity
@@ -59,24 +89,19 @@ public class AbilityExecutionManager : MonoBehaviour
     }
 
     private bool ActivateAbility(PlayerController character, MechStats.AbilityMechSlot abilityClass, GameObject tileTarget) {
-        // Debug.Log("Actived the ActivateAbility method, which calls the UseAbility method on class");
         MechStats.AbilityType abilityType = abilityClass.GetAbilityType();
-        // Debug.Log("Type: : " + abilityType.ToString());
         switch(abilityType) {
             case MechStats.AbilityType.None:
+                    // This means its not an ability its a regular
                     return false;
             case MechStats.AbilityType.Heal:
-                // bool healPassCheck = HealingAbilityRules.UseAbility(character, abilityClass, tileTarget);
                 return HealingAbilityRules.UseAbility(character, abilityClass, tileTarget);
             case MechStats.AbilityType.LightningStrike:
                 return LightningStrikeAbilityRules.UseAbility(character, abilityClass, tileTarget);
             case MechStats.AbilityType.Teleport:
-                    // Debug.Log("Teleport worked");
                 return TeleportAbilityRules.UseAbility(character, abilityClass, tileTarget);
             case MechStats.AbilityType.RockSummon:
                 bool rockPassCheck = RockSummonAbilityRules.UseAbility(character, abilityClass, tileTarget);
-                // Debug.Log("rockPassCheck: " + rockPassCheck);
-                // return RockSummonAbilityRules.UseAbility(character, abilityClass, tileTarget);
                 return rockPassCheck;
             default:
                 // Debug.Log("Went To Default");
@@ -158,11 +183,13 @@ public class AbilityExecutionManager : MonoBehaviour
         public PrefabSummoningPlacement prefabPlacementMethod;
         public MovementImpactType movementEffect;
         public bool requiresLineOfSight = true;
+        public EntityHealthTargetType healthTarget = EntityHealthTargetType.Mech;
 
         // Constructor
         public AbilityRules(MechStats.AbilityType abilityChosen, DamageType healthEffect,
             ScalingType scalingMethod, TileTargetType tileTargetingMethod, 
-            PrefabSummoningPlacement prefabPlacementMethod, MovementImpactType movementEffect, bool requiresLineOfSight) 
+            PrefabSummoningPlacement prefabPlacementMethod, MovementImpactType movementEffect, bool requiresLineOfSight, 
+            EntityHealthTargetType healthTarget) 
         {
             // this.prefabToSummon = prefabToSummon;
             this.abilityChosen = abilityChosen;
@@ -172,6 +199,7 @@ public class AbilityExecutionManager : MonoBehaviour
             this.prefabPlacementMethod = prefabPlacementMethod;
             this.movementEffect = movementEffect;
             this.requiresLineOfSight = requiresLineOfSight;
+            this.healthTarget = healthTarget;
 
         }
 
@@ -238,49 +266,54 @@ public class AbilityExecutionManager : MonoBehaviour
 
         private void UseHealthEffect(PlayerController character, MechStats.AbilityMechSlot slot, GameObject tileTarget) {
             GameObject matchingObject = character.FindMatchingObjectToTile(tileTarget);
-            PlayerController pcTarget = null;
-            ObstacleController obstTarget = null;
-
-            if (matchingObject != null) {
-                pcTarget = matchingObject.GetComponent<PlayerController>();
-                obstTarget = matchingObject.GetComponent<ObstacleController>();
-
-            }
             int powerInt = 0;
 
-            switch(healthEffect) {
-                case DamageType.Heals:
-                        powerInt = 0 - slot.GetIntPower();
-                        if (pcTarget != null) {
-                            pcTarget.TakeDamage(powerInt);
-                        } else if (obstTarget != null) {
-                            obstTarget.TakeDamage(powerInt);
-                        }
-                    break;
-                case DamageType.Damages:
-                        powerInt = slot.GetIntPower();
-                        if (pcTarget != null) {
-                            pcTarget.TakeDamage(powerInt);
-                        } else if (obstTarget != null) {
-                            obstTarget.TakeDamage(powerInt);
-                        }
-                    break;
-                case DamageType.None:
-                        // we do nothing here, we skip
-                        // powerInt = 0;
-                    break;
-                default:
-                        Debug.LogError("Switch statement wasn't prepped for this new DamageType type\n"+
-                        " which is DamageType:" + healthEffect.ToString());
-                    // return false;
-                    break;
-            }
+            // Determine target type and apply effects accordingly
+            if (matchingObject != null) {
+                var pcTarget = matchingObject.GetComponent<PlayerController>();
+                var obstTarget = matchingObject.GetComponent<ObstacleController>();
 
-            // if (pcTarget != null) {
-            //     pcTarget.TakeDamage(powerInt);
-            // } else if (obstTarget != null) {
-            //     obstTarget.TakeDamage(powerInt);
-            // }
+                switch (healthEffect) {
+                    case DamageType.Heals:
+                        powerInt = -slot.GetIntPower();
+                        ApplyDamage(pcTarget, obstTarget, powerInt);
+                        break;
+                    case DamageType.Damages:
+                        powerInt = slot.GetIntPower();
+                        ApplyDamage(pcTarget, obstTarget, powerInt);
+                        break;
+                    case DamageType.None:
+                        // Do nothing
+                        break;
+                    default:
+                        Debug.LogError($"Switch statement wasn't prepped for this new DamageType type which is DamageType: {healthEffect}");
+                        break;
+                }
+            }
+        }
+
+
+
+        private void ApplyDamage(PlayerController pcTarget, ObstacleController obstTarget, int powerInt) {
+            if (pcTarget != null) {
+                switch (healthTarget) {
+                    case EntityHealthTargetType.Pilot:
+                        pcTarget.TakeDamage(powerInt, false);
+                        break;
+                    case EntityHealthTargetType.Mech:
+                        pcTarget.TakeDamage(powerInt, true);
+                        break;
+                    case EntityHealthTargetType.Both:
+                        pcTarget.TakeDamage(powerInt/2, true);
+                        pcTarget.TakeDamage(powerInt/2, false);
+                        break;
+                    case EntityHealthTargetType.None:
+                        // Do nothing
+                        break;
+                }
+            } else if (obstTarget != null) {
+                obstTarget.TakeDamage(powerInt);
+            }
         }
 
         private void UseMovementEffect(PlayerController character, MechStats.AbilityMechSlot slot, GameObject tileTarget) {
@@ -396,6 +429,13 @@ public class AbilityExecutionManager : MonoBehaviour
             PushAwayFromTarget,
             PullTowardsTarget,
             TeleportToTile
+        }
+
+       public enum EntityHealthTargetType {
+            None,
+            Pilot,
+            Mech,
+            Both
         }
 
 

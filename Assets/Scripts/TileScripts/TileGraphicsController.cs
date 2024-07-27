@@ -91,6 +91,13 @@ public class TileGraphicsController : MonoBehaviour
         tileCenter.GetComponent<SpriteRenderer>().color = borderColor;
     }
 
+    public void ShutDown() {
+        foreach (GameObject border in tileBorders) {
+            border.SetActive(false);
+        }
+        tileCenter.SetActive(false);
+    }
+
 
 
     // public void 

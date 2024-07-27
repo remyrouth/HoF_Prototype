@@ -73,8 +73,8 @@ MonoBehaviour:
   - {fileID: 2696259022159620669}
   - {fileID: 1361386838970574185}
   tileCenter: {fileID: 1914846463264439699}
-  centerOriginal: {r: 0.77254903, g: 0.77254903, b: 0.77254903, a: 0.9098039}
-  borderOriginal: {r: 0.77254903, g: 0.77254903, b: 0.77254903, a: 0.7607843}
+  centerOriginal: {r: 0.8867924, g: 0.8867924, b: 0.8867924, a: 0.65882355}
+  borderOriginal: {r: 0.6603774, g: 0.6603774, b: 0.6603774, a: 0.6039216}
   centerSelected: {r: 1, g: 0, b: 0, a: 1}
   borderSelected: {r: 1, g: 0, b: 0, a: 0.3529412}
   centerHovering: {r: 1, g: 0.9030959, b: 0.25943398, a: 1}

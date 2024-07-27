@@ -22,7 +22,6 @@ public class PlayerController : MonoBehaviour
     [Header("Action variables")]
     public bool hasAttackedYet = false;
     public bool hasMovedYet = false;
-    public bool hasUsedAbilityYet = false;
 
 
 
@@ -34,7 +33,7 @@ public class PlayerController : MonoBehaviour
 
     private void Start()
     {
-        currentPlayerHealth = pilotInfo.health;
+        SetupInfoToScript();
         agent = GetComponent<NavMeshAgent>();
         aem = FindObjectOfType<AbilityExecutionManager>();
         TileMapSetup();
@@ -49,17 +48,21 @@ public class PlayerController : MonoBehaviour
         hasMovedYet = true;
         TileMapSetup();
         // is new tile in range? 
-        List<GameObject> reachableTiles = GetReachableTiles(pilotInfo.speed);
+        List<GameObject> reachableTiles = GetReachableTiles(pilotInfo.GetPilotSpeed());
         if (reachableTiles.Contains(newTile)) {
 
-            currentClarityLevel += pilotInfo.clarityGainedFromMovements;
+            currentClarityLevel += pilotInfo.GetMoveClarity();
             currentClarityLevel = Mathf.Min(mechInfo.maximumClarity, currentClarityLevel);
             StartCoroutine(MoveAlongTiles(newTile));
         }
         // StartCoroutine(MoveAlongTiles(newTile));
     }
 
-    public bool AttackTile(GameObject newTile) {
+
+    // THERE IS A PROBLEM HERE // THIS METHOD SHOULD NO LONGER EXITS!!!                 ///////////////////////////////////////////////////////////////////////////////////////////
+    // THERE IS A PROBLEM HERE // THIS METHOD SHOULD NO LONGER EXITS!!!                 ///////////////////////////////////////////////////////////////////////////////////////////
+    // THERE IS A PROBLEM HERE // THIS METHOD SHOULD NO LONGER EXITS!!!                 ///////////////////////////////////////////////////////////////////////////////////////////
+    private bool AttackTile(GameObject newTile) {
         hasAttackedYet = true;
         hasMovedYet = true;
 
@@ -71,15 +74,15 @@ public class PlayerController : MonoBehaviour
             ObstacleController obstTarget = objectOnAttackedTile.GetComponent<ObstacleController>();
 
             if (pcTarget != null) {
-                pcTarget.TakeDamage(pilotInfo.strength);
+                // pcTarget.TakeDamage(pilotInfo.strength);
 
-                currentClarityLevel += pilotInfo.clarityGainedFromAttacks;
+                currentClarityLevel += pilotInfo.GetAttackClarity();
                 currentClarityLevel = Mathf.Min(mechInfo.maximumClarity, currentClarityLevel);
                 return true;
             } else if (obstTarget != null) {
-                obstTarget.TakeDamage(pilotInfo.strength);
+                // obstTarget.TakeDamage(pilotInfo.strength);
 
-                currentClarityLevel += pilotInfo.clarityGainedFromAttacks;
+                currentClarityLevel += pilotInfo.GetAttackClarity();
                 currentClarityLevel = Mathf.Min(mechInfo.maximumClarity, currentClarityLevel);
                 return true;
             }
@@ -94,7 +97,6 @@ public class PlayerController : MonoBehaviour
         if (abilityUsedCheck) {
             hasAttackedYet = true;
             hasMovedYet = true;
-            hasUsedAbilityYet = true;
         }
         return abilityUsedCheck;
     }
@@ -102,26 +104,23 @@ public class PlayerController : MonoBehaviour
 
     // public bool ActivatePlayerAbility()
 
-    public void TakeDamage(int damage) {
-        // Debug.Log("Take damage method called");
-        if (isPlayerEntity) {
-            Debug.Log("Player took damage: " + damage);
+    public void TakeDamage(int damage, bool isMechDamage) {
+        if (isMechDamage) {
+            currentMechHealth = Mathf.Clamp(currentMechHealth - damage, 0, RetrieveMechInfo().GetMechHealth());
+        } else {
+            currentPlayerHealth = Mathf.Clamp(currentPlayerHealth - damage, 0, RetrievePilotInfo().GetPilotHealth());
         }
 
-        currentPlayerHealth -= damage;
-        currentPlayerHealth = Mathf.Max(0, currentPlayerHealth);
-        currentPlayerHealth = Mathf.Min(currentPlayerHealth, RetrievePilotInfo().health);
-
-        if (currentPlayerHealth == 0) {
+        if (currentPlayerHealth == 0 ||currentMechHealth == 0 ) {
             Destroy(gameObject);
         }
     }
+
 
     public void ResetMoveAndAttackStates() {
         Debug.Log("reset");
         hasMovedYet = false;
         hasAttackedYet = false;
-        hasUsedAbilityYet = false;
     }
 
 
@@ -222,7 +221,7 @@ public class PlayerController : MonoBehaviour
     }
 
     private void SetupInfoToScript() {
-        currentPlayerHealth = RetrievePilotInfo().health;
+        currentPlayerHealth = RetrievePilotInfo().GetPilotHealth();
         currentMechHealth =  RetrieveMechInfo().mechHealth;
     }
 

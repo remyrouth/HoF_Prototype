@@ -17,12 +17,15 @@ public class MechStats : ScriptableObject
     // returns true if we can successfully trigger the ability
     public bool UseAbility(GameObject TargetSquare) {
         return true;
-
     }
 
     public GameObject GetMechGFXPrefab() {
         return mechGFXPrefab;
     } 
+
+    public int GetMechHealth() {
+        return mechHealth;
+    }
 
     public enum MechClass {
         StandardSoldier, // this has no abilities
@@ -38,19 +41,6 @@ public class MechStats : ScriptableObject
         Nomad
     }
 
-    /// <Ability List>
-    // Heal
-    // Rocket summon
-    // Teleport
-    // Convert Enemy
-    // Refill attack action
-    // Sprint
-    // Lightning strike (very far range)
-    // Teleport enemy
-    // Scare enemy
-    // Give an ally 30% chance to ignore next damage taken
-    /// <Ability List>
-
     [System.Serializable]
     public class AbilityMechSlot {
         [SerializeField]
@@ -63,6 +53,13 @@ public class MechStats : ScriptableObject
         private int minmumRange = 1;
         [SerializeField]
         private int maximumRange = 1;
+
+        public void SetValues(int newPower, int newClarityCost, int newMinimumRange, int newMaximumRange) {
+            intPower = newPower;
+            clarityCost = newClarityCost;
+            minmumRange = newMinimumRange;
+            maximumRange = newMaximumRange;
+        }
 
 
         // Getters for Ability class properties

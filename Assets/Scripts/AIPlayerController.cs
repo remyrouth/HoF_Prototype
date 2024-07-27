@@ -52,7 +52,7 @@ public class AIPlayerController : MonoBehaviour
 
 
             // Find best tile AI can travel to
-            GameObject bestTile = pc.GetBestReachableTileTowardsTarget(pc.FindClosestTile(closestTarget.transform.position), pc.RetrievePilotInfo().speed);
+            GameObject bestTile = pc.GetBestReachableTileTowardsTarget(pc.FindClosestTile(closestTarget.transform.position), pc.RetrievePilotInfo().GetPilotSpeed());
             pc.MoveToNewTile(bestTile);
 
             return bestTile;
@@ -110,11 +110,11 @@ public class AIPlayerController : MonoBehaviour
 
             // if player is in range, attack
             GameObject playerTile = pc.FindClosestTile(closestTarget.transform.position);
-            List<GameObject> reachableTile = pc.GetAttackableTiles(pc.RetrievePilotInfo().attackRange);
+            List<GameObject> reachableTile = pc.GetAttackableTiles(pc.RetrievePilotInfo().GetLaserRange());
 
             if (reachableTile.Contains(playerTile)) {
                 // Debug.Log("Attacked player tile");
-                pc.AttackTile(playerTile);
+                // pc.AttackTile(playerTile);
             } else {
                 // Debug.Log("player tile not attacked");
             }

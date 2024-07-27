@@ -6,14 +6,22 @@ public class ObstacleController : MonoBehaviour
 {
     public int maxHealth = 1;
     public int currentHealth = 0;
-    public int yOffset = 1;
+    public float yOffset = 1f;
     private List<GameObject> tiles;
+    [SerializeField]
+    private ObstacleType obstacleType = ObstacleType.Destructable;
 
     void Start()
     {
         SetTagToObstacle();
-        PositionalCorrectionSetup();
         currentHealth = maxHealth;
+
+        if (!IsTargetable()) {
+            GameObject closestTile = FindClosestTile(transform.position);
+            closestTile.GetComponent<TileGraphicsController>().ShutDown();
+        } else {
+            PositionalCorrectionSetup();
+        }
     }
 
     public void TakeDamage(int damageToTake) {
@@ -25,6 +33,10 @@ public class ObstacleController : MonoBehaviour
             Destroy(gameObject);
         }
 
+    }
+
+    public bool IsTargetable() {
+        return obstacleType == ObstacleType.Destructable;
     }
 
     // Setup Methods
@@ -69,6 +81,12 @@ public class ObstacleController : MonoBehaviour
 
     private void SetTagToObstacle() {
         gameObject.tag = "Obstacle";
+    }
+
+    public enum ObstacleType {
+        Destructable,
+        Indestructable,
+        SpaceFiller
     }
 
 }

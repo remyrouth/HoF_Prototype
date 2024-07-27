@@ -10,10 +10,12 @@ public class CharacterCanvasController : MonoBehaviour
 
     [Header("Display Variables")]
     public Image pilotPortait;
+    public Image pilotAttackPortait;
     public Image mechPortrait;
     public Image mechAbilityPortrait;
     public GameObject actionMenu;
     public GameObject abilityMenu;
+    public GameObject attackMenu;
 
     [Header("Main Action Texts")]
     public Text strengthText;
@@ -23,14 +25,15 @@ public class CharacterCanvasController : MonoBehaviour
     public Text clarityGainActionText;
     public Text currentClarityText;
 
-
     [Header("Main Action Button Variables")]
-    public GameObject moveButtonMain;
-    public GameObject moveButtonBackground;
-    public GameObject attackButtonMain;
-    public GameObject attackButtonBackground;
-    public GameObject abilityButtonMain;
-    public GameObject abilityButtonBackground;
+    public AbilityButtonClass moveUIClass;
+    public AbilityButtonClass attackUIClass;
+    public AbilityButtonClass abilityUIClass;
+
+    [Header("Main Attack Button Variables")]
+    public AbilityButtonClass laserAttackUIClass;
+    public AbilityButtonClass ballisticAttackUIClass;
+    public AbilityButtonClass comboAttackUIClass;
 
     [Header("Ability Button Variables")]
     public AbilityButtonClass abilityUIClass1;
@@ -44,6 +47,14 @@ public class CharacterCanvasController : MonoBehaviour
 
         actionMenu.SetActive(false);
         abilityMenu.SetActive(false);
+        attackMenu.SetActive(false);
+
+
+        // for action menu
+        pilotPortait.gameObject.SetActive(true);
+        mechPortrait.gameObject.SetActive(true);
+        pilotAttackPortait.gameObject.SetActive(true);
+        mechAbilityPortrait.gameObject.SetActive(true);
     }
 
 
@@ -51,41 +62,34 @@ public class CharacterCanvasController : MonoBehaviour
     public void DisplayCharacter(PlayerController newCharacterScript){
         currentCharacter = newCharacterScript;
 
-
         DetermineActionAvailability(newCharacterScript);
         ShowCharacterText(newCharacterScript);
 
-        moveButtonBackground.SetActive(false);
-        attackButtonBackground.SetActive(false);
-
-        // for action menu
-        pilotPortait.gameObject.SetActive(true);
-        mechPortrait.gameObject.SetActive(true);
+        moveUIClass.CleanupButton();
+        attackUIClass.CleanupButton();
+        abilityUIClass.CleanupButton();
 
         actionMenu.SetActive(true);
         abilityMenu.SetActive(false);
+        attackMenu.SetActive(false);
 
 
         // setting portraits
-        pilotPortait.sprite = currentCharacter.RetrievePilotInfo().characterSprite;
+        pilotPortait.sprite = currentCharacter.RetrievePilotInfo().GetCharacterSprite();
         mechPortrait.sprite = currentCharacter.RetrieveMechInfo().characterSprite;
+        pilotAttackPortait.sprite = currentCharacter.RetrievePilotInfo().GetCharacterSprite();
+        mechAbilityPortrait.sprite = currentCharacter.RetrieveMechInfo().characterSprite;
 
     }
 
     private void ShowCharacterText(PlayerController newCharacterScript) {
         CharacterStats pilot = newCharacterScript.RetrievePilotInfo();
-        
-        // public Text strengthText;
-        // public Text attackRangeText;
-        // public Text speedText;
-        // public Text clarityGainMovementText;
-        // public Text clarityGainActionText;
 
-        strengthText.text = "Strength: " + pilot.strength.ToString();
-        attackRangeText.text = "Range: " + pilot.attackRange.ToString();
-        speedText.text = "Speed: " + pilot.speed.ToString();
-        clarityGainMovementText.text = "Move Clarity: " + pilot.clarityGainedFromMovements.ToString();
-        clarityGainActionText.text = "Atk Clarity: " + pilot.clarityGainedFromAttacks.ToString();
+        strengthText.text = "Strength: " + pilot.GetLaserStrength().ToString();
+        attackRangeText.text = "Range: " + pilot.GetLaserRange().ToString();
+        speedText.text = "Speed: " + pilot.GetPilotSpeed().ToString();
+        clarityGainMovementText.text = "Move Clarity: " + pilot.GetMoveClarity().ToString();
+        clarityGainActionText.text = "Atk Clarity: " + pilot.GetAttackClarity().ToString();
         currentClarityText.text = "Curr Clarity: " + newCharacterScript.currentClarityLevel;
 
     }
@@ -95,6 +99,7 @@ public class CharacterCanvasController : MonoBehaviour
         sm.ChangeToViewingState();
         actionMenu.SetActive(false);
         abilityMenu.SetActive(true);
+        attackMenu.SetActive(false);
         mechAbilityPortrait.gameObject.SetActive(true);
 
         DetermineAbilityAvailability(currentCharacter);
@@ -104,12 +109,10 @@ public class CharacterCanvasController : MonoBehaviour
     }
 
     public void GoBackToActionMenu() {
-        // we make sure its in viewing state in case they've already clicked an ability button
         sm.ChangeToViewingState();
         DisplayCharacter(currentCharacter);
     }
 
-    // this was triggered by UI buttons
     public void SelectAbility(int abilitySlotNumber) {
         if (abilitySlotNumber == 1) {
             abilityUIClass1.SelectButton();
@@ -129,38 +132,72 @@ public class CharacterCanvasController : MonoBehaviour
         } 
     }
 
-    // Determines what buttons are available based on : 
-    // if the entity is player controlled
-    // if they've moved, attack, etc 
-    // (basically if actions have not been used up)
+    public void SelectAttackOption(int attackOption) {
+        if (attackOption == 1) {
+            laserAttackUIClass.SelectButton();
+            ballisticAttackUIClass.CleanupButton();
+            comboAttackUIClass.CleanupButton();
+
+            int power = currentCharacter.RetrievePilotInfo().GetLaserStrength();
+            int range = currentCharacter.RetrievePilotInfo().GetLaserRange();
+            MechStats.AbilityMechSlot tempSlot = CreateAttackSlotOption(power, range);
+            sm.ChangeToAbilityState(tempSlot);
+        } else if (attackOption == 2) {
+            laserAttackUIClass.CleanupButton();
+            ballisticAttackUIClass.SelectButton();
+            comboAttackUIClass.CleanupButton();
+
+            int power = currentCharacter.RetrievePilotInfo().GetBallisticStrength();
+            int range = currentCharacter.RetrievePilotInfo().GetBallisticRange();
+            MechStats.AbilityMechSlot tempSlot = CreateAttackSlotOption(power, range);
+            sm.ChangeToAbilityState(tempSlot);
+        } else if (attackOption == 3) {
+
+
+            laserAttackUIClass.CleanupButton();
+            ballisticAttackUIClass.CleanupButton();
+            comboAttackUIClass.SelectButton();
+
+
+            int power = currentCharacter.RetrievePilotInfo().GetLaserStrength();
+            int range = currentCharacter.RetrievePilotInfo().GetLaserRange();
+            MechStats.AbilityMechSlot tempSlot = CreateAttackSlotOption(power, range);
+            sm.ChangeToAbilityState(tempSlot);
+        } 
+    }
+    public MechStats.AbilityMechSlot CreateAttackSlotOption(int power, int attackRange) {
+        MechStats.AbilityMechSlot tempSlot = new MechStats.AbilityMechSlot();
+        int clarityCost = 0;
+        int minimumRange = 0;
+        tempSlot.SetValues(power, clarityCost, minimumRange, attackRange);
+
+        return tempSlot;
+    }
+
     private void DetermineActionAvailability(PlayerController newCharacterScript) {
         if (newCharacterScript.isPlayerEntity) {
             
             if (newCharacterScript.hasAttackedYet) {
-                attackButtonMain.SetActive(false);
+                attackUIClass.DisableAbilityButton();
+                abilityUIClass.DisableAbilityButton();
             } else {
-                attackButtonMain.SetActive(true);
+                attackUIClass.enableButton();
+                abilityUIClass.enableButton();
             }
 
             if (newCharacterScript.hasMovedYet) {
-                moveButtonMain.SetActive(false);
+                moveUIClass.DisableAbilityButton();
             } else {
-                moveButtonMain.SetActive(true);
+                moveUIClass.enableButton();
             }        
-
-            if (newCharacterScript.hasUsedAbilityYet) {
-                abilityButtonMain.SetActive(false);
-            } else {
-                abilityButtonMain.SetActive(true);
-            }     
+    
 
         } else {
-            attackButtonMain.SetActive(false);
-            moveButtonMain.SetActive(false);
-            abilityButtonMain.SetActive(false);
+            attackUIClass.DisableAbilityButton();
+            abilityUIClass.DisableAbilityButton();
+            moveUIClass.DisableAbilityButton();
         }
     }
-
 
     private void DetermineAbilityAvailability(PlayerController newCharacterScript) {
         MechStats mechInfo = newCharacterScript.RetrieveMechInfo();
@@ -185,6 +222,8 @@ public class CharacterCanvasController : MonoBehaviour
         }
     }
 
+
+
     [System.Serializable]
     public class AbilityButtonClass {
         public GameObject parentObject;
@@ -199,9 +238,13 @@ public class CharacterCanvasController : MonoBehaviour
             parentObject.SetActive(false);
         }
 
+        public void enableButton() {
+            parentObject.SetActive(true);
+        }
+
         public void DisplayAbilityInfo(MechStats.AbilityMechSlot slot) {
             currentAbility = slot;
-            parentObject.SetActive(true);
+            enableButton();
             abilityTitleText.text = slot.GetAbilityType().ToString();
             descriptionText.text = slot.GetAbilityTypeDescription();
             clarityCostText.text = "Clarity Cost: " + slot.GetClarityCost();
@@ -209,6 +252,11 @@ public class CharacterCanvasController : MonoBehaviour
             if (slot.GetMaximumRange() == 0) {
                 rangeText.text = "Range: Self targeting";
             }
+        }
+
+        public void DisplayAttackInfo(MechStats.AbilityMechSlot slot) {
+            currentAbility = slot;
+            enableButton();
         }
         
         // triggered and called by canvas controller which was triggered by UI Button
@@ -230,37 +278,47 @@ public class CharacterCanvasController : MonoBehaviour
         // Debug.Log("Button Triggered Move Method");
         sm.ChangeToMovingState();
 
-        moveButtonBackground.SetActive(true);
-        attackButtonBackground.SetActive(false);
-        abilityButtonBackground.SetActive(false);
+        moveUIClass.enableButton();
+        attackUIClass.DisableAbilityButton();
+        abilityUIClass.DisableAbilityButton();
     }
 
     public void BeginAttackSystem () {
         // Debug.Log("Button Triggered Attack Method");
-        sm.ChangeToAttackingState();
+        // sm.ChangeToAttackingState();
+        sm.ChangeToViewingState();
+        actionMenu.SetActive(false);
+        abilityMenu.SetActive(false);
+        attackMenu.SetActive(true);
 
-        moveButtonBackground.SetActive(false);
-        attackButtonBackground.SetActive(true);
-        abilityButtonBackground.SetActive(false);
+
+        laserAttackUIClass.CleanupButton();
+        ballisticAttackUIClass.CleanupButton();
+        comboAttackUIClass.CleanupButton();
     }
 
     // Clean up Method
     public void MenuCleanup() {
-        moveButtonBackground.SetActive(false);
-        attackButtonBackground.SetActive(false);
+        moveUIClass.DisableAbilityButton();
+        attackUIClass.DisableAbilityButton();
 
 
         // Main Action Menu
         currentCharacter = null;
         pilotPortait.sprite = null;
-        pilotPortait.gameObject.SetActive(false);
+        moveUIClass.CleanupButton();
 
         // Ability Menu
         abilityUIClass1.CleanupButton();
         abilityUIClass2.CleanupButton();
         abilityUIClass3.CleanupButton();
 
+        laserAttackUIClass.CleanupButton();
+        ballisticAttackUIClass.CleanupButton();
+        comboAttackUIClass.CleanupButton();
+
         actionMenu.SetActive(false);
         abilityMenu.SetActive(false);
+        attackMenu.SetActive(false);
     }
 }

@@ -118,7 +118,7 @@ public class SelectionManager : MonoBehaviour
                     ccc.MenuCleanup();
                 } else if (selectionState == CurrentCharacterSelectionStatus.Attacking) {
 
-                    HavePlayerAttack(hit.point);
+                    // HavePlayerAttack(hit.point);
                 } else if (selectionState == CurrentCharacterSelectionStatus.UsingAbility) {
                     bool wasAbilityUsed = HavePlayerUseAbility(hit.point);
                     if (wasAbilityUsed) {
@@ -156,29 +156,6 @@ public class SelectionManager : MonoBehaviour
         }
     }
 
-
-    // Action Type Methods
-    private void HavePlayerAttack(Vector3 targetPosition) {
-
-        GameObject newTile = FindClosestTile(targetPosition);
-        if (newTile == null) {
-            return;
-        } else {
-            // pre clean up
-            currentSelectedTile.GetComponent<TileGraphicsController>().ChangeToDefaultState();
-
-            bool AttackSuccessful = currentSelectCharacter.GetComponent<PlayerController>().AttackTile(newTile);
-
-            if (AttackSuccessful) {
-                Cleanup();
-                ccc.MenuCleanup();
-            }
-
-            
-        }
-
-
-    }
 
     private void MoveSelectedCharacter(Vector3 selectionPoint) {
         // pre clean up
@@ -223,7 +200,7 @@ public class SelectionManager : MonoBehaviour
     public void ChangeToMovingState() {
         selectionState = CurrentCharacterSelectionStatus.Moving;
         PlayerController playerScript = currentSelectCharacter.GetComponent<PlayerController>();
-        List<GameObject> reachableTiles = playerScript.GetReachableTiles(playerScript.RetrievePilotInfo().speed);
+        List<GameObject> reachableTiles = playerScript.GetReachableTiles(playerScript.RetrievePilotInfo().GetPilotSpeed());
         ClearTileRange();
         tileRangeList = reachableTiles;
         foreach (GameObject tile in reachableTiles) {
@@ -240,7 +217,7 @@ public class SelectionManager : MonoBehaviour
     public void ChangeToAttackingState() {
         selectionState = CurrentCharacterSelectionStatus.Attacking;
         PlayerController playerScript = currentSelectCharacter.GetComponent<PlayerController>();
-        List<GameObject> reachableTiles = playerScript.GetAttackableTiles(playerScript.RetrievePilotInfo().attackRange);
+        List<GameObject> reachableTiles = playerScript.GetAttackableTiles(playerScript.RetrievePilotInfo().GetLaserRange());
         ClearTileRange();
         tileRangeList = reachableTiles;
         foreach (GameObject tile in reachableTiles) {
@@ -329,7 +306,7 @@ public class SelectionManager : MonoBehaviour
             Vector3 directionToTile = tile.transform.position - point;
             float dSqrToTile = directionToTile.sqrMagnitude; // Use sqrMagnitude to avoid the cost of a square root calculation
 
-            if (dSqrToTile < closestDistanceSqr)
+            if (dSqrToTile < closestDistanceSqr && ContainsTargetableTile(tile))
             {
                 closestDistanceSqr = dSqrToTile;
                 closestTile = tile;
@@ -340,6 +317,23 @@ public class SelectionManager : MonoBehaviour
             return null;
         }
         return closestTile;
+    }
+
+    private bool ContainsTargetableTile(GameObject tileObject) {
+        GameObject[] obstacleObjectArray = GameObject.FindGameObjectsWithTag("Obstacle");
+
+        Vector3 tilePos = tileObject.transform.position;
+        foreach(GameObject obstacle in obstacleObjectArray) {
+            Vector3 obstPos = obstacle.transform.position;
+            if (obstPos.x == tilePos.x && obstPos.z == tilePos.z) {
+                ObstacleController obstController = obstacle.GetComponent<ObstacleController>();
+                if (!obstController.IsTargetable()) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 
 }

@@ -12,8 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c2d0ce9dc6fef49f4b19ea8ae5cab69e, type: 3}
   m_Name: BellPilot
   m_EditorClassIdentifier: 
-  strength: 3
-  attackRange: 4
+  laserStrength: 3
+  laserRange: 6
+  ballisticStrength: 3
+  ballisticRange: 3
   speed: 4
   health: 3
   currentExperiencePoint: 0

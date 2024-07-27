@@ -10,7 +10,7 @@ public class BoardManager : MonoBehaviour
     public Vector3 startPosition = new Vector3(0, 0, 0); // Starting position of the board
     public float tileSpacing = 1.1f; // Spacing between tiles
 
-    void Start()
+    void Awake()
     {
         if (!Application.isPlaying)
             return;
