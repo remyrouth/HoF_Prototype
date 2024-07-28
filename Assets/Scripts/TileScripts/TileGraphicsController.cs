@@ -98,6 +98,10 @@ public class TileGraphicsController : MonoBehaviour
         tileCenter.SetActive(false);
     }
 
+    public bool IsShutDown() {
+        return !tileCenter.activeInHierarchy;
+    }
+
 
 
     // public void 

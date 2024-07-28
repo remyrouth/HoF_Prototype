@@ -87,7 +87,7 @@ public class AbilityExecutionManager : MonoBehaviour
 
         return legal;
     }
-
+    
     private bool ActivateAbility(PlayerController character, MechStats.AbilityMechSlot abilityClass, GameObject tileTarget) {
         MechStats.AbilityType abilityType = abilityClass.GetAbilityType();
         switch(abilityType) {

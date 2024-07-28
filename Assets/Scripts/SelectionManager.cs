@@ -173,8 +173,10 @@ public class SelectionManager : MonoBehaviour
         if (possibleTileOccupyingObject == null) {
             // move player
             PlayerController pc = currentSelectCharacter.GetComponent<PlayerController>();
-            pc.MoveToNewTile(currentSelectedTile);
-            shouldUseTurnManager = true;
+            if (pc.MoveToNewTile(currentSelectedTile)) {
+                shouldUseTurnManager = true;
+            }
+            shouldUseTurnManager = false;
         }
 
         if (shouldUseTurnManager) {
@@ -240,9 +242,6 @@ public class SelectionManager : MonoBehaviour
         }
     }
 
-
-
-
     private void DisplayerInfoToUI() {
         if (currentSelectCharacter != null) {
             PlayerController characterScript = currentSelectCharacter.GetComponent<PlayerController>();
@@ -252,13 +251,15 @@ public class SelectionManager : MonoBehaviour
 
     private GameObject FindMatchingObjectToTile() {
         GameObject[] playerObjectPiecesArray = GameObject.FindGameObjectsWithTag("Player");
+        GameObject[] obstacleObjectPiecesArray = GameObject.FindGameObjectsWithTag("Obstacle");
+        GameObject[] comboPiecesArray = ConcatenateGameObjectArrays(playerObjectPiecesArray, obstacleObjectPiecesArray);
 
-        foreach (GameObject character in playerObjectPiecesArray)
+        foreach (GameObject tileObject in comboPiecesArray)
         {
-            bool matchingX = (character.transform.position.x == currentSelectedTile.transform.position.x);
-            bool matchingZ = (character.transform.position.z == currentSelectedTile.transform.position.z);
+            bool matchingX = (tileObject.transform.position.x == currentSelectedTile.transform.position.x);
+            bool matchingZ = (tileObject.transform.position.z == currentSelectedTile.transform.position.z);
             if (matchingX && matchingZ) {
-                return character;
+                return tileObject;
             }
         }
 
@@ -334,6 +335,27 @@ public class SelectionManager : MonoBehaviour
         }
 
         return true;
+    }
+
+    // Method to concatenate two GameObject arrays
+    public GameObject[] ConcatenateGameObjectArrays(GameObject[] array1, GameObject[] array2)
+    {
+        // Create a new array with the size of both arrays combined
+        GameObject[] result = new GameObject[array1.Length + array2.Length];
+
+        // Copy the first array into the result array
+        for (int i = 0; i < array1.Length; i++)
+        {
+            result[i] = array1[i];
+        }
+
+        // Copy the second array into the result array
+        for (int i = 0; i < array2.Length; i++)
+        {
+            result[array1.Length + i] = array2[i];
+        }
+
+        return result;
     }
 
 }

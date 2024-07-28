@@ -43,18 +43,20 @@ public class PlayerController : MonoBehaviour
 
     // Main Action Methods
 
-    public void MoveToNewTile(GameObject newTile)
+    public bool MoveToNewTile(GameObject newTile)
     {
-        hasMovedYet = true;
         TileMapSetup();
         // is new tile in range? 
         List<GameObject> reachableTiles = GetReachableTiles(pilotInfo.GetPilotSpeed());
         if (reachableTiles.Contains(newTile)) {
+            hasMovedYet = true;
 
             currentClarityLevel += pilotInfo.GetMoveClarity();
             currentClarityLevel = Mathf.Min(mechInfo.maximumClarity, currentClarityLevel);
             StartCoroutine(MoveAlongTiles(newTile));
+            return true;
         }
+        return false;
         // StartCoroutine(MoveAlongTiles(newTile));
     }
 
@@ -173,6 +175,11 @@ public class PlayerController : MonoBehaviour
     }
 
     public bool IsTileOccupied(GameObject newTile) {
+        TileGraphicsController tgc = newTile.GetComponent<TileGraphicsController>();
+        if (tgc.IsShutDown()) {
+            return true;
+        }
+
         GameObject[] playerObjectPiecesArray = GameObject.FindGameObjectsWithTag("Player");
         GameObject[] obstacleObjectPiecesArray = GameObject.FindGameObjectsWithTag("Obstacle");
         GameObject[] combinedArray = CombineArrays(playerObjectPiecesArray, obstacleObjectPiecesArray);

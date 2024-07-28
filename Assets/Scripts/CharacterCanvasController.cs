@@ -152,8 +152,6 @@ public class CharacterCanvasController : MonoBehaviour
             MechStats.AbilityMechSlot tempSlot = CreateAttackSlotOption(power, range);
             sm.ChangeToAbilityState(tempSlot);
         } else if (attackOption == 3) {
-
-
             laserAttackUIClass.CleanupButton();
             ballisticAttackUIClass.CleanupButton();
             comboAttackUIClass.SelectButton();
