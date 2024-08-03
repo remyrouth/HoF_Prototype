@@ -92,8 +92,15 @@ public class AbilityExecutionManager : MonoBehaviour
         MechStats.AbilityType abilityType = abilityClass.GetAbilityType();
         switch(abilityType) {
             case MechStats.AbilityType.None:
-                    // This means its not an ability its a regular
+                    // This means there's no ability, return false
                     return false;
+            case MechStats.AbilityType.Lazer:
+                    Debug.Log("Used Lazer");
+                    return LazerAttackRules.UseAbility(character, abilityClass, tileTarget);
+            case MechStats.AbilityType.Ballistic:
+                    return BallisticAttackRules.UseAbility(character, abilityClass, tileTarget);
+            case MechStats.AbilityType.Combo:
+                    return ComboAttackRules.UseAbility(character, abilityClass, tileTarget);
             case MechStats.AbilityType.Heal:
                 return HealingAbilityRules.UseAbility(character, abilityClass, tileTarget);
             case MechStats.AbilityType.LightningStrike:

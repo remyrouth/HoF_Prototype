@@ -173,6 +173,9 @@ public class SelectionManager : MonoBehaviour
         if (possibleTileOccupyingObject == null) {
             // move player
             PlayerController pc = currentSelectCharacter.GetComponent<PlayerController>();
+            if (pc == null) {
+                return;
+            }
             if (pc.MoveToNewTile(currentSelectedTile)) {
                 shouldUseTurnManager = true;
             }
@@ -254,12 +257,23 @@ public class SelectionManager : MonoBehaviour
         GameObject[] obstacleObjectPiecesArray = GameObject.FindGameObjectsWithTag("Obstacle");
         GameObject[] comboPiecesArray = ConcatenateGameObjectArrays(playerObjectPiecesArray, obstacleObjectPiecesArray);
 
-        foreach (GameObject tileObject in comboPiecesArray)
+        foreach (GameObject tileObject in playerObjectPiecesArray)
         {
             bool matchingX = (tileObject.transform.position.x == currentSelectedTile.transform.position.x);
             bool matchingZ = (tileObject.transform.position.z == currentSelectedTile.transform.position.z);
             if (matchingX && matchingZ) {
                 return tileObject;
+            }
+        }
+
+
+        foreach (GameObject obstacle in obstacleObjectPiecesArray)
+        {
+            bool matchingX = (obstacle.transform.position.x == currentSelectedTile.transform.position.x);
+            bool matchingZ = (obstacle.transform.position.z == currentSelectedTile.transform.position.z);
+            ObstacleController occupiesTile = obstacle.GetComponent<ObstacleController>();
+            if (matchingX && matchingZ && occupiesTile.OccupiesTilesCheck()) {
+                return obstacle;
             }
         }
 

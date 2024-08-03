@@ -10,10 +10,19 @@ public class ObstacleController : MonoBehaviour
     private List<GameObject> tiles;
     [SerializeField]
     private ObstacleType obstacleType = ObstacleType.Destructable;
+    [SerializeField]
+    private bool occupiesTiles = true;
+    [SerializeField]
+    private int damageOnTouch = 2;
 
     void Start()
     {
-        SetTagToObstacle();
+        if (occupiesTiles) {
+            SetTagToObstacle();
+        } else {
+            
+        }
+
         currentHealth = maxHealth;
 
         if (!IsTargetable()) {
@@ -89,4 +98,16 @@ public class ObstacleController : MonoBehaviour
         SpaceFiller
     }
 
+    public void TriggerInteraction(PlayerController pc) {
+        if (occupiesTiles || damageOnTouch == 0) {
+            return;
+        }
+        pc.TakeDamage(damageOnTouch, true);
+        Destroy(gameObject);
+    }
+
+    public bool OccupiesTilesCheck() {
+        return occupiesTiles;
+    }
+ 
 }

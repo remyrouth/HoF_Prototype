@@ -67,6 +67,11 @@ public class MechStats : ScriptableObject
             return type;
         }
 
+        public void SetAbilityType(AbilityType newType) {
+            type = newType;
+        }
+
+
         public bool IsNotNoneType() {
             return type != AbilityType.None;
         }
@@ -113,6 +118,9 @@ public class MechStats : ScriptableObject
     }
     public enum AbilityType {
         None,
+        Lazer,
+        Ballistic,
+        Combo,
         Heal,
         RocketSummon,
         Teleport,

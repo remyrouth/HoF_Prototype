@@ -18,12 +18,10 @@ public class CharacterCanvasController : MonoBehaviour
     public GameObject attackMenu;
 
     [Header("Main Action Texts")]
-    public Text strengthText;
-    public Text attackRangeText;
-    public Text speedText;
-    public Text clarityGainMovementText;
-    public Text clarityGainActionText;
-    public Text currentClarityText;
+
+    public Text mechHealthText;
+    public Text pilotHealthText;
+    public Text moveSpeedText;
 
     [Header("Main Action Button Variables")]
     public AbilityButtonClass moveUIClass;
@@ -84,13 +82,11 @@ public class CharacterCanvasController : MonoBehaviour
 
     private void ShowCharacterText(PlayerController newCharacterScript) {
         CharacterStats pilot = newCharacterScript.RetrievePilotInfo();
+        MechStats mech = newCharacterScript.RetrieveMechInfo();
 
-        strengthText.text = "Strength: " + pilot.GetLaserStrength().ToString();
-        attackRangeText.text = "Range: " + pilot.GetLaserRange().ToString();
-        speedText.text = "Speed: " + pilot.GetPilotSpeed().ToString();
-        clarityGainMovementText.text = "Move Clarity: " + pilot.GetMoveClarity().ToString();
-        clarityGainActionText.text = "Atk Clarity: " + pilot.GetAttackClarity().ToString();
-        currentClarityText.text = "Curr Clarity: " + newCharacterScript.currentClarityLevel;
+        mechHealthText.text = "Mech Health: " + mech.GetMechHealth().ToString();
+        pilotHealthText.text = "Pilot Health: " + pilot.GetPilotHealth().ToString();
+        moveSpeedText.text = "Move Speed: " +pilot.GetPilotSpeed().ToString();
 
     }
 
@@ -141,6 +137,7 @@ public class CharacterCanvasController : MonoBehaviour
             int power = currentCharacter.RetrievePilotInfo().GetLaserStrength();
             int range = currentCharacter.RetrievePilotInfo().GetLaserRange();
             MechStats.AbilityMechSlot tempSlot = CreateAttackSlotOption(power, range);
+            Debug.Log("Used Lazer");
             sm.ChangeToAbilityState(tempSlot);
         } else if (attackOption == 2) {
             laserAttackUIClass.CleanupButton();
@@ -150,6 +147,7 @@ public class CharacterCanvasController : MonoBehaviour
             int power = currentCharacter.RetrievePilotInfo().GetBallisticStrength();
             int range = currentCharacter.RetrievePilotInfo().GetBallisticRange();
             MechStats.AbilityMechSlot tempSlot = CreateAttackSlotOption(power, range);
+            Debug.Log("Used Lazer");
             sm.ChangeToAbilityState(tempSlot);
         } else if (attackOption == 3) {
             laserAttackUIClass.CleanupButton();
@@ -160,6 +158,7 @@ public class CharacterCanvasController : MonoBehaviour
             int power = currentCharacter.RetrievePilotInfo().GetLaserStrength();
             int range = currentCharacter.RetrievePilotInfo().GetLaserRange();
             MechStats.AbilityMechSlot tempSlot = CreateAttackSlotOption(power, range);
+            Debug.Log("Used Lazer");
             sm.ChangeToAbilityState(tempSlot);
         } 
     }
@@ -168,6 +167,7 @@ public class CharacterCanvasController : MonoBehaviour
         int clarityCost = 0;
         int minimumRange = 0;
         tempSlot.SetValues(power, clarityCost, minimumRange, attackRange);
+        tempSlot.SetAbilityType(MechStats.AbilityType.Lazer);
 
         return tempSlot;
     }
@@ -205,16 +205,19 @@ public class CharacterCanvasController : MonoBehaviour
 
         if (slot1.IsNotNoneType()) {
             abilityUIClass1.DisplayAbilityInfo(slot1);
+            abilityUIClass1.CleanupButton();
         } else {
             abilityUIClass1.DisableAbilityButton();
         }
         if (slot2.IsNotNoneType()) {
             abilityUIClass2.DisplayAbilityInfo(slot2);
+            abilityUIClass2.CleanupButton();
         } else {
             abilityUIClass2.DisableAbilityButton();
         }
         if (slot3.IsNotNoneType()) {
             abilityUIClass3.DisplayAbilityInfo(slot3);
+            abilityUIClass3.CleanupButton();
         } else {
             abilityUIClass3.DisableAbilityButton();
         }
@@ -238,6 +241,7 @@ public class CharacterCanvasController : MonoBehaviour
 
         public void enableButton() {
             parentObject.SetActive(true);
+            SelectButton();
         }
 
         public void DisplayAbilityInfo(MechStats.AbilityMechSlot slot) {
@@ -254,6 +258,7 @@ public class CharacterCanvasController : MonoBehaviour
 
         public void DisplayAttackInfo(MechStats.AbilityMechSlot slot) {
             currentAbility = slot;
+            CleanupButton();
             enableButton();
         }
         
@@ -277,8 +282,8 @@ public class CharacterCanvasController : MonoBehaviour
         sm.ChangeToMovingState();
 
         moveUIClass.enableButton();
-        attackUIClass.DisableAbilityButton();
-        abilityUIClass.DisableAbilityButton();
+        attackUIClass.CleanupButton();
+        abilityUIClass.CleanupButton();
     }
 
     public void BeginAttackSystem () {

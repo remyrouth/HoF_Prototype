@@ -61,38 +61,6 @@ public class PlayerController : MonoBehaviour
     }
 
 
-    // THERE IS A PROBLEM HERE // THIS METHOD SHOULD NO LONGER EXITS!!!                 ///////////////////////////////////////////////////////////////////////////////////////////
-    // THERE IS A PROBLEM HERE // THIS METHOD SHOULD NO LONGER EXITS!!!                 ///////////////////////////////////////////////////////////////////////////////////////////
-    // THERE IS A PROBLEM HERE // THIS METHOD SHOULD NO LONGER EXITS!!!                 ///////////////////////////////////////////////////////////////////////////////////////////
-    private bool AttackTile(GameObject newTile) {
-        hasAttackedYet = true;
-        hasMovedYet = true;
-
-        GameObject objectOnAttackedTile = FindMatchingObjectToTile(newTile);
-        if (objectOnAttackedTile != null) {
-            Debug.Log("Attackable entity found");
-
-            PlayerController pcTarget = objectOnAttackedTile.GetComponent<PlayerController>();
-            ObstacleController obstTarget = objectOnAttackedTile.GetComponent<ObstacleController>();
-
-            if (pcTarget != null) {
-                // pcTarget.TakeDamage(pilotInfo.strength);
-
-                currentClarityLevel += pilotInfo.GetAttackClarity();
-                currentClarityLevel = Mathf.Min(mechInfo.maximumClarity, currentClarityLevel);
-                return true;
-            } else if (obstTarget != null) {
-                // obstTarget.TakeDamage(pilotInfo.strength);
-
-                currentClarityLevel += pilotInfo.GetAttackClarity();
-                currentClarityLevel = Mathf.Min(mechInfo.maximumClarity, currentClarityLevel);
-                return true;
-            }
-
-        }
-        return false;
-    }
-
     public bool UseAbility(MechStats.AbilityMechSlot ability, GameObject targetedTile) {
         // Debug.Log("UseAbility method used in player controller class");
         bool abilityUsedCheck = aem.InputAbilityInformationSources(ability, this, targetedTile);
@@ -184,11 +152,22 @@ public class PlayerController : MonoBehaviour
         GameObject[] obstacleObjectPiecesArray = GameObject.FindGameObjectsWithTag("Obstacle");
         GameObject[] combinedArray = CombineArrays(playerObjectPiecesArray, obstacleObjectPiecesArray);
 
-        foreach (GameObject character in combinedArray)
+        foreach (GameObject character in playerObjectPiecesArray)
         {
             bool matchingX = (character.transform.position.x == newTile.transform.position.x);
             bool matchingZ = (character.transform.position.z == newTile.transform.position.z);
             if (matchingX && matchingZ) {
+                return true;
+            }
+        }
+
+
+        foreach (GameObject obstacle in obstacleObjectPiecesArray)
+        {
+            bool matchingX = (obstacle.transform.position.x == newTile.transform.position.x);
+            bool matchingZ = (obstacle.transform.position.z == newTile.transform.position.z);
+            ObstacleController occupiesTile = obstacle.GetComponent<ObstacleController>();
+            if (matchingX && matchingZ && occupiesTile.OccupiesTilesCheck()) {
                 return true;
             }
         }
@@ -241,6 +220,21 @@ public class PlayerController : MonoBehaviour
         {
             agent.SetDestination(tile.transform.position + Vector3.up * yOffset);
             yield return new WaitUntil(() => agent.remainingDistance < 0.1f);
+        }
+
+        //  Debug.Log("Reached the intended tile: " + destinationTile.name);
+        CheckForSteppingOnObstacleTile(destinationTile);
+    }
+
+    private void CheckForSteppingOnObstacleTile(GameObject tileToCheck) {
+        GameObject[] obstacleObjectPiecesArray = GameObject.FindGameObjectsWithTag("Obstacle");
+
+        Vector3 tilePos = tileToCheck.transform.position;
+        foreach(GameObject obstacle in obstacleObjectPiecesArray) {
+            Vector3 obstPos = obstacle.transform.position;
+            if (obstPos.x == tilePos.x && obstPos.z == tilePos.z) {
+                obstacle.GetComponent<ObstacleController>().TriggerInteraction(this);
+            }
         }
     }
 

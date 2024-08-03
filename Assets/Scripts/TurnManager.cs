@@ -35,12 +35,28 @@ public class TurnManager : MonoBehaviour
     }
 
     private void reachedDestinationCheck() {
-        Vector3 tilePos = targetedTile.transform.position;
-        Vector3 piecePos = movingPiece.transform.position;
-        bool reachedDestination = (piecePos.x == tilePos.x && piecePos.z == tilePos.z);
-        if (reachedDestination) {
-            completeWaitChecks = false;
+        if (movingPiece != null) {
+            Vector3 tilePos = targetedTile.transform.position;
+            Vector3 piecePos = movingPiece.transform.position;
+            bool reachedDestination = (piecePos.x == tilePos.x && piecePos.z == tilePos.z);
+            if (reachedDestination) {
+                completeWaitChecks = false;
 
+                if (isPlayerTurn) {
+                    
+                    movingPiece = null;
+                    targetedTile = null;
+                    sm.enabled = true;
+                } else {
+
+                    movingPiece.GetComponent<AIPlayerController>().Attack();
+                    movingPiece = null;
+                    targetedTile = null;
+                    StartIndividualEnemyAction();
+                }
+
+            }
+        } else {
             if (isPlayerTurn) {
                 
                 movingPiece = null;
@@ -48,12 +64,10 @@ public class TurnManager : MonoBehaviour
                 sm.enabled = true;
             } else {
 
-                movingPiece.GetComponent<AIPlayerController>().Attack();
                 movingPiece = null;
                 targetedTile = null;
                 StartIndividualEnemyAction();
             }
-
         }
 
     }
