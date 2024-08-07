@@ -82,7 +82,9 @@ public class MapSelectorController : MonoBehaviour
         if (dissolve) {
             newValue = floatValue + (dissolveSpeed * Time.deltaTime);
             newValue = Mathf.Min(newValue, 1f);
-            UpperLevelGroup.SetActive(false);
+            if (newValue == 1f) {
+                UpperLevelGroup.SetActive(false);
+            }
         } else {
             newValue = floatValue - (dissolveSpeed * Time.deltaTime);
             newValue = Mathf.Max(newValue, 0f);
