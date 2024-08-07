@@ -5709,7 +5709,7 @@ GameObject:
   - component: {fileID: 1965994570}
   - component: {fileID: 1965994571}
   m_Layer: 5
-  m_Name: Char Inner
+  m_Name: ArrayHolder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -4,8 +4,12 @@ using UnityEngine;
 
 public class MapMarkerController : MonoBehaviour
 {
-    public string levelNameReference;
-    private SpriteRenderer selfSprite;
+    [SerializeField]
+    private MapLevel maplevel;
+
+
+
+
 
     [SerializeField]
     private StateClass neutralState;
@@ -13,6 +17,9 @@ public class MapMarkerController : MonoBehaviour
     private StateClass hoveringState;
     [SerializeField]
     private StateClass selectedState;
+
+
+    private SpriteRenderer selfSprite;
 
     private void Start() {
         selfSprite = GetComponent<SpriteRenderer>();
@@ -29,7 +36,7 @@ public class MapMarkerController : MonoBehaviour
 
     public void ActivateSelected() {
         selectedState.AlterMarker(selfSprite);
-        FindObjectOfType<TeamChooserController>().SetLevelStringReference(levelNameReference);
+        // FindObjectOfType<TeamChooserController>().SetLevelStringReference(levelNameReference);
     }
 
     [System.Serializable]
@@ -43,5 +50,11 @@ public class MapMarkerController : MonoBehaviour
             objectSpriteRenderer.color = stateColor;
             objectSpriteRenderer.sprite = stateSprite;
         }
+    }
+
+    [System.Serializable]
+    public class MapLevel {
+        public string levelStringName;
+        public int teamMemberMax = 1;
     }
 }

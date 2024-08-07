@@ -58,6 +58,9 @@ public class CharacterCanvasController : MonoBehaviour
 
     // UI Methods
     public void DisplayCharacter(PlayerController newCharacterScript){
+        if (newCharacterScript == null) {
+            return;
+        }
         currentCharacter = newCharacterScript;
 
         DetermineActionAvailability(newCharacterScript);
@@ -134,20 +137,24 @@ public class CharacterCanvasController : MonoBehaviour
             ballisticAttackUIClass.CleanupButton();
             comboAttackUIClass.CleanupButton();
 
-            int power = currentCharacter.RetrievePilotInfo().GetLaserStrength();
-            int range = currentCharacter.RetrievePilotInfo().GetLaserRange();
-            MechStats.AbilityMechSlot tempSlot = CreateAttackSlotOption(power, range);
+            // int power = currentCharacter.RetrievePilotInfo().GetLaserStrength();
+            // int range = currentCharacter.RetrievePilotInfo().GetLaserRange();
+            // MechStats.AbilityMechSlot tempSlot = CreateAttackSlotOption(power, range);
             Debug.Log("Used Lazer");
+            // sm.ChangeToAbilityState(tempSlot);
+            MechStats.AbilityMechSlot tempSlot = laserAttackUIClass.getCurretAbilityOfButton();
             sm.ChangeToAbilityState(tempSlot);
         } else if (attackOption == 2) {
             laserAttackUIClass.CleanupButton();
             ballisticAttackUIClass.SelectButton();
             comboAttackUIClass.CleanupButton();
 
-            int power = currentCharacter.RetrievePilotInfo().GetBallisticStrength();
-            int range = currentCharacter.RetrievePilotInfo().GetBallisticRange();
-            MechStats.AbilityMechSlot tempSlot = CreateAttackSlotOption(power, range);
-            Debug.Log("Used Lazer");
+            // int power = currentCharacter.RetrievePilotInfo().GetBallisticStrength();
+            // int range = currentCharacter.RetrievePilotInfo().GetBallisticRange();
+            // MechStats.AbilityMechSlot tempSlot = CreateAttackSlotOption(power, range);
+            Debug.Log("Used Ballistic");
+            // sm.ChangeToAbilityState(tempSlot);
+            MechStats.AbilityMechSlot tempSlot = ballisticAttackUIClass.getCurretAbilityOfButton();
             sm.ChangeToAbilityState(tempSlot);
         } else if (attackOption == 3) {
             laserAttackUIClass.CleanupButton();
@@ -155,11 +162,13 @@ public class CharacterCanvasController : MonoBehaviour
             comboAttackUIClass.SelectButton();
 
 
-            int power = currentCharacter.RetrievePilotInfo().GetLaserStrength();
-            int range = currentCharacter.RetrievePilotInfo().GetLaserRange();
-            MechStats.AbilityMechSlot tempSlot = CreateAttackSlotOption(power, range);
-            Debug.Log("Used Lazer");
+            // int power = currentCharacter.RetrievePilotInfo().GetLaserStrength();
+            // int range = currentCharacter.RetrievePilotInfo().GetLaserRange();
+            // MechStats.AbilityMechSlot tempSlot = CreateAttackSlotOption(power, range);
+            Debug.Log("Used Combo");
+            MechStats.AbilityMechSlot tempSlot = comboAttackUIClass.getCurretAbilityOfButton();
             sm.ChangeToAbilityState(tempSlot);
+            // sm.ChangeToAbilityState(tempSlot);
         } 
     }
     public MechStats.AbilityMechSlot CreateAttackSlotOption(int power, int attackRange) {
@@ -232,6 +241,7 @@ public class CharacterCanvasController : MonoBehaviour
         public Text abilityTitleText;
         public Text descriptionText;
         public Text clarityCostText;
+        public Text damageText;
         public Text rangeText;
         private MechStats.AbilityMechSlot currentAbility;
 
@@ -258,6 +268,10 @@ public class CharacterCanvasController : MonoBehaviour
 
         public void DisplayAttackInfo(MechStats.AbilityMechSlot slot) {
             currentAbility = slot;
+            rangeText.text = "RNG: " + slot.GetMaximumRange();
+            damageText.text = "DMG: " + slot.GetIntPower();
+
+
             CleanupButton();
             enableButton();
         }
@@ -293,6 +307,21 @@ public class CharacterCanvasController : MonoBehaviour
         actionMenu.SetActive(false);
         abilityMenu.SetActive(false);
         attackMenu.SetActive(true);
+
+        int laserPower = currentCharacter.RetrievePilotInfo().GetLaserStrength();
+        int laserRange = currentCharacter.RetrievePilotInfo().GetLaserRange();
+        MechStats.AbilityMechSlot tempLaserSlot = CreateAttackSlotOption(laserPower, laserRange);
+        laserAttackUIClass.DisplayAttackInfo(tempLaserSlot);
+
+        int ballisticPower = currentCharacter.RetrievePilotInfo().GetBallisticStrength();
+        int ballisticRange = currentCharacter.RetrievePilotInfo().GetBallisticRange();
+        MechStats.AbilityMechSlot tempBallisticSlot = CreateAttackSlotOption(ballisticPower, ballisticRange);
+        ballisticAttackUIClass.DisplayAttackInfo(tempBallisticSlot);
+
+        int comboPower = currentCharacter.RetrievePilotInfo().GetLaserStrength();
+        int comboRange = currentCharacter.RetrievePilotInfo().GetLaserRange();
+        MechStats.AbilityMechSlot tempComboSlot = CreateAttackSlotOption(comboPower, comboRange);
+        comboAttackUIClass.DisplayAttackInfo(tempComboSlot);
 
 
         laserAttackUIClass.CleanupButton();
