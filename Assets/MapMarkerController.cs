@@ -25,6 +25,10 @@ public class MapMarkerController : MonoBehaviour
         selfSprite = GetComponent<SpriteRenderer>();
         ActivateNeutral();
     }
+
+    public MapLevel GiveMarkerLevel() {
+        return maplevel;
+    }
  
     public void ActivateNeutral() {
         neutralState.AlterMarker(selfSprite);
@@ -36,7 +40,6 @@ public class MapMarkerController : MonoBehaviour
 
     public void ActivateSelected() {
         selectedState.AlterMarker(selfSprite);
-        // FindObjectOfType<TeamChooserController>().SetLevelStringReference(levelNameReference);
     }
 
     [System.Serializable]

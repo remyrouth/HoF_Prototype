@@ -2,14 +2,21 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class MapSelectorController : MonoBehaviour
 {
+    public enum MapState {
+        ChoosingLevelFromMap,
+        PickingTeamOnChosenLevel
+    }
+    public MapState mapState =  MapState.ChoosingLevelFromMap;
     public MapMarkerController currentMarker;
 
     [Header("Cursor Variables")]
     public Transform mapCursor;
     public float cursorYOffset = 0.2f;
     public float selectionAimAssistRange = 2f;
+    public bool uses3DCursor = false;
 
 
     [Header("Dissolve Variables")]
@@ -19,14 +26,20 @@ public class MapSelectorController : MonoBehaviour
     public GameObject UpperLevelGroup;
     private bool DoDissolve = false;
 
+    [Header("TeamChooser Object Variables")]
+    public GameObject lowerTeamChooserObject;
+    public float yLowerOffset = 1f;
 
 
-    private CameraController cam;
+
+    private CameraController camScript;
+    private Camera mainCamera;
     private List<MapMarkerController> mapMarkers = new List<MapMarkerController>();
     // Start is called before the first frame update
     private void Start()
     {
-        cam = FindObjectOfType<CameraController>();
+        camScript = FindObjectOfType<CameraController>();
+        mainCamera = Camera.main;
         MapMarkerController[] markersArray = FindObjectsOfType<MapMarkerController>();
         foreach (MapMarkerController marker in markersArray)
         {
@@ -34,26 +47,61 @@ public class MapSelectorController : MonoBehaviour
         }
 
         MaterialSetup();
+
+        if (!uses3DCursor) {
+            mapCursor.gameObject.SetActive(false);
+        }
     }
 
 
     void Update()
     {
-        Vector3 camLookPos = CameraLook();
-        if (camLookPos != Vector3.zero) // Only update if we have a valid look position
-        {
+        Vector3 camLookPos = CollectCursorMoveInput();
 
+        if (uses3DCursor) {
             SetCursorPos(camLookPos);
-            SortMarkerActivity(camLookPos);
         }
+        SortMarkerActivity(camLookPos);
+        ControlMaterialDissolve(DoDissolve);
 
-        if (Input.GetKeyDown(KeyCode.Return))
-        {
-           DoDissolve = !DoDissolve;
-        //    Debug.Log("DoDissolve: " + DoDissolve);
+        if (mapState == MapState.ChoosingLevelFromMap) {
+            if (camLookPos != Vector3.zero) // Only update if we have a valid look position
+            {
+                // Debug.Log("IN ChoosingLevelFromMap state");
+                SelectMap();
+            }
+        } 
+
+        if (Input.GetKeyDown(KeyCode.Escape)) {
+            // Debug.Log("escape key pressed");
+            currentMarker = null;
+            mapState = MapState.ChoosingLevelFromMap;
+            DoDissolve = false;
         }
+        
 
-        ToggleDissolveMaterials(DoDissolve);
+
+    }
+
+    private void SelectMap() {
+        if (Input.GetMouseButtonDown(0)) {
+             Debug.Log("Actiavted SelectMap method");
+            if (currentMarker != null) {
+                DoDissolve = true;
+                Vector3 levelPosition = currentMarker.gameObject.transform.position;
+                GiveLevelToTeamChooser();
+                currentMarker = null;
+                lowerTeamChooserObject.transform.position = new Vector3(levelPosition.x, levelPosition.y - yLowerOffset, levelPosition.z);
+
+
+            }
+        }
+    }
+
+    private void GiveLevelToTeamChooser() {
+        MapMarkerController.MapLevel levelChosen = currentMarker.GiveMarkerLevel();
+        TeamChooserController teamChoosingScript = lowerTeamChooserObject.GetComponent<TeamChooserController>();
+        teamChoosingScript.AccessLevelBasedOnData(levelChosen);
 
     }
 
@@ -65,7 +113,7 @@ public class MapSelectorController : MonoBehaviour
     }
 
     // Material Methods
-    private void ToggleDissolveMaterials(bool dissolve)
+    private void ControlMaterialDissolve(bool dissolve)
     {
         // Debug.Log("DoDissolve: " + DoDissolve);
         MapUIGroup.SetActive(!dissolve);
@@ -139,9 +187,19 @@ public class MapSelectorController : MonoBehaviour
         }
 }
 
-    private Vector3 CameraLook() {
-        // Create a ray from the camera's position in the direction it is facing
-        Ray ray = new Ray(cam.transform.position, cam.transform.forward);
+    private Vector3 CollectCursorMoveInput() {
+
+        return CollectMousePositionInWorld();
+        // return CollectCameraLookingPosition();
+
+    }
+
+    private Vector3 CollectMousePositionInWorld() {
+        // Get the mouse position on the screen
+        Vector3 mousePosition = Input.mousePosition;
+
+        // Create a ray from the camera through the mouse position
+        Ray ray = mainCamera.ScreenPointToRay(mousePosition);
 
         // Store the hit information
         RaycastHit hit;
@@ -165,6 +223,32 @@ public class MapSelectorController : MonoBehaviour
         } else {
             return Vector3.zero;
         }
+    }
+    private Vector3 CollectCameraLookingPosition() {
+        // Create a ray from the camera's position in the direction it is facing
+        Ray ray = new Ray(mainCamera.transform.position, mainCamera.transform.forward);
 
+        // Store the hit information
+        RaycastHit hit;
+
+        // Perform the raycast
+        float maxDistance = 50f;
+        if (Physics.Raycast(ray, out hit, maxDistance))
+        {
+            // Optional: Draw a debug line in the scene view
+            Debug.DrawLine(ray.origin, hit.point, Color.red);
+
+            // Optional: Visualize the point with a sphere in the scene view
+            Debug.DrawLine(hit.point, hit.point + Vector3.up * 0.1f, Color.green);
+            Debug.DrawLine(hit.point, hit.point - Vector3.up * 0.1f, Color.green);
+            Debug.DrawLine(hit.point, hit.point + Vector3.right * 0.1f, Color.green);
+            Debug.DrawLine(hit.point, hit.point - Vector3.right * 0.1f, Color.green);
+            Debug.DrawLine(hit.point, hit.point + Vector3.forward * 0.1f, Color.green);
+            Debug.DrawLine(hit.point, hit.point - Vector3.forward * 0.1f, Color.green);
+
+            return hit.point;
+        } else {
+            return Vector3.zero;
+        }
     }
 }

@@ -7,6 +7,7 @@ public class CharacterCanvasController : MonoBehaviour
 {
     [Header("Current Character")]
     public PlayerController currentCharacter;
+    private SelectionManager sm;
 
     [Header("Display Variables")]
     public Image pilotPortait;
@@ -37,8 +38,6 @@ public class CharacterCanvasController : MonoBehaviour
     public AbilityButtonClass abilityUIClass1;
     public AbilityButtonClass abilityUIClass2;
     public AbilityButtonClass abilityUIClass3;
-
-    private SelectionManager sm;
 
     private void Start() {
         sm = FindObjectOfType<SelectionManager>();

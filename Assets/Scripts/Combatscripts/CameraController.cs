@@ -6,6 +6,10 @@ public class CameraController : MonoBehaviour
 {
     public float moveSpeed = 10f;
 
+    public void SetSpeed(float newSpeed) {
+        moveSpeed = newSpeed;
+    }
+
     void Update()
     {
         Vector3 direction = Vector3.zero;
