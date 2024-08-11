@@ -10,9 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9e6b2a1a59e4643a6acf29f0a690bf8b, type: 3}
-  m_Name: Total
+  m_Name: ChosenTeam
   m_EditorClassIdentifier: 
-  mechs:
-  - {fileID: 11400000, guid: 38ff0ca072c704a6190d99b500332374, type: 2}
-  pilots:
-  - {fileID: 11400000, guid: 569a0aeabb4f9418fb713683cb051b34, type: 2}
+  mechs: []
+  pilots: []

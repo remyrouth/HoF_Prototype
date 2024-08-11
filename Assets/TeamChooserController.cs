@@ -1,65 +1,46 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+// this is a script that allows players to choose a team before going on a mission
+// it also is responsible for the UI of the team choosing phase
 public class TeamChooserController : MonoBehaviour
 {
-    public TeamBuilder AvailableEntities; 
+    [SerializeField] private TeamChooserUI teamChooserUI;
+    [SerializeField] private MechDisplayManager mechDisplayManager;
+    [SerializeField] private TeamBuilder availableEntities;
 
-    [SerializeField]
-    private OptionsArrayHolder PilotArrayHolder;
-    [SerializeField]
-    private OptionsArrayHolder MechArrayHolder;
-    public GameObject imagePrefab;
+    private TeamModel teamModel;
 
-    public Text teamSizeText;
-    private MapMarkerController.MapLevel givenLevel;
-    private int currentTeamSpotIndex = 0;
-    private List<TeamSpot> currentTeamList = new List<TeamSpot>();
-
-
-
-
-
-    // To choose a team for a level we need info, this is the entrance to this script
-    public void AccessLevelBasedOnData(MapMarkerController.MapLevel levelInfo) {
-        givenLevel = levelInfo;
-        teamSizeText.text = "" + (currentTeamSpotIndex+1).ToString() + " / " + givenLevel.teamMemberMax.ToString();
-
-        PilotArrayHolder.CreateMechPortaits(AvailableEntities, imagePrefab);
-        MechArrayHolder.CreateMechPortaits(AvailableEntities, imagePrefab);
+    public void AccessLevelBasedOnData(MapMarkerController.MapLevel levelInfo)
+    {
+        if (teamModel != null) {
+            teamModel = null;
+        }
+        teamModel = new TeamModel();
+        teamModel.InitializeTeamList(levelInfo);
+        teamChooserUI.Initialize(teamModel, availableEntities);
+        OnTeamChanged();
     }
 
-    [System.Serializable]
-    public class OptionsArrayHolder {
-        public Transform objectToHoldOptions;
-        public bool isForPilots = true;
-
-        public void CleanUpArrayHolder() {
-            // Iterate through all children and destroy them
-            for (int i = objectToHoldOptions.childCount - 1; i >= 0; i--) {
-                Object.Destroy(objectToHoldOptions.GetChild(i).gameObject);
-            }
-        }
-
-        public void CreateMechPortaits(TeamBuilder AvailableEntities, GameObject imagePrefab) {
-            CleanUpArrayHolder();
-            int listLength = AvailableEntities.PilotLength();
-            if (!isForPilots) {
-                listLength = AvailableEntities.MechLength();
-            }
-
-            for (int i = 0; i < listLength; i++) {
-                // Instantiate the prefab at the specified position and rotation
-                GameObject instantiatedObject = Instantiate(imagePrefab, objectToHoldOptions.position, objectToHoldOptions.rotation, objectToHoldOptions);
-            }
-        }
+    private void OnTeamChanged()
+    {
+        // MechStats currentMech = teamModel.TeamSpots[teamModel.CurrentSpotIndex].chosenMech;
+        mechDisplayManager.DisplayMech(null);
+        teamChooserUI.UpdateUI();
+        // MechDisplayManager
     }
+
 
     [System.Serializable]
     public class TeamSpot {
         public MechStats chosenMech;
         public CharacterStats chosenPilot;
     }
+
+
+
+
 }

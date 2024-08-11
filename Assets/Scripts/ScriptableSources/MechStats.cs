@@ -19,6 +19,11 @@ public class MechStats : ScriptableObject
         return true;
     }
 
+    public Sprite GetMechSprite()
+    {
+        return characterSprite;
+    }
+
     public GameObject GetMechGFXPrefab() {
         return mechGFXPrefab;
     } 
