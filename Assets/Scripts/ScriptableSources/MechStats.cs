@@ -32,6 +32,14 @@ public class MechStats : ScriptableObject
         return mechHealth;
     }
 
+    public int GetMechMaxClarity() {
+        return maximumClarity;
+    }
+
+    public MechClass GetMechType() {
+        return mechAbilityClass;
+    }
+
     public enum MechClass {
         StandardSoldier, // this has no abilities
         Titan,

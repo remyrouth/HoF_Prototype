@@ -20,7 +20,7 @@ public class TeamChooserController : MonoBehaviour
             teamModel = null;
         }
         teamModel = new TeamModel();
-        teamModel.InitializeTeamList(levelInfo);
+        teamModel.InitializeTeamList(levelInfo, mechDisplayManager);
         teamChooserUI.Initialize(teamModel, availableEntities);
         OnTeamChanged();
     }

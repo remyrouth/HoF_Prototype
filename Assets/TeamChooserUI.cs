@@ -10,6 +10,7 @@ public class TeamChooserUI : MonoBehaviour
     [SerializeField] private OptionsArrayHolder mechArrayHolder;
     [SerializeField] private GameObject spriteOptionHolderPrefab;
 
+
     private TeamModel teamModel;
     private TeamBuilder totalAvailableEntities;
 
@@ -19,6 +20,48 @@ public class TeamChooserUI : MonoBehaviour
         teamModel = model;
         pilotArrayHolder.CreateEntityPortaits(totalAvailableEntities, spriteOptionHolderPrefab, teamModel);
         mechArrayHolder.CreateEntityPortaits(totalAvailableEntities, spriteOptionHolderPrefab, teamModel);
+    }
+
+    public void UpdatePortraits() {
+        TeamChooserController.TeamSpot spot = teamModel.RetriveCurrentTeamSpot();
+            // Finish this
+
+        if (spot.chosenMech) {
+            MechStats mech = spot.chosenMech;
+            string primaryString = "Health: " + mech.GetMechHealth() + "\n" 
+                + "Class: " + mech.GetMechType().ToString()+ "\n"
+                + "Clarity Max: " + mech.GetMechMaxClarity().ToString();
+            string secondaryString = "";
+            Sprite entitySprite = mech.GetMechSprite();
+
+            mechArrayHolder.ChangeToPortraitMode(entitySprite, primaryString, secondaryString);
+        } else {
+            mechArrayHolder.CreateEntityPortaits(totalAvailableEntities, spriteOptionHolderPrefab, teamModel);
+        }
+
+        if (spot.chosenPilot) {
+            CharacterStats pilot = spot.chosenPilot;
+            string primaryString = "Health: " + pilot.GetPilotHealth() + "\n" 
+                + "Speed: " + pilot.ToString()+ "\n"
+                + "Clarity Gain: " + pilot.GetMoveClarity().ToString();
+            string secondaryString = "";
+            Sprite entitySprite = pilot.GetCharacterSprite();
+            pilotArrayHolder.ChangeToPortraitMode(entitySprite, primaryString, secondaryString);
+        } else {
+            pilotArrayHolder.CreateEntityPortaits(totalAvailableEntities, spriteOptionHolderPrefab, teamModel);
+        }
+
+    }
+
+    // button activated
+    public void CancelPortrait(bool cancelsPilot) {
+        if (cancelsPilot) {
+            teamModel.UpdatePilot(null);
+        } else {
+            teamModel.UpdateMech(null);
+        }
+
+        UpdatePortraits();
     }
 
     public void UpdateUI() {
@@ -35,13 +78,20 @@ public class TeamChooserUI : MonoBehaviour
     public void OnTeamSpotChangeClicked(bool increase) {
         teamModel.ChangeCurrentSpot(increase);
         UpdateTeamSpotText();
+        UpdatePortraits();
     }
 
 
     [System.Serializable]
     public class OptionsArrayHolder {
-        public Transform objectToHoldOptions;
-        public bool isForPilots = true;
+        [SerializeField] private Transform objectToHoldOptions;
+        [SerializeField] private bool isForPilots = true;
+
+        [SerializeField] private GameObject portraitGameObject;
+        [SerializeField] private Image potraitImage;
+        [SerializeField] private Text primaryText;
+        [SerializeField] private Text secondaryText;
+
 
         public void CleanUpArrayHolder() {
             // Iterate through all children and destroy them
@@ -49,6 +99,18 @@ public class TeamChooserUI : MonoBehaviour
                 // Object.Destroy(objectToHoldOptions.GetChild(i).gameObject);
                 UnityEngine.Object.Destroy(objectToHoldOptions.GetChild(i).gameObject);
             }
+
+            portraitGameObject.gameObject.SetActive(false);
+            objectToHoldOptions.gameObject.SetActive(true);
+        }
+
+        public void ChangeToPortraitMode(Sprite portaitSprite, string primaryPortraitText, string secondaryPortraitText) {
+            portraitGameObject.gameObject.SetActive(true);
+            objectToHoldOptions.gameObject.SetActive(false);
+
+            primaryText.text = primaryPortraitText;
+            secondaryText.text = secondaryPortraitText;
+            potraitImage.sprite = portaitSprite;
         }
 
         public void CreateEntityPortaits(TeamBuilder AvailableEntities, GameObject spriteOptionHolderPrefab, TeamModel teamModel) {
@@ -61,7 +123,6 @@ public class TeamChooserUI : MonoBehaviour
             for (int i = 0; i < listLength; i++) {
                 GameObject instantiatedObject = Instantiate(spriteOptionHolderPrefab, objectToHoldOptions.position, objectToHoldOptions.rotation, objectToHoldOptions);
                 TeamSpotOptionController spotOptionObject = instantiatedObject.GetComponent<TeamSpotOptionController>();
-                
                 if (isForPilots) {
                     spotOptionObject.BecomePilotOption(AvailableEntities.GetPilot(i), teamModel);
                 } else {

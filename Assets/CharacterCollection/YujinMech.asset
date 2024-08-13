@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: YujinMech
   m_EditorClassIdentifier: 
   mechHealth: 10
-  characterSprite: {fileID: 0}
+  characterSprite: {fileID: 21300000, guid: 4e03992f2412d4e7697f1dee1960cdf6, type: 3}
   maximumClarity: 20
   mechGFXPrefab: {fileID: 680448002749240012, guid: f3ba531d18fd74df0b3a7d7f10aa0d53, type: 3}
   mechAbilityClass: 2

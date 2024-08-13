@@ -42,15 +42,13 @@ public class TeamSpotOptionController : MonoBehaviour
         } else if (chosenMech == null && chosenPilot != null) {
             // teamChooserscript.UpdatePilotCurrentSpotIndex(chosenPilot);
             teamModel.UpdatePilot(chosenPilot);
+            TeamChooserUI teamUIScript = FindObjectOfType<TeamChooserUI>();
+            teamUIScript.UpdatePortraits();
         } else if (chosenMech != null && chosenPilot == null) {
             // teamChooserscript.UpdateMechCurrentSpotIndex(chosenMech);
             teamModel.UpdateMech(chosenMech);
-            MechDisplayManager mechDisplayManager = FindObjectOfType<MechDisplayManager>();
-            if (mechDisplayManager == null) {
-                Debug.LogError("MechDisplayManager does not exist. It needs to exist in the scene");
-            } else {
-                mechDisplayManager.DisplayMech(chosenMech);
-            }
+            TeamChooserUI teamUIScript = FindObjectOfType<TeamChooserUI>();
+            teamUIScript.UpdatePortraits();
         }
     }
 
