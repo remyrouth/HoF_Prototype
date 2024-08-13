@@ -13,6 +13,7 @@ public class TeamChooserController : MonoBehaviour
     [SerializeField] private TeamBuilder availableEntities;
 
     private TeamModel teamModel;
+    private MapMarkerController.MapLevel currentLevel;
 
     public void AccessLevelBasedOnData(MapMarkerController.MapLevel levelInfo)
     {
@@ -20,7 +21,8 @@ public class TeamChooserController : MonoBehaviour
             teamModel = null;
         }
         teamModel = new TeamModel();
-        teamModel.InitializeTeamList(levelInfo, mechDisplayManager);
+        currentLevel = levelInfo;
+        teamModel.InitializeTeamList(currentLevel, mechDisplayManager);
         teamChooserUI.Initialize(teamModel, availableEntities);
         OnTeamChanged();
     }
@@ -31,6 +33,11 @@ public class TeamChooserController : MonoBehaviour
         mechDisplayManager.DisplayMech(null);
         teamChooserUI.UpdateUI();
         // MechDisplayManager
+    }
+
+    public void StartLevel() {
+        TeamRosterPersistor roster = gameObject.AddComponent<TeamRosterPersistor>();
+        roster.PrepTeamForLevel(currentLevel.levelStringName, teamModel.TeamSpots);
     }
 
 

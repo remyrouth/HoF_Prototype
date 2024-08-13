@@ -41,6 +41,15 @@ public class PlayerController : MonoBehaviour
         InstantiateMechObject();
     }
 
+    public void SetPilotAndMechFromRosterScript(CharacterStats newPilot, MechStats newMech) {
+        pilotInfo = newPilot;
+        mechInfo = newMech;
+    }
+
+    public bool canReplacePlayerEntity() {
+        return isPlayerEntity;
+    }
+
     // Main Action Methods
 
     public bool MoveToNewTile(GameObject newTile)
