@@ -1,33 +1,41 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-
-
-// this is a script which is created by the team chooser controller scripting group.
-// it essentially takes in a team, and takes it to the intended level scene
 public class TeamRosterPersistor : MonoBehaviour
 {
-    List<TeamChooserController.TeamSpot> teamSpots = new List<TeamChooserController.TeamSpot>();
+    public List<TeamChooserController.TeamSpot> teamSpots = new List<TeamChooserController.TeamSpot>();
     
+    private static TeamRosterPersistor instance;
+
     public void PrepTeamForLevel(string sceneName, List<TeamChooserController.TeamSpot> newTeamRoster) {
+        Debug.Log("Prepped");
         teamSpots = newTeamRoster;
         SceneManager.LoadScene(sceneName);
     }
+
     private void Awake()
     {
-        // Prevent this GameObject (and its components) from being destroyed on scene load.
-        DontDestroyOnLoad(this.gameObject);
-
-        if (teamSpots.Count > 0) {
-            PlaceRoster();
-            Destroy(gameObject);
+        // Singleton pattern to ensure only one instance
+        if (instance == null)
+        {
+            instance = this;
+            DontDestroyOnLoad(gameObject);
+            SceneManager.sceneLoaded += OnSceneLoaded; // Subscribe to the scene loaded event
+        }
+        else
+        {
+            Destroy(gameObject); // Destroy duplicates
         }
     }
 
+    private void OnEnable()
+    {
+        PlaceRoster();
+    }
+
     private void PlaceRoster() {
-        // find replaceable player objects
+        // Find replaceable player objects
         PlayerController[] players = FindObjectsOfType<PlayerController>();
         List<PlayerController> playersToReplace = new List<PlayerController>();
         foreach (PlayerController player in players) {
@@ -35,25 +43,56 @@ public class TeamRosterPersistor : MonoBehaviour
                 playersToReplace.Add(player);
             }
         }
-        List<TeamChooserController.TeamSpot> validSpot = new List<TeamChooserController.TeamSpot>();
 
+        List<TeamChooserController.TeamSpot> validTeamSpot = new List<TeamChooserController.TeamSpot>();
         foreach (TeamChooserController.TeamSpot spot in teamSpots) {
             if (spot.chosenMech && spot.chosenPilot) {
-                validSpot.Add(spot);
+                validTeamSpot.Add(spot);
             }
         }
 
-        // Pair valid spots with players to replace
-        int count = Mathf.Min(validSpot.Count, playersToReplace.Count);
+        Debug.Log("playersToReplace: " + playersToReplace.Count);
+        Debug.Log("validTeamSpot: " + validTeamSpot.Count);
 
-        for (int i = 0; i < count; i++) {
-            playersToReplace[i].SetPilotAndMechFromRosterScript(validSpot[i].chosenPilot, validSpot[i].chosenMech);
+        if (validTeamSpot.Count == playersToReplace.Count) {
+            for (int i = 0; i < playersToReplace.Count; i++) {
+                playersToReplace[i].SetPilotAndMechFromRosterScript(validTeamSpot[i].chosenPilot, validTeamSpot[i].chosenMech);
+            }
         }
 
-        // Delete excess players
-        for (int i = count; i < playersToReplace.Count; i++) {
-            Destroy(playersToReplace[i].gameObject);
+        if (validTeamSpot.Count > playersToReplace.Count) {
+            for (int i = 0; i < playersToReplace.Count; i++) {
+                playersToReplace[i].SetPilotAndMechFromRosterScript(validTeamSpot[i].chosenPilot, validTeamSpot[i].chosenMech);
+            }
+            // Excess valid spots are ignored
         }
 
+        if (validTeamSpot.Count < playersToReplace.Count) {
+            for (int i = 0; i < validTeamSpot.Count; i++) {
+                playersToReplace[i].SetPilotAndMechFromRosterScript(validTeamSpot[i].chosenPilot, validTeamSpot[i].chosenMech);
+            }
+            // Delete excess players
+            for (int i = validTeamSpot.Count; i < playersToReplace.Count; i++) {
+                Destroy(playersToReplace[i].gameObject);
+            }
+        }
+    }
+
+    // Method to be called on scene change
+    private void OnSceneChange()
+    {
+        Debug.Log("Scene changed! Executing method...");
+        PlaceRoster();
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        OnSceneChange(); // Call your method when a new scene is loaded
+    }
+
+    private void OnDestroy()
+    {
+        // Unsubscribe from the event when the object is destroyed
+        SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 }

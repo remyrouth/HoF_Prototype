@@ -36,7 +36,12 @@ public class TeamChooserController : MonoBehaviour
     }
 
     public void StartLevel() {
-        TeamRosterPersistor roster = gameObject.AddComponent<TeamRosterPersistor>();
+        GameObject teamPersistorObject = new GameObject("TeamPersistorObject");
+        TeamRosterPersistor roster = teamPersistorObject.AddComponent<TeamRosterPersistor>();
+
+
+        
+        Debug.Log("TeamSpots Count form controller: " + teamModel.TeamSpots.Count);
         roster.PrepTeamForLevel(currentLevel.levelStringName, teamModel.TeamSpots);
     }
 

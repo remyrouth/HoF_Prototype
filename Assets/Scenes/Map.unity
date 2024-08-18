@@ -542,7 +542,7 @@ GameObject:
   - component: {fileID: 237694411}
   - component: {fileID: 237694410}
   m_Layer: 5
-  m_Name: Level Info
+  m_Name: DescriptionUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2955,7 +2955,7 @@ GameObject:
   - component: {fileID: 1192164124}
   - component: {fileID: 1192164123}
   m_Layer: 5
-  m_Name: Text (Legacy)
+  m_Name: DescriptionText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2978,7 +2978,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -1.8, y: 11}
-  m_SizeDelta: {x: 480, y: 360}
+  m_SizeDelta: {x: 441.1, y: 360}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1192164123
 MonoBehaviour:
@@ -2993,7 +2993,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
+  m_Color: {r: 0.13207549, g: 0.13207549, b: 0.13207549, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -3013,7 +3013,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: New Text
+  m_Text: 'Description Text Here: '
 --- !u!222 &1192164124
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -5821,6 +5821,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   teamSizeText: {fileID: 1932943928}
+  levelDescriptionText: {fileID: 1192164123}
   pilotArrayHolder:
     objectToHoldOptions: {fileID: 1281022571}
     isForPilots: 1

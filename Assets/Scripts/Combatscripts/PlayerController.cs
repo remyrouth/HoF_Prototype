@@ -39,6 +39,14 @@ public class PlayerController : MonoBehaviour
         TileMapSetup();
         PositionalCorrectionSetup();
         InstantiateMechObject();
+
+        GameStateManager gameStateManager = FindObjectOfType<GameStateManager>();
+        if (isPlayerEntity) {
+            gameStateManager.IncreaseFriendlyCount(true);
+        } else {
+            gameStateManager.IncreaseFriendlyCount(true);
+        }
+
     }
 
     public void SetPilotAndMechFromRosterScript(CharacterStats newPilot, MechStats newMech) {
@@ -90,16 +98,29 @@ public class PlayerController : MonoBehaviour
             currentPlayerHealth = Mathf.Clamp(currentPlayerHealth - damage, 0, RetrievePilotInfo().GetPilotHealth());
         }
 
+
+
         if (currentPlayerHealth == 0 ||currentMechHealth == 0 ) {
+            GameStateManager gameStateManager = FindObjectOfType<GameStateManager>();
+            if (isPlayerEntity) {
+                gameStateManager.IncreaseFriendlyCount(false);
+            } else {
+                gameStateManager.IncreaseFriendlyCount(false);
+            }
+
             Destroy(gameObject);
         }
     }
 
 
     public void ResetMoveAndAttackStates() {
-        Debug.Log("reset");
+        // Debug.Log("reset");
         hasMovedYet = false;
         hasAttackedYet = false;
+    }
+
+    private void StartMainLevelChoosingScene() {
+        
     }
 
 

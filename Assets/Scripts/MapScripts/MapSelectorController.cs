@@ -85,7 +85,7 @@ public class MapSelectorController : MonoBehaviour
 
     private void SelectMap() {
         if (Input.GetMouseButtonDown(0)) {
-             Debug.Log("Actiavted SelectMap method");
+            //  Debug.Log("Actiavted SelectMap method");
             if (currentMarker != null) {
                 DoDissolve = true;
                 Vector3 levelPosition = currentMarker.gameObject.transform.position;

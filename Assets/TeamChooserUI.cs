@@ -6,6 +6,9 @@ using UnityEngine.UI;
 public class TeamChooserUI : MonoBehaviour
 {
     [SerializeField] private Text teamSizeText;
+    [SerializeField] private Text levelDescriptionText;
+
+
     [SerializeField] private OptionsArrayHolder pilotArrayHolder;
     [SerializeField] private OptionsArrayHolder mechArrayHolder;
     [SerializeField] private GameObject spriteOptionHolderPrefab;
@@ -121,14 +124,41 @@ public class TeamChooserUI : MonoBehaviour
             }
 
             for (int i = 0; i < listLength; i++) {
-                GameObject instantiatedObject = Instantiate(spriteOptionHolderPrefab, objectToHoldOptions.position, objectToHoldOptions.rotation, objectToHoldOptions);
-                TeamSpotOptionController spotOptionObject = instantiatedObject.GetComponent<TeamSpotOptionController>();
                 if (isForPilots) {
-                    spotOptionObject.BecomePilotOption(AvailableEntities.GetPilot(i), teamModel);
+                    CharacterStats pilot = AvailableEntities.GetPilot(i);
+                    if (!AlreadyHasPilotUsedOnTeam(pilot, teamModel)) {
+                        GameObject instantiatedObject = Instantiate(spriteOptionHolderPrefab, objectToHoldOptions.position, objectToHoldOptions.rotation, objectToHoldOptions);
+                        TeamSpotOptionController spotOptionObject = instantiatedObject.GetComponent<TeamSpotOptionController>();
+                        spotOptionObject.BecomePilotOption(pilot, teamModel);
+                    }
                 } else {
-                    spotOptionObject.BecomeMechOption(AvailableEntities.GetMech(i), teamModel);
+                    MechStats mech = AvailableEntities.GetMech(i);
+                    if (!AlreadyHasMechUsedOnTeam(mech, teamModel)) {
+                        GameObject instantiatedObject = Instantiate(spriteOptionHolderPrefab, objectToHoldOptions.position, objectToHoldOptions.rotation, objectToHoldOptions);
+                        TeamSpotOptionController spotOptionObject = instantiatedObject.GetComponent<TeamSpotOptionController>();
+                        spotOptionObject.BecomeMechOption(mech, teamModel);
+                    }
                 }
             }
+        }
+
+        public bool AlreadyHasPilotUsedOnTeam(CharacterStats pilot, TeamModel teamModel) {
+            foreach (TeamChooserController.TeamSpot spot in teamModel.TeamSpots) {
+                if (spot.chosenPilot == pilot) {
+                    return true;
+                }
+            }
+            return false;
+
+        }
+
+        public bool AlreadyHasMechUsedOnTeam(MechStats mech,TeamModel teamModel) {
+            foreach (TeamChooserController.TeamSpot spot in teamModel.TeamSpots) {
+                if (spot.chosenMech == mech) {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 

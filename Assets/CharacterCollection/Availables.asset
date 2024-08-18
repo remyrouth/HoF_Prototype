@@ -17,3 +17,4 @@ MonoBehaviour:
   - {fileID: 11400000, guid: af7582c3dc2c94b19a62bd1976fbd604, type: 2}
   pilots:
   - {fileID: 11400000, guid: 569a0aeabb4f9418fb713683cb051b34, type: 2}
+  - {fileID: 11400000, guid: ce05155a85a0e4dc19e201c90cb29e59, type: 2}
