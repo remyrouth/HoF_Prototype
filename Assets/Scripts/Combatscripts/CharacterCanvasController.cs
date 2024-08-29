@@ -139,7 +139,7 @@ public class CharacterCanvasController : MonoBehaviour
             // int power = currentCharacter.RetrievePilotInfo().GetLaserStrength();
             // int range = currentCharacter.RetrievePilotInfo().GetLaserRange();
             // MechStats.AbilityMechSlot tempSlot = CreateAttackSlotOption(power, range);
-            Debug.Log("Used Lazer");
+            Debug.Log("Clicked Lazer");
             // sm.ChangeToAbilityState(tempSlot);
             MechStats.AbilityMechSlot tempSlot = laserAttackUIClass.getCurretAbilityOfButton();
             sm.ChangeToAbilityState(tempSlot);
@@ -175,7 +175,7 @@ public class CharacterCanvasController : MonoBehaviour
         int clarityCost = 0;
         int minimumRange = 0;
         tempSlot.SetValues(power, clarityCost, minimumRange, attackRange);
-        tempSlot.SetAbilityType(MechStats.AbilityType.Lazer);
+        tempSlot.SetAbilityType(MechStats.AbilityType.Laser);
 
         return tempSlot;
     }

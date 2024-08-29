@@ -79,8 +79,10 @@ public class PlayerController : MonoBehaviour
 
 
     public bool UseAbility(MechStats.AbilityMechSlot ability, GameObject targetedTile) {
-        // Debug.Log("UseAbility method used in player controller class");
+        // Debug.Log("UseAbility method used in player controller class: " + ability.GetAbilityType().ToString());
+
         bool abilityUsedCheck = aem.InputAbilityInformationSources(ability, this, targetedTile);
+        // Debug.Log("abilityUsedCheck: " + abilityUsedCheck);
         if (abilityUsedCheck) {
             hasAttackedYet = true;
             hasMovedYet = true;
@@ -95,7 +97,9 @@ public class PlayerController : MonoBehaviour
         if (isMechDamage) {
             currentMechHealth = Mathf.Clamp(currentMechHealth - damage, 0, RetrieveMechInfo().GetMechHealth());
         } else {
+            Debug.Log("Pilot took damage: Started at " + currentPlayerHealth);
             currentPlayerHealth = Mathf.Clamp(currentPlayerHealth - damage, 0, RetrievePilotInfo().GetPilotHealth());
+            Debug.Log("Pilot took damage: Ended at " + currentPlayerHealth);
         }
 
 

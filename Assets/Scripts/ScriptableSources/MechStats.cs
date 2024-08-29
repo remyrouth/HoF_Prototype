@@ -131,12 +131,12 @@ public class MechStats : ScriptableObject
     }
     public enum AbilityType {
         None,
-        Lazer,
+        Laser,
         Ballistic,
         Combo,
         Heal,
         RocketSummon,
-        Teleport,
+        TeleportToTile,
         RockSummon,
         ConvertEnemy,
         RefillAttackAction,
