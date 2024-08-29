@@ -44,7 +44,7 @@ public class PlayerController : MonoBehaviour
         if (isPlayerEntity) {
             gameStateManager.IncreaseFriendlyCount(true);
         } else {
-            gameStateManager.IncreaseFriendlyCount(true);
+            gameStateManager.IncreaseEnemyCount(true);
         }
 
     }
