@@ -123,8 +123,12 @@ public class PlayerController : MonoBehaviour
         hasAttackedYet = false;
     }
 
-    private void StartMainLevelChoosingScene() {
-        
+    public int GetPilotHealth() {
+        return currentPlayerHealth;
+    }
+
+    public int GetMechHealth() {
+        return currentMechHealth;
     }
 
 

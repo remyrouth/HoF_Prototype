@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c2d0ce9dc6fef49f4b19ea8ae5cab69e, type: 3}
   m_Name: YujinPilot
   m_EditorClassIdentifier: 
+  pilotName: Yujin Tomota
   laserStrength: 1
   laserRange: 1
   ballisticStrength: 1

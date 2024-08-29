@@ -86,8 +86,8 @@ public class CharacterCanvasController : MonoBehaviour
         CharacterStats pilot = newCharacterScript.RetrievePilotInfo();
         MechStats mech = newCharacterScript.RetrieveMechInfo();
 
-        mechHealthText.text = "Mech Health: " + mech.GetMechHealth().ToString();
-        pilotHealthText.text = "Pilot Health: " + pilot.GetPilotHealth().ToString();
+        mechHealthText.text = "Mech Health: " + newCharacterScript.GetMechHealth() + "/" + mech.GetMechHealth().ToString();
+        pilotHealthText.text = "Pilot Health: " + newCharacterScript.GetPilotHealth() + "/" + pilot.GetPilotHealth().ToString();
         moveSpeedText.text = "Move Speed: " +pilot.GetPilotSpeed().ToString();
 
     }

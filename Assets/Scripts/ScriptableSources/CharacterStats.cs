@@ -4,6 +4,8 @@ using UnityEngine;
 public class CharacterStats : ScriptableObject
 {
     [SerializeField]
+    private string pilotName; 
+    [SerializeField]
     private int laserStrength;
     [SerializeField]
     private int laserRange;
@@ -24,6 +26,11 @@ public class CharacterStats : ScriptableObject
     private int clarityGainedFromMovements = 1;
     [SerializeField]
     private int clarityGainedFromAttacks = 1;
+
+
+    public string GetPilotName() {
+        return pilotName;
+    }
 
     public int GetPilotHealth()
     {

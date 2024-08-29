@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a7dfae0d4fa2b475298a4f0601ce2af6, type: 3}
   m_Name: BellMech
   m_EditorClassIdentifier: 
+  mechName: Bell's Mech
   mechHealth: 4
   characterSprite: {fileID: 21300000, guid: f377da51488dc4249b7329b86c9ed5ac, type: 3}
   maximumClarity: 10

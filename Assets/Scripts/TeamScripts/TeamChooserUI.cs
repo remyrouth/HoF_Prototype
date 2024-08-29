@@ -34,7 +34,10 @@ public class TeamChooserUI : MonoBehaviour
             string primaryString = "Health: " + mech.GetMechHealth() + "\n" 
                 + "Class: " + mech.GetMechType().ToString()+ "\n"
                 + "Clarity Max: " + mech.GetMechMaxClarity().ToString();
-            string secondaryString = "";
+            string abilities = "Ability1: " + mech.AbilitySlot1.GetAbilityType().ToString() + "\n" + 
+            "Ability2: " + mech.AbilitySlot2.GetAbilityType().ToString() + "\n" + 
+            "Ability3: " + mech.AbilitySlot3.GetAbilityType().ToString();
+            string secondaryString = abilities;
             Sprite entitySprite = mech.GetMechSprite();
 
             mechArrayHolder.ChangeToPortraitMode(entitySprite, primaryString, secondaryString);

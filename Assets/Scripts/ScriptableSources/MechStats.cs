@@ -3,6 +3,8 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "NewCharacterStats", menuName = "Character/NewMech")]
 public class MechStats : ScriptableObject
 {
+    [SerializeField]
+    private string mechName; 
     public int mechHealth;
     public Sprite characterSprite;
     public int maximumClarity;
@@ -17,6 +19,10 @@ public class MechStats : ScriptableObject
     // returns true if we can successfully trigger the ability
     public bool UseAbility(GameObject TargetSquare) {
         return true;
+    }
+
+    public string GetMechName() {
+        return mechName;
     }
 
     public Sprite GetMechSprite()
