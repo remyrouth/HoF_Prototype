@@ -26,7 +26,7 @@ public class GameStateManager : MonoBehaviour
             currentFriendlyCount--;
             EndLevel();
         }
-        Debug.Log("currentFriendlyCount: " + currentFriendlyCount);
+        // Debug.Log("currentFriendlyCount: " + currentFriendlyCount);
     }
 
     public void IncreaseEnemyCount(bool increase) {
@@ -37,13 +37,13 @@ public class GameStateManager : MonoBehaviour
             EndLevel();
         }
 
-        Debug.Log("currentEnemyCount: " + currentEnemyCount);
+        // Debug.Log("currentEnemyCount: " + currentEnemyCount);
     }
 
     private void EndLevel() {
         if (currentEnemyCount <= 0 || currentFriendlyCount <= 0) {
-            Debug.Log("currentEnemyCount: " + currentEnemyCount + "  currentFriendlyCount: " + currentFriendlyCount);
-            Debug.Log("GAME HAS ENEDED NOW");
+            // Debug.Log("currentEnemyCount: " + currentEnemyCount + "  currentFriendlyCount: " + currentFriendlyCount);
+            // Debug.Log("GAME HAS ENEDED NOW");
             // Map
             SceneManager.LoadScene("Map");
         }

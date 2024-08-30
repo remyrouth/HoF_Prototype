@@ -14,6 +14,7 @@ public class AbilityExecutionManager : MonoBehaviour
         _abilityFactories[MechStats.AbilityType.Laser] = childObject.AddComponent<LaserAbilitySettings>();
         _abilityFactories[MechStats.AbilityType.RockSummon] = childObject.AddComponent<RockSummonAbilitySettings>();
         _abilityFactories[MechStats.AbilityType.TeleportToTile] = childObject.AddComponent<TeleportToTileAbilitySettings>();
+        _abilityFactories[MechStats.AbilityType.Heal] = childObject.AddComponent<HealAllyAbilitySettings>();
     }
 
     public bool InputAbilityInformationSources(MechStats.AbilityMechSlot ability, PlayerController character, GameObject tileTarget)
