@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class TurnManager : MonoBehaviour
 {
-    
     [SerializeField] private bool isPlayerTurn = true;
     [SerializeField] private bool isPaused = false;
 
