@@ -56,7 +56,7 @@ public class AIPlayerController : MonoBehaviour
 
             // Find best tile AI can travel to
             GameObject bestTile = pc.GetBestReachableTileTowardsTarget(pc.FindClosestTile(closestTarget.transform.position), pc.RetrievePilotInfo().GetPilotSpeed());
-            pc.MoveToNewTile(bestTile);
+            pc.MoveToTile(bestTile);
 
             return bestTile;
 

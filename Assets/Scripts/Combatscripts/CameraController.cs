@@ -4,14 +4,23 @@ using UnityEngine;
 
 public class CameraController : MonoBehaviour
 {
+    private bool isCurrentlyPaused = false;
     public float moveSpeed = 10f;
 
     public void SetSpeed(float newSpeed) {
         moveSpeed = newSpeed;
     }
 
+    public void SetPauseState(bool isPaused) {
+        isCurrentlyPaused = isPaused;
+    }
+
     void Update()
     {
+        if (isCurrentlyPaused) {
+            return;
+        }
+        
         Vector3 direction = Vector3.zero;
 
         if (Input.GetKey(KeyCode.W))

@@ -23,38 +23,50 @@ public class CombatStateController : MonoBehaviour
 
 
     // Controllers
-    private bool playerTurnCheck = true; // this will tell us when we're resuming,
-    // if we go back to AI turn, or back to player controls
     private TurnManager turnManager;
     private CharacterCanvasController characterCanvasController;
     private SelectionManager selectionManager;
 
 
-    public void PauseCombat() {
+    // called by GameStateManager
+    public void PauseOrResumeCombat(bool shouldPause) {
         FindManagers();
-        if (selectionManager.enabled == true) { // this means its currently the player turn
-            playerTurnCheck = true;
-            selectionManager.enabled = false;
-            characterCanvasController.MenuCleanup();
-        } else { // this means its currently the AI turn
-
+        if (shouldPause) { // we pause
+            Pause();
+        } else { // we resume the AI or the player turn
+           Resume();
         }
     }
 
-    public void ResumeCombat() {
-        FindManagers();
+    private void Pause() {
+        selectionManager.enabled = false;
+        characterCanvasController.MenuCleanup();
+        turnManager.PauseTurnSystem();
+    }
 
+    private void Resume() {
+        bool playerTurnCheck = turnManager.IsPlayerTurnCheck(); // this will tell us when we're resuming,
+        // if we go back to AI turn, or back to player controls
+
+        if (playerTurnCheck) { // this means its currently the player turn
+            selectionManager.enabled = true;
+        } else { // this means its currently the AI turn
+            selectionManager.enabled = false;
+        }
+        
+        turnManager.ResumeTurnSystem();
+        characterCanvasController.MenuCleanup();
     }
 
     private void FindManagers() {
         if (turnManager == null) {
             turnManager = FindObjectOfType<TurnManager>();
         }
-        if (turnManager == null) {
-            turnManager = FindObjectOfType<TurnManager>();
+        if (characterCanvasController == null) {
+            characterCanvasController = FindObjectOfType<CharacterCanvasController>();
         }
-        if (turnManager == null) {
-            turnManager = FindObjectOfType<TurnManager>();
+        if (selectionManager == null) {
+            selectionManager = FindObjectOfType<SelectionManager>();
         }
     }
 

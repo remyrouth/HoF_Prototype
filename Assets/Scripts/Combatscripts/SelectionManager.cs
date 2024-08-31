@@ -176,7 +176,7 @@ public class SelectionManager : MonoBehaviour
             if (pc == null) {
                 return;
             }
-            if (pc.MoveToNewTile(currentSelectedTile)) {
+            if (pc.MoveToTile(currentSelectedTile)) {
                 shouldUseTurnManager = true;
             }
             shouldUseTurnManager = false;

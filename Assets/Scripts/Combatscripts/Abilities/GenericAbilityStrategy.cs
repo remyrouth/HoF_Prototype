@@ -33,7 +33,7 @@ public class GenericAbilityStrategy : IAbilityStrategy
             case AbilityRules.MovementImpactType.TeleportToTile:
                     Vector3 newPos = tileTarget.transform.position;
                     character.gameObject.transform.position = new Vector3(newPos.x, character.gameObject.transform.position.y, newPos.z);
-                    character.MoveToNewTile(tileTarget);
+                    character.MoveToTile(tileTarget);
                 break;
             case AbilityRules.MovementImpactType.PullTowardsTarget:
                     // not yet implemented

@@ -13,7 +13,7 @@ public class TurnManager : MonoBehaviour
     private SelectionManager sm;
     private CharacterCanvasController ccc;
     private bool completeWaitChecks = false;
-    public GameObject EndTurnCanvas;
+    [SerializeField] private GameObject EndTurnCanvas;
 
     private void Start() {
         sm = FindObjectOfType<SelectionManager>();
@@ -21,11 +21,15 @@ public class TurnManager : MonoBehaviour
     }
 
     private void Update() {
-        Debug.Log("update continuing");
-        Debug.Log("completeWaitChecks status: " + completeWaitChecks + " isPaused Status: " + isPaused);
+        // Debug.Log("update continuing");
+        // Debug.Log("completeWaitChecks status: " + completeWaitChecks + " isPaused Status: " + isPaused);
         if (completeWaitChecks && !isPaused) {
             reachedDestinationCheck();
         }
+    }
+
+    public bool IsPlayerTurnCheck() {
+        return isPlayerTurn;
     }
 
     public void PauseTurnSystem() {
@@ -89,10 +93,10 @@ public class TurnManager : MonoBehaviour
     }
 
     private void StartIndividualEnemyAction() {
-        Debug.Log("StartIndividualEnemyAction method called");
+        // Debug.Log("StartIndividualEnemyAction method called");
         if (isPaused) {
             // Don't start the next new action if paused
-            Debug.Log("StartIndividualEnemyAction method canceled from pause state");
+            // Debug.Log("StartIndividualEnemyAction method canceled from pause state");
             return;
         }
         // Collect all enemies. if no enemies available, end enemy turn
@@ -116,7 +120,7 @@ public class TurnManager : MonoBehaviour
 
         // choose random enemy that has yet to move
         // move piece
-        Debug.Log("enemyControlled Count: " + enemyControlled.Count);
+        // Debug.Log("enemyControlled Count: " + enemyControlled.Count);
         GameObject bestTileToMoveTo = enemyControlled[0].GetComponent<AIPlayerController>().Move();
 
         // wait for piece
@@ -146,7 +150,7 @@ public class TurnManager : MonoBehaviour
 
     // called by end turn button on canvas
     public void EndPlayerTurn() {
-        Debug.Log("EndPlayerTurn button method called");
+        // Debug.Log("EndPlayerTurn button method called");
         isPlayerTurn = false;
         EndTurnCanvas.SetActive(false);
         ccc.MenuCleanup();

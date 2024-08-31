@@ -71,7 +71,7 @@ public class PlayerController : MonoBehaviour
 
     // Main Action Methods
 
-    public bool MoveToNewTile(GameObject newTile)
+    public bool MoveToTile(GameObject newTile)
     {
         TileMapSetup();
         // is new tile in range? 
