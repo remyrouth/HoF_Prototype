@@ -5,8 +5,8 @@ using UnityEngine;
 public class TurnManager : MonoBehaviour
 {
     
-    [SerializeField] public bool isPlayerTurn = true;
-    [SerializeField] public bool isPaused = false;
+    [SerializeField] private bool isPlayerTurn = true;
+    [SerializeField] private bool isPaused = false;
 
     private GameObject movingPiece;
     private GameObject targetedTile;

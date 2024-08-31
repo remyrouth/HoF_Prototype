@@ -5,6 +5,10 @@ using UnityEngine;
 public class PauseMenuController : MonoBehaviour
 {
     [SerializeField] private GameObject MainPauseMenu;
+
+
+
+    // Scripts to control pause with
     private GameStateManager gameStateManager;
     private CameraController cameraController;
 
