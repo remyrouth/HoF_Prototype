@@ -290,8 +290,10 @@ public class SelectionManager : MonoBehaviour
         currentSelectedTile = null;
         currentSelectAbility = null;
 
-        currentHoverableTile.GetComponent<TileGraphicsController>().ChangeToDefaultState();
-        currentHoverableTile = null;
+        if (currentHoverableTile != null) {
+            currentHoverableTile.GetComponent<TileGraphicsController>().ChangeToDefaultState();
+            currentHoverableTile = null;
+        }
 
         ClearTileRange();
     }

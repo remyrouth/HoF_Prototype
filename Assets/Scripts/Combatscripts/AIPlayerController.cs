@@ -10,6 +10,9 @@ public class AIPlayerController : MonoBehaviour
         pc = GetComponent<PlayerController>();
     }
 
+    // This method is called by the turn manager script. This move method must return the tile this AI intends
+    // to move to, so that the turn manager knows when it has successfully reached its intended tile.
+    // This way, it'll know when to start moving the next enemy
     public GameObject Move() {
         return MoveCloserToClosestPlayer();
     }
