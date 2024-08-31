@@ -15,8 +15,12 @@ public class SoundManager : MonoBehaviour
     private GameObject cameraAudioChildObject; // will hold sound players
 
     private void Awake() {
-        musicTrackPlayer = GetOrCreateSoundPlayer(musicTrack);
-        musicTrackPlayer.PlayFromForeignTrigger();
+        if (musicTrack != null) {
+            musicTrackPlayer = GetOrCreateSoundPlayer(musicTrack);
+            musicTrackPlayer.PlayFromForeignTrigger();
+        } else {
+            Debug.LogWarning("SoundManager was not given a music track to play");
+        }
     }
 
     public SingleSoundPlayer GetOrCreateSoundPlayer(Sound soundScriptableObject)
