@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class TurnManager : MonoBehaviour
 {
+    
+    [SerializeField] public bool isPlayerTurn = true;
+    [SerializeField] public bool isPaused = false;
 
-    public bool isPlayerTurn = true;
-
-
-    public GameObject movingPiece;
-    public GameObject targetedTile;
+    private GameObject movingPiece;
+    private GameObject targetedTile;
     private SelectionManager sm;
     private CharacterCanvasController ccc;
     private bool completeWaitChecks = false;
@@ -21,12 +21,28 @@ public class TurnManager : MonoBehaviour
     }
 
     private void Update() {
-        // Debug.Log("completeWaitChecks boolean: " + completeWaitChecks);
-        if (completeWaitChecks) {
+        Debug.Log("update continuing");
+        Debug.Log("completeWaitChecks status: " + completeWaitChecks + " isPaused Status: " + isPaused);
+        if (completeWaitChecks && !isPaused) {
             reachedDestinationCheck();
         }
     }
 
+    public void PauseTurnSystem() {
+        isPaused = true;
+    }
+
+    public void ResumeTurnSystem() {
+        isPaused = false;
+
+        // Ensure we don't start another move too early
+        if (!completeWaitChecks && !isPaused) {
+            StartIndividualEnemyAction();
+        }
+    }
+
+    // called by selectionmanager, so that we cannot tell a new piece to move
+    // while another piece was just told to move
     public void BeginWait(GameObject entity, GameObject tile) {
         movingPiece = entity;
         targetedTile = tile;
@@ -73,6 +89,12 @@ public class TurnManager : MonoBehaviour
     }
 
     private void StartIndividualEnemyAction() {
+        Debug.Log("StartIndividualEnemyAction method called");
+        if (isPaused) {
+            // Don't start the next new action if paused
+            Debug.Log("StartIndividualEnemyAction method canceled from pause state");
+            return;
+        }
         // Collect all enemies. if no enemies available, end enemy turn
         GameObject[] playerObjectPiecesArray = GameObject.FindGameObjectsWithTag("Player");
         List<GameObject> enemyControlled = new List<GameObject>();
@@ -94,6 +116,7 @@ public class TurnManager : MonoBehaviour
 
         // choose random enemy that has yet to move
         // move piece
+        Debug.Log("enemyControlled Count: " + enemyControlled.Count);
         GameObject bestTileToMoveTo = enemyControlled[0].GetComponent<AIPlayerController>().Move();
 
         // wait for piece
@@ -116,16 +139,18 @@ public class TurnManager : MonoBehaviour
             }
         }
 
-
         isPlayerTurn = true;
         sm.enabled = true;
         EndTurnCanvas.SetActive(true);
     }
 
+    // called by end turn button on canvas
     public void EndPlayerTurn() {
+        Debug.Log("EndPlayerTurn button method called");
         isPlayerTurn = false;
         EndTurnCanvas.SetActive(false);
         ccc.MenuCleanup();
+        isPaused = false; // Ensure the game is not paused when ending the player's turn
         StartIndividualEnemyAction();
     }
 }

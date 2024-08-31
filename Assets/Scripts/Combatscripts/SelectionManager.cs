@@ -6,13 +6,13 @@ using UnityEngine.EventSystems;
 public class SelectionManager : MonoBehaviour
 {
     // List to store all the GameObjects with the "Tile" tag
-    public List<GameObject> tiles;
+    private List<GameObject> tiles;
     public float minSelectDistance;
-    public GameObject currentHoverableTile;
-    public GameObject currentSelectedTile;
-    public GameObject currentSelectCharacter;
-    public MechStats.AbilityMechSlot currentSelectAbility;
-    public List<GameObject> tileRangeList;
+    private GameObject currentHoverableTile;
+    private GameObject currentSelectedTile;
+    private GameObject currentSelectCharacter;
+    private MechStats.AbilityMechSlot currentSelectAbility;
+    private List<GameObject> tileRangeList;
     private CharacterCanvasController ccc;
     private TurnManager tm;
 
@@ -25,7 +25,7 @@ public class SelectionManager : MonoBehaviour
         UsingAbility
     }
 
-    public CurrentCharacterSelectionStatus selectionState = CurrentCharacterSelectionStatus.Viewing;
+    private CurrentCharacterSelectionStatus selectionState = CurrentCharacterSelectionStatus.Viewing;
 
     // Start is called before the first frame update
     void Start()

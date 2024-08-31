@@ -128,8 +128,7 @@ public class MechStats : ScriptableObject
                 default:
                     // Debug.LogError("Ability Description not implemented yet. Look Into MechStats.cs file.\nThe method RetreiveAbilityTypeDescription is resonsible for this");
                     // return "Enum type is unknown";
-                    return "Ability Description not \nwritten yet. \nLook Into MechStats.cs file." + 
-                    "\nThe method RetreiveAbilityTypeDescription is resonsible for this";
+                    return "Ability Description not \nwritten yet. \nLook Into MechStats.cs file.";
                     // break;
             }
         }

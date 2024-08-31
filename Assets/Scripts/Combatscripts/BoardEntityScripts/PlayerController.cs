@@ -31,6 +31,9 @@ public class PlayerController : MonoBehaviour
     private NavMeshAgent agent;
     private AbilityExecutionManager aem;
 
+    // manager variables
+    private CombatStateController combatStateController;
+
     private void Start()
     {
         SetupInfoToScript();
@@ -41,10 +44,18 @@ public class PlayerController : MonoBehaviour
         InstantiateMechObject();
 
         GameStateManager gameStateManager = FindObjectOfType<GameStateManager>();
+        if (gameStateManager == null) {
+            Debug.LogError("GameState does not exist");
+        }
+        combatStateController = gameStateManager.GetCombatStateController();
+
+        if (combatStateController == null) {
+            Debug.LogError("combatState does not exist");
+        }
         if (isPlayerEntity) {
-            gameStateManager.IncreaseFriendlyCount(true);
+            combatStateController.IncreaseFriendlyCount(true);
         } else {
-            gameStateManager.IncreaseEnemyCount(true);
+            combatStateController.IncreaseEnemyCount(true);
         }
 
     }
@@ -105,11 +116,10 @@ public class PlayerController : MonoBehaviour
 
 
         if (currentPlayerHealth == 0 ||currentMechHealth == 0 ) {
-            GameStateManager gameStateManager = FindObjectOfType<GameStateManager>();
             if (isPlayerEntity) {
-                gameStateManager.IncreaseFriendlyCount(false);
+                combatStateController.IncreaseFriendlyCount(false);
             } else {
-                gameStateManager.IncreaseFriendlyCount(false);
+                combatStateController.IncreaseFriendlyCount(false);
             }
 
             Destroy(gameObject);
