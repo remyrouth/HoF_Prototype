@@ -9,28 +9,32 @@ public class MapSelectorController : MonoBehaviour
         ChoosingLevelFromMap,
         PickingTeamOnChosenLevel
     }
-    public MapState mapState =  MapState.ChoosingLevelFromMap;
-    public MapMarkerController currentMarker;
+    [SerializeField] private MapState mapState =  MapState.ChoosingLevelFromMap;
+    [SerializeField] private MapMarkerController currentMarker;
 
     [Header("Cursor Variables")]
-    public Transform mapCursor;
-    public float cursorYOffset = 0.2f;
-    public float selectionAimAssistRange = 2f;
-    public bool uses3DCursor = false;
+    [SerializeField] private Transform mapCursor;
+    [SerializeField] private float cursorYOffset = 0.2f;
+    // selectionAimAssistRange is the float distance helper. We can be (selectionAimAssistRange) distance away
+    // from a selection target, so that we dont have to click on it exactly to the pixel.
+    [SerializeField] private float selectionAimAssistRange = 2f; 
+    [SerializeField] private bool uses3DCursor = false;
 
 
     [Header("Dissolve Variables")]
-    public List<Material> dissolveMats = new List<Material>();
-    public float dissolveSpeed = 1.0f;
-    public GameObject MapUIGroup;
-    public GameObject UpperLevelGroup;
+    [SerializeField] private  List<Material> dissolveMats = new List<Material>();
+    [SerializeField] private  float dissolveSpeed = 1.0f;
+    [SerializeField] private  GameObject MapUIGroup;
+    [SerializeField] private  GameObject UpperLevelGroup;
     private bool DoDissolve = false;
 
     [Header("TeamChooser Object Variables")]
-    public GameObject lowerTeamChooserObject;
-    public float yLowerOffset = 1f;
+    [SerializeField] private GameObject lowerTeamChooserObject;
+    [SerializeField] private float yLowerOffset = 1f;
 
 
+
+    private bool isPaused = false;
 
     private CameraController camScript;
     private Camera mainCamera;
@@ -54,8 +58,12 @@ public class MapSelectorController : MonoBehaviour
     }
 
 
-    void Update()
+    private void Update()
     {
+        if (isPaused) {
+            return;
+        }
+
         Vector3 camLookPos = CollectCursorMoveInput();
 
         if (uses3DCursor) {
@@ -78,9 +86,11 @@ public class MapSelectorController : MonoBehaviour
             mapState = MapState.ChoosingLevelFromMap;
             DoDissolve = false;
         }
-        
+    }
 
-
+    // called by game state manager
+    public void SetPauseState(bool newPauseState) {
+        isPaused = newPauseState;
     }
 
     private void SelectMap() {

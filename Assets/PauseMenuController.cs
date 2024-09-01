@@ -10,14 +10,12 @@ public class PauseMenuController : MonoBehaviour
 
     // Scripts to control pause with
     private GameStateManager gameStateManager;
-    private CameraController cameraController;
 
     private bool isPaused = false;
 
     private void Start() {
         MainPauseMenu.SetActive(isPaused);
         gameStateManager = FindObjectOfType<GameStateManager>();
-        cameraController = FindObjectOfType<CameraController>();
     }
 
     void Update()
@@ -25,12 +23,10 @@ public class PauseMenuController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             isPaused = !isPaused;
-            gameStateManager.PauseResumeControllers(isPaused);
-            MainPauseMenu.SetActive(isPaused);
-
-            if (cameraController != null) {
-                cameraController.SetPauseState(isPaused);
+            if (gameStateManager != null) {
+                gameStateManager.PauseResumeControllers(isPaused);
             }
+            MainPauseMenu.SetActive(isPaused);
         }
     }
 }

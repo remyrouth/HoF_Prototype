@@ -2,21 +2,21 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using System.Linq;
 
+
+// this is a game state manager. More accurately, it will give the appropriate manager to 
+// relavent scripts depending on the scene. So if this is a combat scene, this will give 
+// it a combat state controller. It centralizes which scripts to pause as well.
 public class GameStateManager : MonoBehaviour
 {
-    public enum LevelState {
-        ChoosingTeamAndLevel,
-        Combat
-    }
-    
-    private LevelState currentSceneLevelState = LevelState.Combat;
     private CombatStateController combatStateController;
+    private CameraController cameraController;
 
     // called by PlayerController to tell CombatStateController to keep track of entity count
     // so that it can end the game if all entities are dead
     public CombatStateController GetCombatStateController() {
-        currentSceneLevelState = LevelState.Combat;
+        combatStateController = FindObjectOfType<CombatStateController>();
         if (combatStateController == null) {
             combatStateController = gameObject.AddComponent<CombatStateController>();
         }
@@ -24,20 +24,48 @@ public class GameStateManager : MonoBehaviour
     }
 
     public void GetLevelTeamStateController() {
-        currentSceneLevelState = LevelState.ChoosingTeamAndLevel;
+
     }
 
     // called by pause menu controller
     public void PauseResumeControllers(bool shouldPause) {
-        switch (currentSceneLevelState) {
-            case LevelState.Combat:
-                combatStateController.PauseOrResumeCombat(shouldPause);
-                break;
-            case LevelState.ChoosingTeamAndLevel:
-                break;
-            default:
-                Debug.LogWarning("Unknown LevelState type.");
-                break;
+        if (combatStateController != null) {
+            // there may not always be a combat controller in scene
+            combatStateController.PauseOrResumeCombat(shouldPause);
+        }
+
+        if (cameraController == null) {
+            // there should always be a camera controller in scene
+            cameraController = FindObjectOfType<CameraController>();
+        }
+        cameraController.SetPauseState(shouldPause);
+
+        PauseResumeLevelTeamControllers(shouldPause);
+
+    }
+
+    // this is where we handle pausing team/level choosing
+    private void PauseResumeLevelTeamControllers(bool shouldPause) {
+        MapSelectorController mapSelectorControllerSingleton = FindObjectOfType<MapSelectorController>();
+        TeamChooserUI teamChooserUISingleton = FindObjectOfType<TeamChooserUI>();
+        List<TeamSpotOptionController> optionControllerList = FindObjectsOfType<TeamSpotOptionController>().ToList();
+
+        if (mapSelectorControllerSingleton != null) {
+
+        }
+
+        if (teamChooserUISingleton != null) {
+            teamChooserUISingleton.SetPauseState(shouldPause);
+        }
+
+        if (mapSelectorControllerSingleton != null) {
+            mapSelectorControllerSingleton.SetPauseState(shouldPause);
+        }
+
+        foreach (TeamSpotOptionController optionController in optionControllerList) {
+            if (optionController != null) {
+                optionController.SetPauseState(shouldPause);
+            }
         }
     }
 

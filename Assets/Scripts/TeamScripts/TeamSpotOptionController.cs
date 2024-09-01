@@ -5,10 +5,14 @@ using UnityEngine.UI;
 
 public class TeamSpotOptionController : MonoBehaviour
 {
-    public TeamModel teamModel;
-    public MechStats chosenMech;
-    public CharacterStats chosenPilot;
-    public Image entityPortrait;
+    [SerializeField] private TeamModel teamModel;
+    [SerializeField] private MechStats chosenMech;
+    [SerializeField] private CharacterStats chosenPilot;
+    [SerializeField] private Image entityPortrait;
+
+    private bool isPaused = false;
+
+    
 
     // initialized by team chooser
     public void BecomeMechOption(MechStats mechOption, TeamModel newTeamModel) {
@@ -30,6 +34,10 @@ public class TeamSpotOptionController : MonoBehaviour
 
 
     public void SendEntity() {
+        if (isPaused) {
+            return;
+        }
+        
         TeamChooserController teamChooserscript = FindObjectOfType<TeamChooserController>();
         if (teamChooserscript == null) {
             Debug.LogError("TeamChooserController does not exist. It should though");
@@ -38,7 +46,7 @@ public class TeamSpotOptionController : MonoBehaviour
 
 
         if (chosenMech == null && chosenPilot == null) {
-            Debug.LogError("SendEntity should not function before being initialized");
+            Debug.LogError("SendEntity should not function before being initialized. Something is wrong");
         } else if (chosenMech == null && chosenPilot != null) {
             // teamChooserscript.UpdatePilotCurrentSpotIndex(chosenPilot);
             teamModel.UpdatePilot(chosenPilot);
@@ -50,6 +58,11 @@ public class TeamSpotOptionController : MonoBehaviour
             TeamChooserUI teamUIScript = FindObjectOfType<TeamChooserUI>();
             teamUIScript.UpdatePortraits();
         }
+    }
+
+    // called by game state manager
+    public void SetPauseState(bool newPauseState) {
+        isPaused = newPauseState;
     }
 
 

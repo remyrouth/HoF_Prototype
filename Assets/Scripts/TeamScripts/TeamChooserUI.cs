@@ -17,6 +17,8 @@ public class TeamChooserUI : MonoBehaviour
     private TeamModel teamModel;
     private TeamBuilder totalAvailableEntities;
 
+    private bool isPaused = false;
+
     public void Initialize(TeamModel model, TeamBuilder newEntityList)
     {
         totalAvailableEntities = newEntityList;
@@ -26,6 +28,9 @@ public class TeamChooserUI : MonoBehaviour
     }
 
     public void UpdatePortraits() {
+        if (isPaused) {
+            return;
+        }
         TeamChooserController.TeamSpot spot = teamModel.RetriveCurrentTeamSpot();
             // Finish this
 
@@ -61,6 +66,10 @@ public class TeamChooserUI : MonoBehaviour
 
     // button activated
     public void CancelPortrait(bool cancelsPilot) {
+        if (isPaused) {
+            return;
+        }
+
         if (cancelsPilot) {
             teamModel.UpdatePilot(null);
         } else {
@@ -82,6 +91,9 @@ public class TeamChooserUI : MonoBehaviour
 
     // Methods to handle UI interactions
     public void OnTeamSpotChangeClicked(bool increase) {
+        if (isPaused) {
+            return;
+        }
         teamModel.ChangeCurrentSpot(increase);
         UpdateTeamSpotText();
         UpdatePortraits();
@@ -163,6 +175,11 @@ public class TeamChooserUI : MonoBehaviour
             }
             return false;
         }
+    }
+
+    // called by game state manager
+    public void SetPauseState(bool newPauseState) {
+        isPaused = newPauseState;
     }
 
 }
