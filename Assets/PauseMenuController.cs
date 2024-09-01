@@ -1,10 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+
 
 public class PauseMenuController : MonoBehaviour
 {
     [SerializeField] private GameObject MainPauseMenu;
+    [SerializeField] private GameObject settingsMenu;
+    [SerializeField] private GameObject goToLevelChooserSceneButton;
+    [SerializeField] private string LevelChoosingSceneName = "Map";
 
 
 
@@ -15,18 +20,40 @@ public class PauseMenuController : MonoBehaviour
 
     private void Start() {
         MainPauseMenu.SetActive(isPaused);
+        settingsMenu.SetActive(false);
         gameStateManager = FindObjectOfType<GameStateManager>();
+        if (gameStateManager == null) {
+            gameStateManager = gameObject.AddComponent<GameStateManager>();
+        }
     }
 
-    void Update()
+    private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             isPaused = !isPaused;
-            if (gameStateManager != null) {
-                gameStateManager.PauseResumeControllers(isPaused);
-            }
+            // if (gameStateManager == null) {
+            //     gameObject.AddComponent<GameStateManager>();
+            // }
+            gameStateManager.PauseResumeControllers(isPaused);
             MainPauseMenu.SetActive(isPaused);
+            LevelChoosingButtonCheck();
+        }
+    }
+
+    // called by button
+    public void GoToLevelChooser() {
+        SceneManager.LoadScene(LevelChoosingSceneName);
+    }
+
+    // checks if we can use the level chooser scene button, if so
+    // then allow said button to appear on the pause menu
+    private void LevelChoosingButtonCheck() {
+        GameStateManager.GameSceneType sceneType = gameStateManager.GetSceneType();
+        if (sceneType != GameStateManager.GameSceneType.LevelChoosingScene) {
+            goToLevelChooserSceneButton.SetActive(true);
+        } else {
+            goToLevelChooserSceneButton.SetActive(false);
         }
     }
 }

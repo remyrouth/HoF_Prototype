@@ -10,6 +10,12 @@ using System.Linq;
 // it a combat state controller. It centralizes which scripts to pause as well.
 public class GameStateManager : MonoBehaviour
 {
+    public enum GameSceneType {
+        UpgradeScene,
+        CombatScene,
+        LevelChoosingScene,
+        MainMenuScene
+    }
     private CombatStateController combatStateController;
     private CameraController cameraController;
 
@@ -23,8 +29,18 @@ public class GameStateManager : MonoBehaviour
         return combatStateController;
     }
 
-    public void GetLevelTeamStateController() {
+    public GameSceneType GetSceneType() {
+        MapSelectorController mapSelectorControllerSingleton = FindObjectOfType<MapSelectorController>();
+        // currently we just have two types 
+        // mapSelectorControllerSingleton 
+        // will always be present in the map choosing scenes
+        // so we'll just check that for now
 
+        if (mapSelectorControllerSingleton != null) {
+            return GameSceneType.LevelChoosingScene;
+        } else {
+            return GameSceneType.CombatScene;
+        }
     }
 
     // called by pause menu controller
