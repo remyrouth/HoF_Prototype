@@ -70,7 +70,13 @@ public class PlayerController : MonoBehaviour
     }
 
     // Main Action Methods
+    #region Main Actions
 
+    // is a method is move players to a specific tile
+    // called by selection manager returns a bool 
+    // to let the selection manager know if
+    // it selected a viable tile to move, and can
+    // therefore return to the viewing state
     public bool MoveToTile(GameObject newTile)
     {
         TileMapSetup();
@@ -85,10 +91,11 @@ public class PlayerController : MonoBehaviour
             return true;
         }
         return false;
-        // StartCoroutine(MoveAlongTiles(newTile));
     }
 
-
+    // given to use by selection manager once it has chosen a tile to use it on
+    // it returns a bool to let the selection manager know if the ability was successfully used
+    // and can therefore return back to its viewing state
     public bool UseAbility(MechStats.AbilityMechSlot ability, GameObject targetedTile) {
         // Debug.Log("UseAbility method used in player controller class: " + ability.GetAbilityType().ToString());
 
@@ -100,9 +107,6 @@ public class PlayerController : MonoBehaviour
         }
         return abilityUsedCheck;
     }
-    
-
-    // public bool ActivatePlayerAbility()
 
     public void TakeDamage(int damage, bool isMechDamage) {
         if (isMechDamage) {
@@ -126,12 +130,16 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-
+    // called by turn manager. This allows our pieces to
+    // re-activate for our turn. 
     public void ResetMoveAndAttackStates() {
         // Debug.Log("reset");
         hasMovedYet = false;
         hasAttackedYet = false;
     }
+    #endregion Main Actions
+    // Getter Methods
+    #region Getters
 
     public int GetPilotHealth() {
         return currentPlayerHealth;
@@ -140,10 +148,6 @@ public class PlayerController : MonoBehaviour
     public int GetMechHealth() {
         return currentMechHealth;
     }
-
-
-
-    // Getter Methods
 
     public CharacterStats RetrievePilotInfo() {
         return pilotInfo;
@@ -222,8 +226,9 @@ public class PlayerController : MonoBehaviour
 
         return false;
     }
-
-    // Setup Methods 
+    #endregion Getters
+    // Setup Methods
+    #region Setup 
     private void InstantiateMechObject() {
         Vector3 selfPosition = gameObject.transform.position;
         Quaternion selfRotation = gameObject.transform.rotation;
@@ -259,7 +264,9 @@ public class PlayerController : MonoBehaviour
         currentMechHealth =  RetrieveMechInfo().mechHealth;
     }
 
+    #endregion Setup 
     // Pathing Methods
+    #region Pathing
     private IEnumerator MoveAlongTiles(GameObject destinationTile) // IF YOU MOVE AND THEN TELEPORT THIS STILL OPERATES.... 
     {
         List<GameObject> path = FindPath(FindClosestTile(transform.position), destinationTile);
@@ -520,5 +527,6 @@ public class PlayerController : MonoBehaviour
 
         return combinedArray;
     }
+    #endregion Pathing
 
 }

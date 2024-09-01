@@ -171,6 +171,10 @@ public class CharacterCanvasController : MonoBehaviour
         } 
     }
     public MechStats.AbilityMechSlot CreateAttackSlotOption(int power, int attackRange) {
+        // why are these 0? because standard attack options do not cost 
+        // clarity to use/cast. And the minimum range of these abilities is
+        // always zero. Other abilities may have a minimum range, 
+        // standard attack options do not
         MechStats.AbilityMechSlot tempSlot = new MechStats.AbilityMechSlot();
         int clarityCost = 0;
         int minimumRange = 0;
