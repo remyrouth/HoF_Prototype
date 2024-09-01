@@ -31,14 +31,19 @@ public class PauseMenuController : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            isPaused = !isPaused;
-            // if (gameStateManager == null) {
-            //     gameObject.AddComponent<GameStateManager>();
-            // }
-            gameStateManager.PauseResumeControllers(isPaused);
-            MainPauseMenu.SetActive(isPaused);
-            LevelChoosingButtonCheck();
+            Pause();
         }
+    }
+
+    // can be called by main menu script
+    public void Pause() {
+        isPaused = !isPaused;
+        // if (gameStateManager == null) {
+        //     gameObject.AddComponent<GameStateManager>();
+        // }
+        gameStateManager.PauseResumeControllers(isPaused);
+        MainPauseMenu.SetActive(isPaused);
+        LevelChoosingButtonCheck();
     }
 
     // called by button
@@ -46,11 +51,16 @@ public class PauseMenuController : MonoBehaviour
         SceneManager.LoadScene(LevelChoosingSceneName);
     }
 
+    public void OpenSettingsMenu() {
+        SceneManager.LoadScene(LevelChoosingSceneName);
+    }
+    
+
     // checks if we can use the level chooser scene button, if so
     // then allow said button to appear on the pause menu
     private void LevelChoosingButtonCheck() {
         GameStateManager.GameSceneType sceneType = gameStateManager.GetSceneType();
-        if (sceneType != GameStateManager.GameSceneType.LevelChoosingScene) {
+        if (sceneType == GameStateManager.GameSceneType.CombatScene) {
             goToLevelChooserSceneButton.SetActive(true);
         } else {
             goToLevelChooserSceneButton.SetActive(false);

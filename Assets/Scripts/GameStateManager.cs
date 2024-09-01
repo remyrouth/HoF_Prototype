@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using System.Linq;
 
 
@@ -31,15 +30,19 @@ public class GameStateManager : MonoBehaviour
 
     public GameSceneType GetSceneType() {
         MapSelectorController mapSelectorControllerSingleton = FindObjectOfType<MapSelectorController>();
+        PlayerController playerController = FindObjectOfType<PlayerController>();
+        MainMenuController mainMenuController = FindObjectOfType<MainMenuController>();
         // currently we just have two types 
         // mapSelectorControllerSingleton 
         // will always be present in the map choosing scenes
         // so we'll just check that for now
 
-        if (mapSelectorControllerSingleton != null) {
+        if (mapSelectorControllerSingleton != null) { // we are in map level chooser 
             return GameSceneType.LevelChoosingScene;
-        } else {
+        } else if (playerController != null) { // only exist in combat scenes
             return GameSceneType.CombatScene;
+        } else { // we only have a main menu type scene left
+            return GameSceneType.MainMenuScene;
         }
     }
 
@@ -54,7 +57,10 @@ public class GameStateManager : MonoBehaviour
             // there should always be a camera controller in scene
             cameraController = FindObjectOfType<CameraController>();
         }
-        cameraController.SetPauseState(shouldPause);
+
+        if (cameraController != null) {
+            cameraController.SetPauseState(shouldPause);
+        }
 
         PauseResumeLevelTeamControllers(shouldPause);
 
