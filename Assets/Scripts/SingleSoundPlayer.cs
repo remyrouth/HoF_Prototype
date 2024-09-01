@@ -10,7 +10,7 @@ public class SingleSoundPlayer : MonoBehaviour
     private Sound.SoundType enumSoundType;
     private AudioSource audioSource;
     
-    // Constructor
+    // Initialization method, self-explanatory
     public void Initialize(Sound soundScriptableObject)
     {
         this.MaxVolume = soundScriptableObject.GetMaxVolume();
@@ -21,6 +21,8 @@ public class SingleSoundPlayer : MonoBehaviour
         audioSource.volume = soundScriptableObject.GetMaxVolume();
     }
 
+    // an outside / foreign script will trigger the 
+    // play audio source method
     public void PlayFromForeignTrigger() {
         if (!audioSource.isPlaying)
         {
@@ -28,6 +30,8 @@ public class SingleSoundPlayer : MonoBehaviour
         }
     }
 
+    // an outside / foreign script will trigger the 
+    // pause audio source method
     public void PauseFromForeignTrigger() {
         if (audioSource.isPlaying)
         {
@@ -37,6 +41,15 @@ public class SingleSoundPlayer : MonoBehaviour
 
     private void InitializeAudioSource() {
         audioSource = gameObject.AddComponent<AudioSource>();
+    }
+
+    // the settings has sliders like master volume and sound effect volume changers
+    // while a single sound player has a max volume float variable
+    // of that volume maximum, we can only output a percentage of it 
+    // according to the gameplaysettingmanger.cs script settings
+    public void NewVolumePercentageOutput(float newPercentOutput) {
+        audioSource.volume = MaxVolume * newPercentOutput;
+        Debug.Log("current percent: " + newPercentOutput);
     }
 
 }

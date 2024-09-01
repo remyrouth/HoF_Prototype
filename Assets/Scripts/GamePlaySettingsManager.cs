@@ -1,58 +1,50 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GamePlaySettingsManager : MonoBehaviour
 {
-    public delegate void VolumeChanged(float newVolume);
-    public event VolumeChanged OnSoundEffectVolumeChanged;
-    public event VolumeChanged OnAmbientSoundVolumeChanged;
-    public event VolumeChanged OnMusicVolumeChanged;
+    // master
+    public Slider masterVSlider;
 
-    private float _masterVolume = 1f;
-    private float _soundEffectVolume = 1f;
-    private float _ambientSoundVolume = 1f;
-    private float _musicVolume = 1f;
+    // ambient
+    public Slider soundEffectVSlider;
 
-    public float MasterVolume
-    {
-        get => _masterVolume;
-        set
-        {
-            _masterVolume = value;
-            UpdateVolume(OnSoundEffectVolumeChanged, _soundEffectVolume);
-            UpdateVolume(OnAmbientSoundVolumeChanged, _ambientSoundVolume);
-            UpdateVolume(OnMusicVolumeChanged, _musicVolume);
-        } 
+    // ambient
+    public Slider ambientVSlider;
+
+    // music
+    public Slider musicVSlider;
+
+
+    private SoundManager soundManager;
+
+    private void Start() {
+        soundManager = FindObjectOfType<SoundManager>();
+        if (soundManager == null) {
+            soundManager = gameObject.AddComponent<SoundManager>();
+        }
     }
 
-    public float SoundEffectVolume
-    {
-        get => _soundEffectVolume;
-        set => UpdateVolume(ref _soundEffectVolume, value, OnSoundEffectVolumeChanged);
+    // method called from button to update all sound floats
+    // access/changed by sliders
+    public void CallUpdateFromButton() {
+        SendVolumeUpdateToSoundManager(Sound.SoundType.AmbientSoundEffect, ambientVSlider.value * masterVSlider.value);
+        SendVolumeUpdateToSoundManager(Sound.SoundType.AmbientSoundEffect, soundEffectVSlider.value * masterVSlider.value);
+        SendVolumeUpdateToSoundManager(Sound.SoundType.MusicTrack, musicVSlider.value * masterVSlider.value);
     }
 
-    public float AmbientSoundVolume
+    private void SendVolumeUpdateToSoundManager(Sound.SoundType soundType, float newVolumePercent)
     {
-        get => _ambientSoundVolume;
-        set => UpdateVolume(ref _ambientSoundVolume, value, OnAmbientSoundVolumeChanged);
-    }
+        
 
-    public float MusicVolume
-    {
-        get => _musicVolume;
-        set => UpdateVolume(ref _musicVolume, value, OnMusicVolumeChanged);
-    }
-
-    private void UpdateVolume(VolumeChanged volumeChanged, float volume)
-    {
-        volumeChanged?.Invoke(_masterVolume * volume);
-    }
-
-    private void UpdateVolume(ref float currentVolume, float newVolume, VolumeChanged volumeChanged)
-    {
-        if (currentVolume == newVolume) return;
-        currentVolume = newVolume;
-        UpdateVolume(volumeChanged, currentVolume);
+        // soundManager.
+        // have sound manager when making a new sound be able to reference the current settings
+        // have game play settings manager be able to tell sound manager to update all single sound players
+        // of type X, with a specific float percentage input
+        // and then the sound system is completely integrated
+        // then have the UI pause menu update said values of game play settings manager
+        soundManager.UpdateSoundList(soundType, newVolumePercent);
     }
 }

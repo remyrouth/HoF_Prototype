@@ -10,6 +10,18 @@ public class PauseMenuController : MonoBehaviour
     [SerializeField] private GameObject settingsMenu;
     [SerializeField] private GameObject goToLevelChooserSceneButton;
     [SerializeField] private string LevelChoosingSceneName = "Map";
+    [SerializeField] private GameObject goToMainMenuSceneButton;
+    [SerializeField] private string MainMenuSceneName = "MainMenu";
+
+    private GamePlaySettingsManager settingsManager;
+
+    private void Awake() {
+        settingsManager = FindObjectOfType<GamePlaySettingsManager>();
+        if (settingsManager == null) {
+            settingsManager = gameObject.AddComponent<GamePlaySettingsManager>();
+        }
+
+    }
 
 
 
@@ -44,6 +56,7 @@ public class PauseMenuController : MonoBehaviour
         gameStateManager.PauseResumeControllers(isPaused);
         MainPauseMenu.SetActive(isPaused);
         LevelChoosingButtonCheck();
+        MainMenuButtonCheck();
     }
 
     // called by button
@@ -51,19 +64,27 @@ public class PauseMenuController : MonoBehaviour
         SceneManager.LoadScene(LevelChoosingSceneName);
     }
 
-    public void OpenSettingsMenu() {
-        SceneManager.LoadScene(LevelChoosingSceneName);
+    // called by button
+    public void GoToMainMenu() {
+        SceneManager.LoadScene(MainMenuSceneName);
     }
-    
+
+    public void OpenSettingsMenu() {
+        MainPauseMenu.SetActive(false);
+        settingsMenu.SetActive(true);
+    }
+
+    // checks if we can use the main menu scene button, if so
+    // then allow said button to appear on the pause menu
+    private void MainMenuButtonCheck() {
+        GameStateManager.GameSceneType sceneType = gameStateManager.GetSceneType();
+        goToMainMenuSceneButton.SetActive(sceneType != GameStateManager.GameSceneType.MainMenuScene);
+    }
 
     // checks if we can use the level chooser scene button, if so
     // then allow said button to appear on the pause menu
     private void LevelChoosingButtonCheck() {
         GameStateManager.GameSceneType sceneType = gameStateManager.GetSceneType();
-        if (sceneType == GameStateManager.GameSceneType.CombatScene) {
-            goToLevelChooserSceneButton.SetActive(true);
-        } else {
-            goToLevelChooserSceneButton.SetActive(false);
-        }
+        goToLevelChooserSceneButton.SetActive(sceneType == GameStateManager.GameSceneType.CombatScene);
     }
 }
