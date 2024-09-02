@@ -130,8 +130,18 @@ public class PlayerController : MonoBehaviour
             } else {
                 combatStateController.IncreaseFriendlyCount(false);
             }
-            SingleSoundPlayer soundPlayer = FindObjectOfType<SoundManager>().GetOrCreateSoundPlayer(deathSound);
-            soundPlayer.PlayFromForeignTrigger();
+            if (deathSound != null) {
+                SoundManager soundManager = FindObjectOfType<SoundManager>();
+                if (soundManager != null) {
+                    SingleSoundPlayer soundPlayer = soundManager.GetOrCreateSoundPlayer(deathSound);
+                    soundPlayer.PlayFromForeignTrigger();
+                } else {
+                    Debug.LogWarning("No sound manager has been located in the scene");
+                }
+            } else {
+                Debug.LogWarning("player controller does not have a death sound scriptable object");
+            }
+
             Destroy(gameObject);
         }
     }
