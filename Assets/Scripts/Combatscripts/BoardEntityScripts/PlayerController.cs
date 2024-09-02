@@ -24,6 +24,11 @@ public class PlayerController : MonoBehaviour
     public bool hasMovedYet = false;
 
 
+    [Header("Sound variable")]
+    [SerializeField] private Sound deathSound;
+
+
+
 
     // moving variables
     public float yOffset = 1f;
@@ -125,7 +130,8 @@ public class PlayerController : MonoBehaviour
             } else {
                 combatStateController.IncreaseFriendlyCount(false);
             }
-
+            SingleSoundPlayer soundPlayer = FindObjectOfType<SoundManager>().GetOrCreateSoundPlayer(deathSound);
+            soundPlayer.PlayFromForeignTrigger();
             Destroy(gameObject);
         }
     }
