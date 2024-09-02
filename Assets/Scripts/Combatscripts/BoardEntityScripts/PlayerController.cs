@@ -112,9 +112,9 @@ public class PlayerController : MonoBehaviour
         if (isMechDamage) {
             currentMechHealth = Mathf.Clamp(currentMechHealth - damage, 0, RetrieveMechInfo().GetMechHealth());
         } else {
-            Debug.Log("Pilot took damage: Started at " + currentPlayerHealth);
+            // Debug.Log("Pilot took damage: Started at " + currentPlayerHealth);
             currentPlayerHealth = Mathf.Clamp(currentPlayerHealth - damage, 0, RetrievePilotInfo().GetPilotHealth());
-            Debug.Log("Pilot took damage: Ended at " + currentPlayerHealth);
+            // Debug.Log("Pilot took damage: Ended at " + currentPlayerHealth);
         }
 
 
