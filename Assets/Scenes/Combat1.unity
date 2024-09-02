@@ -4360,7 +4360,7 @@ MonoBehaviour:
   currentClarityLevel: 100
   hasAttackedYet: 0
   hasMovedYet: 0
-  deathSound: {fileID: 0}
+  deathSound: {fileID: 11400000, guid: 24857236e362d48d7aeaebb583974166, type: 2}
   yOffset: 0.5
 --- !u!135 &307323351
 SphereCollider:
@@ -7209,7 +7209,7 @@ MonoBehaviour:
   currentClarityLevel: 0
   hasAttackedYet: 0
   hasMovedYet: 0
-  deathSound: {fileID: 0}
+  deathSound: {fileID: 11400000, guid: 24857236e362d48d7aeaebb583974166, type: 2}
   yOffset: 0.5
 --- !u!135 &500192037
 SphereCollider:
@@ -15436,7 +15436,7 @@ MonoBehaviour:
   currentClarityLevel: 0
   hasAttackedYet: 0
   hasMovedYet: 0
-  deathSound: {fileID: 0}
+  deathSound: {fileID: 11400000, guid: 24857236e362d48d7aeaebb583974166, type: 2}
   yOffset: 0.5
 --- !u!135 &1055937344
 SphereCollider:
@@ -16520,7 +16520,7 @@ MonoBehaviour:
   currentClarityLevel: 100
   hasAttackedYet: 0
   hasMovedYet: 0
-  deathSound: {fileID: 0}
+  deathSound: {fileID: 11400000, guid: 24857236e362d48d7aeaebb583974166, type: 2}
   yOffset: 0.5
 --- !u!135 &1104260333
 SphereCollider:
@@ -17206,7 +17206,7 @@ MonoBehaviour:
   currentClarityLevel: 0
   hasAttackedYet: 0
   hasMovedYet: 0
-  deathSound: {fileID: 0}
+  deathSound: {fileID: 11400000, guid: 24857236e362d48d7aeaebb583974166, type: 2}
   yOffset: 0.5
 --- !u!135 &1141268476
 SphereCollider:
@@ -27084,7 +27084,7 @@ MonoBehaviour:
   currentClarityLevel: 0
   hasAttackedYet: 0
   hasMovedYet: 0
-  deathSound: {fileID: 0}
+  deathSound: {fileID: 11400000, guid: 24857236e362d48d7aeaebb583974166, type: 2}
   yOffset: 0.5
 --- !u!135 &1810764933
 SphereCollider:
@@ -27268,7 +27268,7 @@ MonoBehaviour:
   currentClarityLevel: 0
   hasAttackedYet: 0
   hasMovedYet: 0
-  deathSound: {fileID: 0}
+  deathSound: {fileID: 11400000, guid: 24857236e362d48d7aeaebb583974166, type: 2}
   yOffset: 0.5
 --- !u!135 &1811050892
 SphereCollider:
@@ -29009,7 +29009,7 @@ MonoBehaviour:
   currentClarityLevel: 100
   hasAttackedYet: 0
   hasMovedYet: 0
-  deathSound: {fileID: 0}
+  deathSound: {fileID: 11400000, guid: 24857236e362d48d7aeaebb583974166, type: 2}
   yOffset: 0.5
 --- !u!114 &1899819293
 MonoBehaviour:
