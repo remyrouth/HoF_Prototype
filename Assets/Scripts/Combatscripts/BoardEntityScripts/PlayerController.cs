@@ -6,6 +6,7 @@ using UnityEngine.AI;
 
 public class PlayerController : MonoBehaviour
 {
+    public GameObject chosenTile;
 
     [Header("Player Sources")]
     public CharacterStats pilotInfo;
@@ -31,7 +32,6 @@ public class PlayerController : MonoBehaviour
 
 
     // moving variables
-    public float yOffset = 1f;
     private List<GameObject> tiles;
     private NavMeshAgent agent;
     private AbilityExecutionManager aem;
@@ -258,8 +258,13 @@ public class PlayerController : MonoBehaviour
     }
     private void PositionalCorrectionSetup()
     {
-        Vector3 positionalCorrection = FindClosestTile(gameObject.transform.position).transform.position;
-        gameObject.transform.position = new Vector3(positionalCorrection.x, positionalCorrection.y + yOffset, positionalCorrection.z);
+        GameObject chosenClosestTile = FindClosestTile(gameObject.transform.position);
+        chosenTile = chosenClosestTile;
+        // Vector3 positionalCorrection = chosenClosestTile.transform.position;
+        Debug.Log("positionalCorrection: " + chosenClosestTile.transform.position);
+        // gameObject.transform.position = new Vector3(positionalCorrection.x, positionalCorrection.y, positionalCorrection.z);
+        // Debug.Log("positionalResult: " + gameObject.transform.position);
+        gameObject.transform.position = chosenClosestTile.transform.position;
     }
 
     private void TileMapSetup()
@@ -285,11 +290,12 @@ public class PlayerController : MonoBehaviour
     #region Pathing
     private IEnumerator MoveAlongTiles(GameObject destinationTile) // IF YOU MOVE AND THEN TELEPORT THIS STILL OPERATES.... 
     {
+        Debug.Log("Moving");
         List<GameObject> path = FindPath(FindClosestTile(transform.position), destinationTile);
 
         foreach (GameObject tile in path)
         {
-            agent.SetDestination(tile.transform.position + Vector3.up * yOffset);
+            agent.SetDestination(tile.transform.position + Vector3.up);
             yield return new WaitUntil(() => agent.remainingDistance < 0.1f);
         }
 

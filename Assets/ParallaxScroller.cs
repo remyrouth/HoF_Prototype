@@ -52,7 +52,7 @@ public class ParallaxScroller : MonoBehaviour
         public void WrapObjects(Vector3 minBounds, Vector3 maxBounds) {
             foreach(GameObject parallaxObject in parallaxObjectList) {
                 if(ShouldWrap(parallaxObject, minBounds, maxBounds)) {
-                    Debug.Log("Object needs wrapping");
+                    // Debug.Log("Object needs wrapping");
                     WrapPosition(parallaxObject, minBounds, maxBounds);
                 }
             }
@@ -127,7 +127,7 @@ public class ParallaxScroller : MonoBehaviour
             }
 
             // Log the result
-            Debug.Log($"Number of {parallaxObject.originalGameObject.name} objects needed: {numberOfObjectsNeeded}");
+            // Debug.Log($"Number of {parallaxObject.originalGameObject.name} objects needed: {numberOfObjectsNeeded}");
             parallaxObject.originalGameObject.SetActive(false);
         }
     }
