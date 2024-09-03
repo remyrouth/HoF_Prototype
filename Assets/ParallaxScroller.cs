@@ -8,6 +8,10 @@ public class ParallaxScroller : MonoBehaviour
     {
         public GameObject originalGameObject;
         public float speed;
+        public float safetyOffest = 4f;
+        // I noticed that there is a random space sometimes present in wrapping 
+        // of objects. I have no idea why that is, but we can fix that with
+        // a safety offset. Easy fix. 
         private float size = 0f;
         private List<GameObject> parallaxObjectList = new List<GameObject>();
         public void UpdateSize(float newSize) {
@@ -30,48 +34,51 @@ public class ParallaxScroller : MonoBehaviour
             }
         }
 
-        public bool ShouldWrap(GameObject obj, Vector3 boundsCenter)
+        public bool ShouldWrap(GameObject obj, Vector3 minBounds, Vector3 maxBounds)
         {
-            Vector3 pos = obj.transform.position;
-            Vector3 halfSize = new Vector3(size / 2, size / 2, size / 2);
+            Vector3 position = obj.transform.position;
+            
+            bool pastMinX = position.x < minBounds.x;
+            bool pastMaxX = position.x > maxBounds.x;
+            bool pastMinY = position.y < minBounds.y;
+            bool pastMaxY = position.y > maxBounds.y;
+            bool pastMinZ = position.z < minBounds.z;
+            bool pastMaxZ = position.z > maxBounds.z;
 
-            bool wrapX = pos.x > boundsCenter.x + halfSize.x || pos.x < boundsCenter.x - halfSize.x;
-            bool wrapY = pos.y > boundsCenter.y + halfSize.y || pos.y < boundsCenter.y - halfSize.y;
-            bool wrapZ = pos.z > boundsCenter.z + halfSize.z || pos.z < boundsCenter.z - halfSize.z;
-
-            // Return true only if both sides of the object's bounds are out of the ParallaxScroller's bounds.
-            return wrapX && wrapY && wrapZ;
+            // Return true if the object has passed any of the bounds walls
+            return pastMinX || pastMaxX || pastMinY || pastMaxY || pastMinZ || pastMaxZ;
         }
 
-        public void WrapObject(Vector3 boundsEdge) {
+        public void WrapObjects(Vector3 minBounds, Vector3 maxBounds) {
             foreach(GameObject parallaxObject in parallaxObjectList) {
-                if(ShouldWrap(parallaxObject, boundsCenter)) {
-                    // place it at the end wall opposite of the flow direction where its just out of bounds
+                if(ShouldWrap(parallaxObject, minBounds, maxBounds)) {
+                    Debug.Log("Object needs wrapping");
+                    WrapPosition(parallaxObject, minBounds, maxBounds);
                 }
             }
         }
 
-        public void WrapPosition(GameObject obj, Vector3 boundsCenter)
+        public void WrapPosition(GameObject obj, Vector3 minBounds, Vector3 maxBounds)
         {
-            Vector3 pos = obj.transform.position;
-            Vector3 halfBounds = new Vector3(size / 2, size / 2, size / 2);
+            Vector3 position = obj.transform.position;
+            Vector3 size = obj.GetComponent<Renderer>().bounds.size;
 
-            if (pos.x > boundsCenter.x + halfBounds.x)
-                pos.x = boundsCenter.x - halfBounds.x;
-            else if (pos.x < boundsCenter.x - halfBounds.x)
-                pos.x = boundsCenter.x + halfBounds.x;
+            if (position.x < minBounds.x)
+                position.x = maxBounds.x - size.x- safetyOffest;
+            else if (position.x > maxBounds.x)
+                position.x = minBounds.x - safetyOffest;
 
-            if (pos.y > boundsCenter.y + halfBounds.y)
-                pos.y = boundsCenter.y - halfBounds.y;
-            else if (pos.y < boundsCenter.y - halfBounds.y)
-                pos.y = boundsCenter.y + halfBounds.y;
+            if (position.y < minBounds.y)
+                position.y = maxBounds.y - size.y- safetyOffest;
+            else if (position.y > maxBounds.y)
+                position.y = minBounds.y- safetyOffest;
 
-            if (pos.z > boundsCenter.z + halfBounds.z)
-                pos.z = boundsCenter.z - halfBounds.z;
-            else if (pos.z < boundsCenter.z - halfBounds.z)
-                pos.z = boundsCenter.z + halfBounds.z;
+            if (position.z < minBounds.z)
+                position.z = maxBounds.z - size.z- safetyOffest;
+            else if (position.z > maxBounds.z)
+                position.z = minBounds.z- safetyOffest;
 
-            obj.transform.position = pos;
+            obj.transform.position = position;
         }
     }
 
@@ -127,9 +134,13 @@ public class ParallaxScroller : MonoBehaviour
 
     void Update()
     {
+        Vector3 minBounds = transform.position + offset - new Vector3(boundsWidth, boundsHeight, boundsDepth);
+        Vector3 maxBounds = transform.position + offset + new Vector3(boundsWidth, boundsHeight, boundsDepth);
+        
         foreach (ParallaxObject parallaxObject in parallaxObjects)
         {
             parallaxObject.Move(flowDirection);
+            parallaxObject.WrapObjects(minBounds, maxBounds);
         }
     }
 
