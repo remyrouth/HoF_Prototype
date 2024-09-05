@@ -48,14 +48,12 @@ public class PlayerController : MonoBehaviour
         PositionalCorrectionSetup();
         InstantiateMechObject();
 
-        GameStateManager gameStateManager = FindObjectOfType<GameStateManager>();
-        if (gameStateManager == null) {
-            Debug.LogError("GameState does not exist");
-        }
-        combatStateController = gameStateManager.GetCombatStateController();
+        CombatStateController combatStateController = FindObjectOfType<CombatStateController>();
 
         if (combatStateController == null) {
-            Debug.LogError("combatState does not exist");
+            Debug.LogWarning("combatStateController does not exist, and was created by a player object");
+            GameObject combatObject = new GameObject("CombatStateController");
+            combatStateController =  combatObject.AddComponent<CombatStateController>();
         }
         if (isPlayerEntity) {
             combatStateController.IncreaseFriendlyCount(true);

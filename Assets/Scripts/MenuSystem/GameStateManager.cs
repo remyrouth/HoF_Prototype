@@ -18,16 +18,6 @@ public class GameStateManager : MonoBehaviour
     private CombatStateController combatStateController;
     private CameraController cameraController;
 
-    // called by PlayerController to tell CombatStateController to keep track of entity count
-    // so that it can end the game if all entities are dead
-    public CombatStateController GetCombatStateController() {
-        combatStateController = FindObjectOfType<CombatStateController>();
-        if (combatStateController == null) {
-            combatStateController = gameObject.AddComponent<CombatStateController>();
-        }
-        return combatStateController;
-    }
-
     public GameSceneType GetSceneType() {
         MapSelectorController mapSelectorControllerSingleton = FindObjectOfType<MapSelectorController>();
         PlayerController playerController = FindObjectOfType<PlayerController>();
