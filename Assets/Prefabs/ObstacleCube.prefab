@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 4315173651748974430}
   - component: {fileID: 4579018715489061448}
   - component: {fileID: 8918865915689847026}
+  - component: {fileID: 2490609269951804357}
   m_Layer: 0
   m_Name: ObstacleCube
   m_TagString: Untagged
@@ -122,6 +123,28 @@ MonoBehaviour:
   maxHealth: 1
   currentHealth: 0
   yOffset: 1
+  obstacleType: 0
+  occupiesTiles: 1
+  damageOnTouch: 2
+--- !u!114 &2490609269951804357
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 62048164874512022}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e3fdca004f2d45fe8abbed571a8abd5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_OverrideArea: 0
+  m_Area: 0
+  m_OverrideGenerateLinks: 0
+  m_GenerateLinks: 0
+  m_IgnoreFromBuild: 1
+  m_ApplyToChildren: 1
+  m_AffectedAgents: ffffffff
 --- !u!1 &3061803451464404523
 GameObject:
   m_ObjectHideFlags: 0
