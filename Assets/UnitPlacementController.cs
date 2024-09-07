@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using System.Linq;
 
 public class UnitPlacementController : MonoBehaviour
 {
@@ -29,6 +30,7 @@ public class UnitPlacementController : MonoBehaviour
 
     private List<PlacementOptionFrame> frameOptionList = new List<PlacementOptionFrame>();
     private List<GameObject> tiles = new List<GameObject>();
+    private List<GameObject> preCombatTileList = new List<GameObject>();
     private EventSystem eventSystem;
 
     public void InitializeFromTeamRosterPersistor(List<TeamChooserController.TeamSpot> newTeam)  {
@@ -65,6 +67,24 @@ public class UnitPlacementController : MonoBehaviour
         foreach (GameObject tile in tilesArray)
         {
             tiles.Add(tile);
+        }
+
+        List<GameObject> markerList = GameObject.FindGameObjectsWithTag("PreCombatTileMarker").ToList();
+
+        foreach(GameObject marker in markerList) {
+            GameObject preCombatTile = FindClosestTile(marker.transform.position);
+            if (preCombatTile != null) {
+                preCombatTileList.Add(preCombatTile);
+            }
+        }
+
+
+        foreach (GameObject tile in tiles)
+        {
+            if (!preCombatTileList.Contains(tile))
+            {
+                tile.SetActive(false);
+            }
         }
     }
 
@@ -134,6 +154,10 @@ public class UnitPlacementController : MonoBehaviour
         bool canstartGame = HaveAllFramesBeenUsedCheck();
         // Debug.Log("canstartGame method return is: " + canstartGame);
         if (canstartGame) {
+            foreach (GameObject tile in tiles)
+            {
+                tile.SetActive(true);
+            }
             Debug.Log("canstartGame method return is true");
             PauseThroughCombatManager(false);
             gameObject.SetActive(false);
