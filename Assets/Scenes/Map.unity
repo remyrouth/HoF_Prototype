@@ -5863,6 +5863,7 @@ MonoBehaviour:
   teamChooserUI: {fileID: 2141578887}
   mechDisplayManager: {fileID: 2141578888}
   availableEntities: {fileID: 11400000, guid: 2e11c3901344944b1a8ef6e0c98407b7, type: 2}
+  unitPlacementControllerPrefab: {fileID: 1203032925474201824, guid: 9e86eaa9fad7f42f99457774918369ac, type: 3}
 --- !u!114 &2141578887
 MonoBehaviour:
   m_ObjectHideFlags: 0

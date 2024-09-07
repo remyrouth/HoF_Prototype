@@ -12,6 +12,10 @@ public class TeamChooserController : MonoBehaviour
     [SerializeField] private MechDisplayManager mechDisplayManager;
     [SerializeField] private TeamBuilder availableEntities;
 
+    // we give this to the team roster persistor so that it can have a menu to activate 
+    // in the combat scene
+    [SerializeField] private GameObject unitPlacementControllerPrefab;
+
     private TeamModel teamModel;
     private MapMarkerController.MapLevel currentLevel;
 
@@ -41,8 +45,8 @@ public class TeamChooserController : MonoBehaviour
 
 
         
-        Debug.Log("TeamSpots Count form controller: " + teamModel.TeamSpots.Count);
-        roster.PrepTeamForLevel(currentLevel.levelStringName, teamModel.TeamSpots);
+        // Debug.Log("TeamSpots Count form controller: " + teamModel.TeamSpots.Count);
+        roster.PrepTeamForLevel(currentLevel.levelStringName, teamModel.TeamSpots, unitPlacementControllerPrefab);
     }
 
 

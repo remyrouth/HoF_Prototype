@@ -18,6 +18,15 @@ public class GameStateManager : MonoBehaviour
     private CombatStateController combatStateController;
     private CameraController cameraController;
 
+    private void Awake() {
+        combatStateController = FindObjectOfType<CombatStateController>();
+        if (combatStateController) {
+            Debug.LogWarning("combatStateController does not exist, and was created by a game state manager object object");
+            GameObject combatObject = new GameObject("CombatStateController");
+            combatStateController = combatObject.AddComponent<CombatStateController>();
+        }
+    }
+
     public GameSceneType GetSceneType() {
         MapSelectorController mapSelectorControllerSingleton = FindObjectOfType<MapSelectorController>();
         PlayerController playerController = FindObjectOfType<PlayerController>();
@@ -40,7 +49,7 @@ public class GameStateManager : MonoBehaviour
     public void PauseResumeControllers(bool shouldPause) {
         if (combatStateController != null) {
             // there may not always be a combat controller in scene
-            combatStateController.PauseOrResumeCombat(shouldPause);
+            combatStateController.PauseOrResumeCombat(shouldPause, gameObject);
         }
 
         if (cameraController == null) {

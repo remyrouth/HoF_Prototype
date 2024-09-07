@@ -43,6 +43,9 @@ public class PlayerController : MonoBehaviour
     {
         SetupInfoToScript();
         agent = GetComponent<NavMeshAgent>();
+        if (agent == null) {
+            agent = gameObject.AddComponent<NavMeshAgent>();
+        }
         aem = FindObjectOfType<AbilityExecutionManager>();
         TileMapSetup();
         PositionalCorrectionSetup();
@@ -53,7 +56,7 @@ public class PlayerController : MonoBehaviour
         if (combatStateController == null) {
             Debug.LogWarning("combatStateController does not exist, and was created by a player object");
             GameObject combatObject = new GameObject("CombatStateController");
-            combatStateController =  combatObject.AddComponent<CombatStateController>();
+            combatStateController = combatObject.AddComponent<CombatStateController>();
         }
         if (isPlayerEntity) {
             combatStateController.IncreaseFriendlyCount(true);
@@ -123,6 +126,7 @@ public class PlayerController : MonoBehaviour
 
 
         if (currentPlayerHealth == 0 ||currentMechHealth == 0 ) {
+            combatStateController = FindObjectOfType<CombatStateController>();
             if (isPlayerEntity) {
                 combatStateController.IncreaseFriendlyCount(false);
             } else {
@@ -259,7 +263,7 @@ public class PlayerController : MonoBehaviour
         GameObject chosenClosestTile = FindClosestTile(gameObject.transform.position);
         chosenTile = chosenClosestTile;
         // Vector3 positionalCorrection = chosenClosestTile.transform.position;
-        Debug.Log("positionalCorrection: " + chosenClosestTile.transform.position);
+        // Debug.Log("positionalCorrection: " + chosenClosestTile.transform.position);
         // gameObject.transform.position = new Vector3(positionalCorrection.x, positionalCorrection.y, positionalCorrection.z);
         // Debug.Log("positionalResult: " + gameObject.transform.position);
         gameObject.transform.position = chosenClosestTile.transform.position;
@@ -286,21 +290,84 @@ public class PlayerController : MonoBehaviour
     #endregion Setup 
     // Pathing Methods
     #region Pathing
-    private IEnumerator MoveAlongTiles(GameObject destinationTile) // IF YOU MOVE AND THEN TELEPORT THIS STILL OPERATES.... 
+    // private IEnumerator MoveAlongTiles(GameObject destinationTile) // IF YOU MOVE AND THEN TELEPORT THIS STILL OPERATES.... 
+    // {
+    //     Debug.Log("Moving");
+    //     List<GameObject> path = FindPath(FindClosestTile(transform.position), destinationTile);
+    //     if (agent == null) {
+    //         agent.GetComponent<NavMeshAgent>();
+    //     }
+    //     if (agent == null) {
+    //         agent = gameObject.AddComponent<NavMeshAgent>();
+    //     }
+
+    //     foreach (GameObject tile in path)
+    //     {
+    //         agent.SetDestination(tile.transform.position + Vector3.up);
+    //         yield return new WaitUntil(() => agent.remainingDistance < 0.1f);
+    //     }
+
+    //     //  Debug.Log("Reached the intended tile: " + destinationTile.name);
+    //     CheckForSteppingOnObstacleTile(destinationTile);
+    // }
+
+    private IEnumerator MoveAlongTiles(GameObject destinationTile)
     {
         Debug.Log("Moving");
         List<GameObject> path = FindPath(FindClosestTile(transform.position), destinationTile);
+        if (agent == null)
+        {
+            agent = GetComponent<NavMeshAgent>();
+        }
+        if (agent == null)
+        {
+            agent = gameObject.AddComponent<NavMeshAgent>();
+        }
+
+        // Ensure the NavMeshAgent is on a valid NavMesh
+        if (!agent.isOnNavMesh)
+        {
+            Debug.LogWarning("Agent is not on NavMesh. Attempting to place on NavMesh.");
+            NavMeshHit hit;
+            if (NavMesh.SamplePosition(transform.position, out hit, 1.0f, NavMesh.AllAreas))
+            {
+                agent.Warp(hit.position);
+            }
+            else
+            {
+                Debug.LogError("Unable to place agent on NavMesh.");
+                yield break;
+            }
+        }
 
         foreach (GameObject tile in path)
         {
             agent.SetDestination(tile.transform.position + Vector3.up);
-            yield return new WaitUntil(() => agent.remainingDistance < 0.1f);
+            
+            while (agent.pathPending || agent.remainingDistance > 0.1f)
+            {
+                if (!agent.isOnNavMesh)
+                {
+                    Debug.LogWarning("Agent left NavMesh during movement. Attempting to replace.");
+                    NavMeshHit hit;
+                    if (NavMesh.SamplePosition(transform.position, out hit, 1.0f, NavMesh.AllAreas))
+                    {
+                        agent.Warp(hit.position);
+                    }
+                    else
+                    {
+                        Debug.LogError("Unable to place agent back on NavMesh.");
+                        yield break;
+                    }
+                }
+                yield return null;
+            }
         }
 
-        //  Debug.Log("Reached the intended tile: " + destinationTile.name);
+        Debug.Log("Reached the intended tile: " + destinationTile.name);
         CheckForSteppingOnObstacleTile(destinationTile);
     }
-
+    
     private void CheckForSteppingOnObstacleTile(GameObject tileToCheck) {
         GameObject[] obstacleObjectPiecesArray = GameObject.FindGameObjectsWithTag("Obstacle");
 

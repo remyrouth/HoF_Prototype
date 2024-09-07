@@ -6,10 +6,11 @@ using UnityEngine.SceneManagement;
 public class CombatStateController : MonoBehaviour
 {
     public enum CombatState {
-        Paused,
-        PlayerTurn,
-        AITurn
+        PreCombat,
+        RegularCombat,
+        Paused
     }
+
 
     public enum WinCondition {
         EnemyAnnihilation,
@@ -28,13 +29,31 @@ public class CombatStateController : MonoBehaviour
     private SelectionManager selectionManager;
 
 
+    // [SerializeField] private List<string> pauseCallerNames = new List<string>();
+    [SerializeField] private List<GameObject> pauseCallerNames = new List<GameObject>();
     // called by GameStateManager
-    public void PauseOrResumeCombat(bool shouldPause) {
+
+    // we input an object to tell how many have called pause. we know we can
+    // unpause from other scripts, so we have to know how many scripts
+    // are currently requesting a pause. if there's no pause requests currently
+    // in effect, we resume
+    public void PauseOrResumeCombat(bool shouldPause, GameObject objectCaller) {
+        // Debug.Log("PauseOrResumeCombat called in combat state controller");
         FindManagers();
         if (shouldPause) { // we pause
             Pause();
+            // Debug.Log("pauseCallers.Count before addition: " + pauseCallerNames.Count);
+            pauseCallerNames.Add(objectCaller);
+            // Debug.Log("pauseCallers.Count after addition: " + pauseCallerNames.Count);
         } else { // we resume the AI or the player turn
-           Resume();
+            Debug.Log("Called Removal"); 
+            // Debug.Log("pauseCallers.Count before removal: " + pauseCallerNames.Count);
+            pauseCallerNames.Remove(objectCaller);
+            // Debug.Log("pauseCallers.Count after removal: " + pauseCallerNames.Count);
+            if (pauseCallerNames.Count == 0) {
+                Resume();
+            }
+            Resume();
         }
     }
 
@@ -45,6 +64,7 @@ public class CombatStateController : MonoBehaviour
     }
 
     private void Resume() {
+        Debug.Log("Resume called");
         bool playerTurnCheck = turnManager.IsPlayerTurnCheck(); // this will tell us when we're resuming,
         // if we go back to AI turn, or back to player controls
 

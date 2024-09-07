@@ -4,12 +4,14 @@ using UnityEngine.SceneManagement;
 
 public class TeamRosterPersistor : MonoBehaviour
 {
-    public List<TeamChooserController.TeamSpot> teamSpots = new List<TeamChooserController.TeamSpot>();
-    
+    [SerializeField] private List<TeamChooserController.TeamSpot> teamSpots = new List<TeamChooserController.TeamSpot>();
+    [SerializeField] private GameObject unitPlacementControllerPrefab;
+    private CombatStateController combatStateController;
     private static TeamRosterPersistor instance;
 
-    public void PrepTeamForLevel(string sceneName, List<TeamChooserController.TeamSpot> newTeamRoster) {
-        Debug.Log("Prepped");
+    public void PrepTeamForLevel(string sceneName, List<TeamChooserController.TeamSpot> newTeamRoster, GameObject placementPrefab) {
+        unitPlacementControllerPrefab = placementPrefab;
+        // Debug.Log("Prepped");
         teamSpots = newTeamRoster;
         SceneManager.LoadScene(sceneName);
     }
@@ -29,12 +31,7 @@ public class TeamRosterPersistor : MonoBehaviour
         }
     }
 
-    private void OnEnable()
-    {
-        PlaceRoster();
-    }
-
-    private void PlaceRoster() {
+    private void PlaceRosterUsingExistingPieces() {
         // Find replaceable player objects
         PlayerController[] players = FindObjectsOfType<PlayerController>();
         List<PlayerController> playersToReplace = new List<PlayerController>();
@@ -78,16 +75,35 @@ public class TeamRosterPersistor : MonoBehaviour
         }
     }
 
-    // Method to be called on scene change
-    private void OnSceneChange()
-    {
-        Debug.Log("Scene changed! Executing method...");
-        PlaceRoster();
-    }
 
+    // called by unity itself when a scene is loaded, but is subscribed to the 
+    // unity manager itself using SceneManager.sceneLoaded
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        OnSceneChange(); // Call your method when a new scene is loaded
+        // PlaceRosterUsingExistingPieces();
+        PlaceTeamOnBoard();
+    }
+
+
+    private void PlaceTeamOnBoard() {
+        PlayerController[] playerEntityList = FindObjectsOfType<PlayerController>();
+        // List<GameObject> viablePlayerGameObjectList = FindObjectsOfType<GameObject>();
+
+        foreach(PlayerController playerPiece in playerEntityList) {
+            GameObject playerObject = playerPiece.gameObject;
+            AIPlayerController AI = playerObject.GetComponent<AIPlayerController>();
+            if (AI == null) {
+                // this means we found a player object
+                // viablePlayerGameObjectList.Add(playerObject);
+                Destroy(playerObject);
+            }
+        }
+
+        Debug.Log("Executed PlaceTeamOnBoard method");
+        GameObject unitPlacer = Instantiate(unitPlacementControllerPrefab, new Vector3(0, 0, 0), Quaternion.identity);
+        UnitPlacementController unitPlacementController = unitPlacer.GetComponent<UnitPlacementController>();
+        unitPlacementController.InitializeFromTeamRosterPersistor(teamSpots);
+
     }
 
     private void OnDestroy()
