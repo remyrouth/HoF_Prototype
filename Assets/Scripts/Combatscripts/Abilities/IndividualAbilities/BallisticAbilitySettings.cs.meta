@@ -3,7 +3,9 @@ guid: 938f6f95afe6142df9956e437dffd599
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - attackPrefab: {instanceID: 0}
+  - activationSFX: {fileID: 11400000, guid: 39d6a0ce1e6554fc58ee4b1baece8552, type: 2}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

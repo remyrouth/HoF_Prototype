@@ -3,7 +3,9 @@ guid: cab139fdcdf2341dda5a843c10ea00d4
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - healingPrefab: {instanceID: 0}
+  - activationSFX: {fileID: 11400000, guid: 802a1bb1ab12544ed9305b6e22451c3b, type: 2}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
