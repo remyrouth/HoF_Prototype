@@ -5,6 +5,7 @@ MonoImporter:
   serializedVersion: 2
   defaultReferences:
   - rockPrefab: {fileID: 62048164874512022, guid: 37c8d41efc9ab4d2c8bb5c210a7e4d20, type: 3}
+  - activationSFX: {fileID: 11400000, guid: 8e022873832b24cf7a41ace9bd7720e7, type: 2}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

@@ -13,6 +13,7 @@ public class TeleportToTileAbilitySettings : MonoBehaviour, IAbilitySettings
     public AbilityRules.MovementImpactType MovementEffect = AbilityRules.MovementImpactType.TeleportToTile;
     public bool RequiresLineOfSight = false;
     public AbilityRules.EntityHealthTargetType HealthTarget = AbilityRules.EntityHealthTargetType.None;
+    public Sound activationSFX;
 
 
 
@@ -31,5 +32,9 @@ public class TeleportToTileAbilitySettings : MonoBehaviour, IAbilitySettings
         };
 
         return new GenericAbilityStrategy(traits);
+    }
+
+    public Sound GiveAbilitySound() {
+        return activationSFX;
     }
 }

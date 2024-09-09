@@ -6,6 +6,7 @@ using UnityEngine;
 public class AbilityExecutionManager : MonoBehaviour
 {
     private Dictionary<MechStats.AbilityType, IAbilitySettings> _abilityFactories = new Dictionary<MechStats.AbilityType, IAbilitySettings>();
+    SoundManager soundManager;
 
     void Awake()
     {
@@ -19,13 +20,30 @@ public class AbilityExecutionManager : MonoBehaviour
         _abilityFactories[MechStats.AbilityType.Combo] = childObject.AddComponent<ComboAbilitySettings>();
     }
 
+    private void UseSoundEffect(IAbilitySettings settingsOutput) {
+        if (soundManager == null) {
+            soundManager = FindObjectOfType<SoundManager>();
+        }
+        if (soundManager == null) {
+            soundManager = gameObject.AddComponent<SoundManager>();
+        }
+
+        SingleSoundPlayer soundPlayer = soundManager.GetOrCreateSoundPlayer(settingsOutput.GiveAbilitySound());
+        soundPlayer.PlayFromForeignTrigger();
+    }
+
     public bool InputAbilityInformationSources(MechStats.AbilityMechSlot ability, PlayerController character, GameObject tileTarget)
     {
         if (_abilityFactories.TryGetValue(ability.GetAbilityType(), out IAbilitySettings settingsOutput))
         {
             IAbilityStrategy abilityStrategy = settingsOutput.GiveAbility();
-             Debug.Log("Type WAS actually found: " + ability.GetAbilityType().ToString());
-            return abilityStrategy.Execute(ability, character, tileTarget);
+            // Debug.Log("Type WAS actually found: " + ability.GetAbilityType().ToString());
+            bool abilitySucessfullyUsed = abilityStrategy.Execute(ability, character, tileTarget);
+            if (abilitySucessfullyUsed) {
+                UseSoundEffect(settingsOutput);
+            }
+
+            return abilitySucessfullyUsed;
         } else {
             Debug.Log("Type was not found: " + ability.GetAbilityType().ToString());
         }

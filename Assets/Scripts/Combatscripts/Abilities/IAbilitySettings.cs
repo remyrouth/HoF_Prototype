@@ -5,4 +5,6 @@ using UnityEngine;
 public interface IAbilitySettings
 {
     public IAbilityStrategy GiveAbility();
+
+    public Sound GiveAbilitySound();
 }

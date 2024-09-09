@@ -14,6 +14,8 @@ public class LaserAbilitySettings : MonoBehaviour, IAbilitySettings
     public bool RequiresLineOfSight = true;
     public AbilityRules.EntityHealthTargetType HealthTarget = AbilityRules.EntityHealthTargetType.Pilot;
 
+    public Sound activationSFX;
+
 
 
     public IAbilityStrategy GiveAbility() {
@@ -31,5 +33,9 @@ public class LaserAbilitySettings : MonoBehaviour, IAbilitySettings
         };
 
         return new GenericAbilityStrategy(traits);
+    }
+
+    public Sound GiveAbilitySound() {
+        return activationSFX;
     }
 }

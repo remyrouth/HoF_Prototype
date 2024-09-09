@@ -13,6 +13,7 @@ public class BallisticAbilitySettings : MonoBehaviour, IAbilitySettings
     public AbilityRules.MovementImpactType MovementEffect = AbilityRules.MovementImpactType.None;
     public bool RequiresLineOfSight = true;
     public AbilityRules.EntityHealthTargetType HealthTarget = AbilityRules.EntityHealthTargetType.Mech;
+    public Sound activationSFX;
 
 
 
@@ -31,5 +32,9 @@ public class BallisticAbilitySettings : MonoBehaviour, IAbilitySettings
         };
 
         return new GenericAbilityStrategy(traits);
+    }
+
+    public Sound GiveAbilitySound() {
+        return activationSFX;
     }
 }

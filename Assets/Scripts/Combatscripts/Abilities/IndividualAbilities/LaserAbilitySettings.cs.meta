@@ -5,6 +5,7 @@ MonoImporter:
   serializedVersion: 2
   defaultReferences:
   - laserPrefab: {instanceID: 0}
+  - activationSFX: {fileID: 11400000, guid: cebbbf9a1fa43436ab66388a415275fa, type: 2}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

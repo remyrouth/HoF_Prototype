@@ -3,9 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 
 // Generic ability strategy
+// Note that this is its logic, and does not include SFX/sound
+// if you're looking for sound go to the manager. We need monobehavior
+// to run sounds, which the manager has access to
 public class GenericAbilityStrategy : IAbilityStrategy
 {
     protected AbilityTraits _traits;
+        // [SerializeField] private Sound deathSound;
+    // protected Indiv
 
     public GenericAbilityStrategy(AbilityTraits traits)
     {
@@ -28,6 +33,11 @@ public class GenericAbilityStrategy : IAbilityStrategy
         return true;
     }
 
+    public SingleSoundPlayer GiveAbilitySound() {
+        // this should never be used
+        Debug.LogWarning("If this method has been used, there is a problem. It should have never been used");
+        return null;
+    }
     protected virtual void ApplyMovementEffect(PlayerController character, GameObject tileTarget) {
         switch(_traits.MovementEffect) {
             case AbilityRules.MovementImpactType.TeleportToTile:
