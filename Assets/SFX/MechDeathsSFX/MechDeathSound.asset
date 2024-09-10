@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   shouldLoop: 0
   maxVolume: 1
-  audioClip: {fileID: 8300000, guid: 356237778a7634c26a06d16fcb0b2b5b, type: 3}
+  audioClip: {fileID: 8300000, guid: 4ecab7daba44d4ef8a11e5836793324b, type: 3}
   soundType: 0
   usesForeignTrigger: 1
