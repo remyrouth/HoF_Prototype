@@ -3,22 +3,23 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "NewCharacterStats", menuName = "Character/NewMech")]
 public class MechStats : ScriptableObject
 {
-    [SerializeField]
-    private string mechName; 
+    // we can change the public fields to serialized private anyway,
+    // its just a left over from prototyping that they're public. If
+    // any problems, ask Remy for help
+    [SerializeField] private string mechName; 
     public int mechHealth;
     public Sprite characterSprite;
     public int maximumClarity;
-    [SerializeField]
-    private GameObject mechGFXPrefab;
+    [SerializeField] private GameObject mechGFXPrefab;
+    [SerializeField] private Sound mechIdleSFX;
     public MechClass mechAbilityClass = MechClass.StandardSoldier;
 
     public AbilityMechSlot AbilitySlot1 = new AbilityMechSlot();
     public AbilityMechSlot AbilitySlot2 = new AbilityMechSlot();
     public AbilityMechSlot AbilitySlot3 = new AbilityMechSlot();
 
-    // returns true if we can successfully trigger the ability
-    public bool UseAbility(GameObject TargetSquare) {
-        return true;
+    public Sound GetMechIdleSFX() {
+        return mechIdleSFX;
     }
 
     public string GetMechName() {
