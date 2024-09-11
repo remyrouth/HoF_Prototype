@@ -122,15 +122,26 @@ public class MechStats : ScriptableObject
             {
                 case AbilityType.None:
                     return "Empty Ability Slot";
-                    // break;
+                case AbilityType.Laser:
+                    return "Shoots mech targeting lasers as a basic attack";
+                case AbilityType.Ballistic:
+                    return "Shoots pilot targeting ballistics as a basic attack";
+                case AbilityType.Combo:
+                    return "Uses a combo of lasers and ballistics doing 50%\ndamage to both pilot and mech as a basic attack";
                 case AbilityType.Heal:
                     return "Healing ability boosts both a mechs and pilots HP";
-                    // break;
+                case AbilityType.RocketSummon:
+                    return "Summons a rocket which targets the nearest enemy mech, damaging mechs";
+                case AbilityType.TeleportToTile:
+                    return "Allows your unit to teleport to a tile instantly";
+                case AbilityType.ConvertEnemy:
+                    return "Converts a unit to the opposing side";
+                case AbilityType.LightningStrike:
+                    return "Strikes the enemy with lightning, frying the mechs components";
+                case AbilityType.Artillery:
+                    return "Fires an artillery charge at a target enemy, damaging the mech";
                 default:
-                    // Debug.LogError("Ability Description not implemented yet. Look Into MechStats.cs file.\nThe method RetreiveAbilityTypeDescription is resonsible for this");
-                    // return "Enum type is unknown";
                     return "Ability Description not \nwritten yet. \nLook Into MechStats.cs file.";
-                    // break;
             }
         }
 
@@ -145,10 +156,8 @@ public class MechStats : ScriptableObject
         TeleportToTile,
         RockSummon,
         ConvertEnemy,
-        RefillAttackAction,
-        Sprint,
         LightningStrike,
-        ScareEnemy
+        Artillery
     }
 
 
