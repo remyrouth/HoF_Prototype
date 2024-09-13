@@ -17,6 +17,7 @@ MonoBehaviour:
   characterSprite: {fileID: 21300000, guid: f377da51488dc4249b7329b86c9ed5ac, type: 3}
   maximumClarity: 10
   mechGFXPrefab: {fileID: 2303117280526404648, guid: 3d973fa132b924344a19986b8134350c, type: 3}
+  mechIdleSFX: {fileID: 11400000, guid: 4d5d03f916d584764a33c83d5d52d88d, type: 2}
   mechAbilityClass: 10
   AbilitySlot1:
     type: 6
