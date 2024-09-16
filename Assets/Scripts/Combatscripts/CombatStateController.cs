@@ -119,4 +119,9 @@ public class CombatStateController : MonoBehaviour
             SceneManager.LoadScene("Map");
         }
     }
+    
+    public int FinalFriendlyCasualtyCount()
+    {
+        return currentFriendlyCount;
+    }
 }

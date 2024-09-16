@@ -10,7 +10,6 @@ using System.Linq;
 public class GameStateManager : MonoBehaviour
 {
     public enum GameSceneType {
-        UpgradeScene,
         CombatScene,
         LevelChoosingScene,
         MainMenuScene
