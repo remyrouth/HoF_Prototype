@@ -28,7 +28,7 @@ public class MechSaveFileInteractor : MonoBehaviour
     {
         // Prepare the string with the data
         string dataToWrite = $"Mech Name: {individualMech.GetMechName()} [ " +
-                             $"Mech Health Upgrade Count: : {0} " +
+                             $"Mech Health Upgrade Count: {0} " +
                              $"Max Clarity Upgrade Count: {0} ]\n";
 
         // Write the data to the file
@@ -75,11 +75,11 @@ public class MechSaveFileInteractor : MonoBehaviour
     private int ExtractMechHealth(string line)
     {
         int healthStartIndex = line.IndexOf("Mech Health Upgrade Count: ") + "Mech Health Upgrade Count: ".Length;
-        int healthEndIndex = line.IndexOf(" Max Clarity:", healthStartIndex);
+        int healthEndIndex = line.IndexOf(" Max Clarity Upgrade Count:", healthStartIndex);
 
         if (healthStartIndex >= 0 && healthEndIndex > healthStartIndex)
         {
-            string healthStr = line.Substring(healthStartIndex, healthEndIndex - healthStartIndex);
+            string healthStr = line.Substring(healthStartIndex, healthEndIndex - healthStartIndex).Trim();
             if (int.TryParse(healthStr, out int mechHealth))
             {
                 return mechHealth;
@@ -97,7 +97,7 @@ public class MechSaveFileInteractor : MonoBehaviour
 
         if (clarityStartIndex >= 0 && clarityEndIndex > clarityStartIndex)
         {
-            string clarityStr = line.Substring(clarityStartIndex, clarityEndIndex - clarityStartIndex);
+            string clarityStr = line.Substring(clarityStartIndex, clarityEndIndex - clarityStartIndex).Trim();
             if (int.TryParse(clarityStr, out int mechMaxClarity))
             {
                 return mechMaxClarity;
@@ -118,9 +118,10 @@ public class MechSaveFileInteractor : MonoBehaviour
     }
 
     // called by upgrade mech controller script
-    public List<MechStats> ExtractMechsFromFile()
+    public List<UpgradeMechController.UpgradableMechUnit> ExtractMechsFromFile()
     {
-        List<MechStats> extractedMechs = new List<MechStats>();
+        Debug.Log("Extraction called from save file");
+        List<UpgradeMechController.UpgradableMechUnit> extractedMechs = new List<UpgradeMechController.UpgradableMechUnit>();
         if (!CheckForFileExistence()) {
             return extractedMechs;
         }
@@ -137,7 +138,15 @@ public class MechSaveFileInteractor : MonoBehaviour
                 // Debug.Log($"Mech Name: {mechName}, Mech Health: {mechHealth}, Max Clarity: {mechMaxClarity}");
                 MechStats mech = GetSpecificMech(mechName);
                 if (mech != null) {
-                    extractedMechs.Add(mech);
+                    UpgradeMechController.UpgradableMechUnit mechUnit = new UpgradeMechController.UpgradableMechUnit();
+                    mechUnit.mechBaseModel = mech;
+                    mechUnit.maxHealthUpgradeCount = mechHealth;
+                    mechUnit.maxClarityUpgradeCount = mechMaxClarity;
+
+                    extractedMechs.Add(mechUnit);
+                    // extractedMechs.Add(mech);
+                } else {
+                    Debug.LogWarning("Could not find mech named: " + mechName);
                 }
 
             }
