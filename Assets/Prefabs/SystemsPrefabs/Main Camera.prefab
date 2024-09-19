@@ -107,6 +107,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 10
+  maxBounds: {x: 0, y: 0}
+  minBounds: {x: 0, y: 0}
 --- !u!114 &748829750191756250
 MonoBehaviour:
   m_ObjectHideFlags: 0

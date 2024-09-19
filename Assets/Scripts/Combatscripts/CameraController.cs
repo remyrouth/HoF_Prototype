@@ -7,7 +7,8 @@ public class CameraController : MonoBehaviour
     private bool isCurrentlyPaused = false;
     public float moveSpeed = 10f;
 
-    public float minX, maxX, minZ, maxZ;
+    public Vector2 maxBounds;
+    public Vector2 minBounds;
 
 
     public void SetSpeed(float newSpeed) {
@@ -53,8 +54,22 @@ public class CameraController : MonoBehaviour
         transform.Translate(direction * moveSpeed * Time.deltaTime, Space.World);
 
         Vector3 clampedPos = transform.position;
-        clampedPos.x = Mathf.Clamp(clampedPos.x, minX, maxX);
-        clampedPos.z = Mathf.Clamp(clampedPos.z, minZ, maxZ);
+        clampedPos.x = Mathf.Clamp(clampedPos.x, minBounds.x, maxBounds.x);
+        clampedPos.z = Mathf.Clamp(clampedPos.z, minBounds.y, maxBounds.y);
         transform.position = clampedPos;
+    }
+
+    private void OnDrawGizmos()
+    {
+        //draws a gizmos reprensenting the bounds of the camera. 
+        Gizmos.color = Color.green;
+        Gizmos.DrawLine(new Vector3(minBounds.x, transform.position.y, minBounds.y),
+            new Vector3(maxBounds.x, transform.position.y, minBounds.y)); // Bottom line
+        Gizmos.DrawLine(new Vector3(minBounds.x, transform.position.y, minBounds.y),
+            new Vector3(minBounds.x, transform.position.y, maxBounds.y)); // Left line
+        Gizmos.DrawLine(new Vector3(maxBounds.x, transform.position.y, minBounds.y),
+            new Vector3(maxBounds.x, transform.position.y, maxBounds.y)); // Right line
+        Gizmos.DrawLine(new Vector3(minBounds.x, transform.position.y, maxBounds.y),
+            new Vector3(maxBounds.x, transform.position.y, maxBounds.y)); // Top line
     }
 }
