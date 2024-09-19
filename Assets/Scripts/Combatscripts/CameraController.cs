@@ -7,6 +7,9 @@ public class CameraController : MonoBehaviour
     private bool isCurrentlyPaused = false;
     public float moveSpeed = 10f;
 
+    public float minX, maxX, minZ, maxZ;
+
+
     public void SetSpeed(float newSpeed) {
         moveSpeed = newSpeed;
     }
@@ -48,5 +51,10 @@ public class CameraController : MonoBehaviour
 
         // Move the camera in global space
         transform.Translate(direction * moveSpeed * Time.deltaTime, Space.World);
+
+        Vector3 clampedPos = transform.position;
+        clampedPos.x = Mathf.Clamp(clampedPos.x, minX, maxX);
+        clampedPos.z = Mathf.Clamp(clampedPos.z, minZ, maxZ);
+        transform.position = clampedPos;
     }
 }
