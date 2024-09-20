@@ -33,6 +33,9 @@ public class CombatStateController : MonoBehaviour
     [SerializeField] private List<GameObject> pauseCallerNames = new List<GameObject>();
     // called by GameStateManager
 
+    // Friendlt deceased list
+    private List<string> friendlyDeceasedList;
+
     // we input an object to tell how many have called pause. we know we can
     // unpause from other scripts, so we have to know how many scripts
     // are currently requesting a pause. if there's no pause requests currently
@@ -90,10 +93,16 @@ public class CombatStateController : MonoBehaviour
         }
     }
 
-    public void IncreaseFriendlyCount(bool increase) {
+    // Currently takes in character stats to get info to add to list of deceased names(string). 
+    // Can be swapped to CharacterStats at lines 26 & 137 (declaration and friendlydeceasedlist). 
+    public void IncreaseFriendlyCount(bool increase, CharacterStats name) {
         if (increase) {
             currentFriendlyCount++;
         } else {
+            if (friendlyDeceasedList == null) {
+                friendlyDeceasedList = new List<string>();
+            }
+            friendlyDeceasedList.Add(name.GetPilotName());
             currentFriendlyCount--;
             EndLevel();
         }
@@ -123,5 +132,9 @@ public class CombatStateController : MonoBehaviour
     public int FinalFriendlyCasualtyCount()
     {
         return currentFriendlyCount;
+    }
+
+    public List<string> DeceasedFriendlyList() {
+        return friendlyDeceasedList;
     }
 }

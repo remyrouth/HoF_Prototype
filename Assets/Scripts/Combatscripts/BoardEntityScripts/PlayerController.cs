@@ -59,7 +59,7 @@ public class PlayerController : MonoBehaviour
             combatStateController = combatObject.AddComponent<CombatStateController>();
         }
         if (isPlayerEntity) {
-            combatStateController.IncreaseFriendlyCount(true);
+            combatStateController.IncreaseFriendlyCount(true, null);
         } else {
             combatStateController.IncreaseEnemyCount(true);
         }
@@ -128,9 +128,9 @@ public class PlayerController : MonoBehaviour
         if (currentPlayerHealth == 0 ||currentMechHealth == 0 ) {
             combatStateController = FindObjectOfType<CombatStateController>();
             if (isPlayerEntity) {
-                combatStateController.IncreaseFriendlyCount(false);
+                combatStateController.IncreaseFriendlyCount(false, pilotInfo);
             } else {
-                combatStateController.IncreaseFriendlyCount(false);
+                combatStateController.IncreaseEnemyCount(false);
             }
             if (deathSound != null) {
                 SoundManager soundManager = FindObjectOfType<SoundManager>();
