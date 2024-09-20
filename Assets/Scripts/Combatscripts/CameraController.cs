@@ -55,7 +55,7 @@ public class CameraController : MonoBehaviour
 
         Vector3 clampedPos = transform.position;
         clampedPos.x = Mathf.Clamp(clampedPos.x, minBounds.x, maxBounds.x);
-        clampedPos.z = Mathf.Clamp(clampedPos.z, minBounds.y, maxBounds.y);
+        clampedPos.y = Mathf.Clamp(clampedPos.z, minBounds.y, maxBounds.y);
         transform.position = clampedPos;
     }
 
