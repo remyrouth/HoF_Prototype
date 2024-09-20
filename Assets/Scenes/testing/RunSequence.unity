@@ -443,14 +443,20 @@ MonoBehaviour:
     characterSprite: {fileID: 21300000, guid: bfbab94b4b460401eb97298f31f5d42a, type: 3}
     characterName: Bell
     defaultOffset: {x: 0, y: 0}
+  leftSpeakerImage: {fileID: 1246510353}
   rightSideSpeakers:
   - spriteFaceLeftDefault: 1
     characterSprite: {fileID: 21300000, guid: 9bdca686c7fb04bfc96efcd493904344, type: 3}
     characterName: Desh
     defaultOffset: {x: 0, y: 0}
+  rightSpeakerImage: {fileID: 1560173827}
   spokenDialogue:
   - textSpoken: hello
+    speakerIndex: 0
+    rightSide: 0
   - textSpoken: this is a test
+    speakerIndex: 0
+    rightSide: 1
   currentDialogueIndex: 0
   dialogueTextObject: {fileID: 30932652}
 --- !u!1 &960150929
