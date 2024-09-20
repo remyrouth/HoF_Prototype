@@ -3,81 +3,60 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEditor;
-using UnityEngine.SceneManagement;
 
 public class VNController : MonoBehaviour
 {
-    private List<Sprite> sprites = new List<Sprite>();
-    private Image currImage;
-    private bool notAtEnd = true;
-    public int idx = -1;
+    [SerializeField] private bool playsOnStart = false;
+    [SerializeField] private List<DialogueSpeaker> leftSideSpeakers = new List<DialogueSpeaker>();
+    [SerializeField] private List<DialogueSpeaker> rightSideSpeakers = new List<DialogueSpeaker>();
 
-    void Start()
-    {
-        //initializes the sprites list 
-        CollectAllSprites();
 
-        //ensures that the currImage is never null
-        if (currImage == null) {
-            currImage = GetComponentInChildren<Image>();
+    [SerializeField] private List<DialogueSpoken> spokenDialogue = new List<DialogueSpoken>();
+
+    [SerializeField] private int currentDialogueIndex = 0;
+
+
+    [SerializeField] private Text dialogueTextObject;
+
+
+    private void Start() {
+        if (playsOnStart) {
+            StartFirstDialogue();
         }
-
-        //ensures that the cycling through sprites list is delayed at each call
-        if (notAtEnd)
-        {
-            InvokeRepeating("CycleThroughSprites", 1.0f, 2.5f);
-        } 
     }
 
-    //finds all visual novel scene sprites in folder and stores them in list
-    private void CollectAllSprites() 
-    {   
-        //prevents duplicates
-        sprites.Clear();
+    private void StartFirstDialogue() {
+        if (spokenDialogue.Count > 0) {
+            dialogueTextObject.text = spokenDialogue[currentDialogueIndex].textSpoken;
+        }
+    }
 
-        //finds the folder containing visual novel sprites
-        string folderPath = "Assets/UI/Visual_Novel_Sprites";
-        string[] spritePaths = AssetDatabase.FindAssets("t:Sprite", new string[] { folderPath });
-
-        //puts each sprite found into the list of sprites
-        foreach (string spritePath in spritePaths) 
+    private void Update() {
+        if (Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Space))
         {
-            string path = AssetDatabase.GUIDToAssetPath(spritePath);
-            Sprite sprite = AssetDatabase.LoadAssetAtPath<Sprite>(path);
-            if (sprite != null) {
-                sprites.Add(sprite);
+            if (currentDialogueIndex < spokenDialogue.Count - 1) {
+                currentDialogueIndex++;
+                dialogueTextObject.text = spokenDialogue[currentDialogueIndex].textSpoken;
+            } else {
+                Destroy(gameObject);
             }
         }
     }
 
-    //assigns a Sprite to an Image
-    private void CycleThroughSprites()
-    {
-        //ensures that the sprite isn't null
-        Sprite a_sprite = CycleThroughSpritesHelp();
-        if (a_sprite != null) {
-            currImage.sprite = a_sprite;
-        }
-
-        //loads next scene if we've reached the end of the sprites list 
-        if (idx >= sprites.Count - 1) {
-            CancelInvoke("CycleThroughSprites");
-            Debug.Log("Loading next scene...");
-            SceneManager.LoadScene("SampleScene");
-        }
+    private IEnumerator FadeInImage(Image image, Color colorFade) {
+        yield return null;
     }
 
-    //iterates through the list of sprites 
-    private Sprite CycleThroughSpritesHelp() 
-    {
-        idx++; //increment index count
-        if (sprites.Count != 0 && idx <= sprites.Count - 1) {
-            Debug.Log("Returning next sprite");
-            return sprites[idx];
-        }
-        
-        Debug.Log("At end of sprites list");
-        notAtEnd = false;
-        return null;
+    [System.Serializable]
+    public class DialogueSpeaker {
+        public bool spriteFaceLeftDefault = true;
+        public Sprite characterSprite = null;
+        public string characterName;
+        public Vector2 defaultOffset = new Vector2(0f, 0f);
+    }
+
+    [System.Serializable]
+    public class DialogueSpoken {
+        public string textSpoken; 
     }
 }
