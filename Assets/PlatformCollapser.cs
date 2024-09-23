@@ -9,10 +9,17 @@ public class PlatformCollapser : MonoBehaviour
     [SerializeField] private AnimationCurve fallCurve;
     [SerializeField] private float fallDuration = 0.25f;
 
+    [SerializeField] private List<GameObject> shutOffObjectsList = new List<GameObject>();
+
     public void Start() {
     }
 
     private void OnTriggerEnter(Collider other) {
+        foreach(GameObject shutOffObject in shutOffObjectsList) {
+            shutOffObject.SetActive(false);
+        }
+
+
         Collider triggerCollider = GetComponent<Collider>();
         if (triggerCollider != null) {
             triggerCollider.enabled = false;
