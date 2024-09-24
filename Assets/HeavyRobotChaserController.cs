@@ -15,7 +15,6 @@ public class HeavyRobotChaserController : MonoBehaviour
     // moving variables
     [SerializeField] private float moveSpeed = 1f;
     [SerializeField] private float rotationSpeed = 5f; // New variable for rotation speed
-    [SerializeField] private float delayToMove = 1f;
     [SerializeField] private GameObject playerObject; // the object this object will face and walk towards
     [SerializeField] private GameObject endChaseObject; // the object this object to trigger the end of the robo chase
     [SerializeField] private float detectDistance = 1f; // the minimum distance to identify a target as reached 
@@ -23,8 +22,20 @@ public class HeavyRobotChaserController : MonoBehaviour
     private bool isChasing = false;
     private float chaseStartTime;
 
+
+    // wall break variables
+    [SerializeField] private CollisionBreaker breakerScript;
+    [SerializeField] private GameObject VNObjectTrigger;
+    [SerializeField] private float breakDelay = 1f;
+    private bool hasTriggeredBefore = false;
+
+    private void StartWallBreak() {
+        breakerScript.Break();
+    }
+
     private void Start()
     {
+        
         if (animator == null)
         {
             animator = GetComponent<Animator>();
@@ -34,21 +45,27 @@ public class HeavyRobotChaserController : MonoBehaviour
         animator.SetLayerWeight(IdleLayerIndex, 1f);
         animator.SetLayerWeight(RunLayerIndex, 0f);
 
-        // Start the chase after the delay
-        StartCoroutine(StartChaseAfterDelay());
     }
 
-    private IEnumerator StartChaseAfterDelay()
-    {
-        yield return new WaitForSeconds(delayToMove);
-        isChasing = true;
-        chaseStartTime = Time.time;
-        runningTargetWeight = 1f;
-        IdleTargetWeight = 0f;
+
+    private void TriggerBreakCycle() {
+        if (VNObjectTrigger == null && !hasTriggeredBefore) {
+            hasTriggeredBefore = true;
+
+
+            isChasing = true;
+            runningTargetWeight = 1f;
+            IdleTargetWeight = 0f;
+            Invoke("StartWallBreak", breakDelay);
+            // StartWallBreak();
+        }
     }
 
     private void Update()
     {
+        TriggerBreakCycle();
+
+
         if (!isChasing) return;
 
         // Move towards the player

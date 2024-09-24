@@ -6,12 +6,13 @@ public class CollisionBreaker : MonoBehaviour
 {
     [SerializeField] private GameObject OriginalObject; // object that should look like its breaking apart
     [SerializeField] private List<GameObject> breakParts = new List<GameObject>();
-    [SerializeField] private float delay = 3f;
+
     [SerializeField] private Vector3 breakDirection = Vector3.up;
     [SerializeField] private float forceMagnitude = 5f;
     [SerializeField] private float randomizationDegree = 30f;
     [SerializeField] private Vector3 breakPoint;
     [SerializeField] private float deleteTimer = 10f;
+    private bool hasBroken = false;
 
     private void Start()
     {
@@ -19,8 +20,6 @@ public class CollisionBreaker : MonoBehaviour
         {
             part.SetActive(false);
         }
-        Invoke("Break", delay);
-        Invoke("SafetyDelete", deleteTimer);
     }
 
     private void SafetyDelete() {
@@ -30,8 +29,14 @@ public class CollisionBreaker : MonoBehaviour
         }
     }
 
-    private void Break()
+    public void Break()
     {
+        Invoke("SafetyDelete", deleteTimer);
+        if (hasBroken) {
+            return;
+        }
+        hasBroken = true;
+
         if (OriginalObject) {
             Destroy(OriginalObject);
         }

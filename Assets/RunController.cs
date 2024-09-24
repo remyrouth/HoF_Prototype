@@ -5,10 +5,12 @@ using UnityEngine;
 public class RunController : MonoBehaviour
 {
     // move variables
-    public float moveSpeed = 5f;
-    public float fallSpeed = 9.8f; // Fall speed when in the air
-    public float raycastDistance = 1.1f; // Distance for ground detection
+    [SerializeField] private float moveSpeed = 5f;
+    [SerializeField] private float fallSpeed = 9.8f; // Fall speed when in the air
+    [SerializeField] private float raycastDistance = 1.1f; // Distance for ground detection
     private bool isFalling = false; // Track if the player is falling
+
+    private bool canUsePlayerInput = true; // used for pausing controller
 
 
     // animation variables
@@ -31,6 +33,10 @@ public class RunController : MonoBehaviour
         mainCamera = Camera.main;
     }
 
+    public void PauseControls(bool shouldPause) {
+        canUsePlayerInput = !shouldPause;
+    }
+
     void Update()
     {
         HandleMovement();
@@ -38,7 +44,7 @@ public class RunController : MonoBehaviour
         HandleFalling();
 
         // Check for W key input
-         if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.D))
+         if ((Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.D)) && canUsePlayerInput)
         {
             StartRunning();
         }
@@ -101,6 +107,10 @@ public class RunController : MonoBehaviour
 
     void HandleMovement()
     {
+        if (!canUsePlayerInput) {
+            return;
+        }
+
         float moveX = Input.GetAxis("Horizontal");
         float moveZ = Input.GetAxis("Vertical");
 
