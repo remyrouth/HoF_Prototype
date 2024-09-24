@@ -35,7 +35,6 @@ public class TeamChooserController : MonoBehaviour
     {
         // MechStats currentMech = teamModel.TeamSpots[teamModel.CurrentSpotIndex].chosenMech;
         mechDisplayManager.DisplayMech(null);
-        teamChooserUI.UpdateUI();
         // MechDisplayManager
     }
 

@@ -10,6 +10,7 @@ public class TeamModel
     public MapMarkerController.MapLevel CurrentLevel { get; private set; }
     private MechDisplayManager mechDisplayManager;
 
+    // this is initialized by the TeamChooserUI.cs script 
     public void InitializeTeamList(MapMarkerController.MapLevel levelInfo, MechDisplayManager newMechDisplayManager) {
         mechDisplayManager = newMechDisplayManager;
         CurrentLevel = levelInfo;

@@ -16,6 +16,7 @@ public class PauseMenuController : MonoBehaviour
     private GamePlaySettingsManager settingsManager;
 
     private void Awake() {
+        MainPauseMenu.SetActive(true);
         settingsManager = FindObjectOfType<GamePlaySettingsManager>();
         if (settingsManager == null) {
             settingsManager = gameObject.AddComponent<GamePlaySettingsManager>();
