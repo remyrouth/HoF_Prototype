@@ -20,6 +20,10 @@ public class VNController : MonoBehaviour
     [SerializeField] private int currentDialogueIndex = 0;
     [SerializeField] private Text dialogueTextObject;
 
+    [Header("Speaker Indices Currently On")]
+    [SerializeField] private int currentLeftSpeakerIndex = -1;
+    [SerializeField] private int currentRightSpeakerIndex = -1;
+
 
     private void Start() {
         leftSpeakerImage.enabled = false;
@@ -49,30 +53,111 @@ public class VNController : MonoBehaviour
     }
 
     private void DisplayCurrentInfo() {
-        // getting text to show up
-        dialogueTextObject.text = spokenDialogue[currentDialogueIndex].textSpoken;
+        StartCoroutine(FadeInText(dialogueTextObject, 0.5f));
 
-        // getting images to show up
-        List<DialogueSpeaker> dialogueSide = leftSideSpeakers;
-        if (spokenDialogue[currentDialogueIndex].rightSide) {
-            dialogueSide = rightSideSpeakers;
+        ChangeSpeakerImage();
+    }
+
+    private IEnumerator FadeInImage(Image image, Sprite newSprite, float duration)
+    {
+        Color oldColor = image.color;
+        float counter = 0;
+
+        //fade out
+        while(counter < duration)
+        {
+            counter += Time.deltaTime;
+            float alpha = Mathf.Lerp(1, 0, counter / duration);
+            image.color = new Color(oldColor.r, oldColor.g, oldColor.b, alpha);
+            yield return null;
         }
-        int speakerIndex = spokenDialogue[currentDialogueIndex].speakerIndex;
 
-        if (speakerIndex < dialogueSide.Count) {
-            if (spokenDialogue[currentDialogueIndex].rightSide) {
-                rightSpeakerImage.enabled = true;
-                rightSpeakerImage.sprite = dialogueSide[speakerIndex].characterSprite;
-            } else {
-                leftSpeakerImage.enabled = true;
-                leftSpeakerImage.sprite = dialogueSide[speakerIndex].characterSprite;
-            }
+        image.sprite = newSprite;
+
+        //fade in
+        while(counter < duration)
+        {
+            counter += Time.deltaTime;
+            float alpha = Mathf.Lerp(0, 1, counter / duration);
+            image.color = new Color(oldColor.r, oldColor.g, oldColor.b, alpha);
+            yield return null;
+        }
+
+        
+    }
+
+    private IEnumerator FadeInText(Text text, float duration)
+    {
+        Color oldColor = text.color;
+        float counter = 0;
+
+        //fade out
+        while(counter < duration)
+        {
+            counter += Time.deltaTime;
+            float alpha = Mathf.Lerp(1, 0, counter / duration);
+            text.color = new Color(oldColor.r, oldColor.g, oldColor.b, alpha);
+            yield return null;
+        }
+
+        text.text = spokenDialogue[currentDialogueIndex].textSpoken;
+
+        //fade in
+        while(counter < duration)
+        {
+            counter += Time.deltaTime;
+            float alpha = Mathf.Lerp(0, 1, counter / duration);
+            text.color = new Color(oldColor.r, oldColor.g, oldColor.b, alpha);
+            yield return null; 
         }
     }
 
-    // private IEnumerator FadeInImage(Image image, Color colorFade) {
-    //     yield return null;
-    // }
+    private void ChangeSpeakerImage()
+    {
+        List<DialogueSpeaker> dialogueSide = leftSideSpeakers;
+        bool isRightSide = spokenDialogue[currentDialogueIndex].rightSide;
+        if (isRightSide)
+        {
+            dialogueSide = rightSideSpeakers;
+        }
+
+
+        int speakerIndex = spokenDialogue[currentDialogueIndex].speakerIndex;
+
+        if (speakerIndex < dialogueSide.Count)
+        {
+            Sprite newSprite = dialogueSide[speakerIndex].characterSprite;
+           
+            if (spokenDialogue[currentDialogueIndex].rightSide)
+            {
+                if(spokenDialogue[currentDialogueIndex].speakerIndex == currentRightSpeakerIndex)
+                {
+                    StartCoroutine(FadeInImage(rightSpeakerImage, newSprite, 0.5f));
+                }
+                else
+                {
+                    rightSpeakerImage.sprite = newSprite;
+                }
+                
+            }
+
+            else
+            {
+                if (spokenDialogue[currentDialogueIndex].speakerIndex == currentRightSpeakerIndex)
+                {
+                    StartCoroutine(FadeInImage(leftSpeakerImage, newSprite, 0.5f));
+                }
+                else
+                {
+                    rightSpeakerImage.sprite = newSprite;
+                }
+            }
+        }
+
+
+    }
+
+   
 
     [System.Serializable]
     public class DialogueSpeaker {
