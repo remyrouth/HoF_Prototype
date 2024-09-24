@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+
 
 public class HeavyRobotChaserController : MonoBehaviour
 {
@@ -66,8 +68,38 @@ public class HeavyRobotChaserController : MonoBehaviour
         TriggerBreakCycle();
 
 
-        if (!isChasing) return;
+        if (!isChasing) {
+            return;
+        }
 
+        HandleMovingRobot();
+
+        HandleEndChaseObject();
+
+        UpdateAnimationLayerWeights();
+
+    }
+
+    private void UpdateAnimationLayerWeights() {
+        // Update animation layer weights
+        float currentRunWeight = animator.GetLayerWeight(RunLayerIndex);
+        float currentIdleWeight = animator.GetLayerWeight(IdleLayerIndex);
+
+        animator.SetLayerWeight(RunLayerIndex, Mathf.MoveTowards(currentRunWeight, runningTargetWeight, Time.deltaTime * transitionRate));
+        animator.SetLayerWeight(IdleLayerIndex, Mathf.MoveTowards(currentIdleWeight, IdleTargetWeight, Time.deltaTime * transitionRate));
+    }
+
+    private void HandleEndChaseObject() {
+        // Check if we've reached the end chase object
+        if (endChaseObject != null && Vector3.Distance(transform.position, endChaseObject.transform.position) <= detectDistance)
+        {
+            isChasing = false;
+            runningTargetWeight = 0f;
+            IdleTargetWeight = 1f;
+        }
+    }
+
+    private void HandleMovingRobot() {
         // Move towards the player
         if (playerObject != null)
         {
@@ -84,19 +116,19 @@ public class HeavyRobotChaserController : MonoBehaviour
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
         }
 
-        // Check if we've reached the end chase object
-        if (endChaseObject != null && Vector3.Distance(transform.position, endChaseObject.transform.position) <= detectDistance)
-        {
-            isChasing = false;
-            runningTargetWeight = 0f;
-            IdleTargetWeight = 1f;
+        if (playerObject != null && Vector3.Distance(transform.position, playerObject.transform.position) <= detectDistance) {
+            RestartScene();
         }
+    }
+    
 
-        // Update animation layer weights
-        float currentRunWeight = animator.GetLayerWeight(RunLayerIndex);
-        float currentIdleWeight = animator.GetLayerWeight(IdleLayerIndex);
-
-        animator.SetLayerWeight(RunLayerIndex, Mathf.MoveTowards(currentRunWeight, runningTargetWeight, Time.deltaTime * transitionRate));
-        animator.SetLayerWeight(IdleLayerIndex, Mathf.MoveTowards(currentIdleWeight, IdleTargetWeight, Time.deltaTime * transitionRate));
+    private void RestartScene() {
+        Debug.Log("StartTransition method called");
+        TransitionController transitioner = FindObjectOfType<TransitionController>();
+        if (transitioner != null) {
+            transitioner.TransitionToNewScene(SceneManager.GetActiveScene().name);
+        } else {
+            Debug.LogWarning("There is no TransitionController prefab in scene, cannot transition");
+        }
     }
 }

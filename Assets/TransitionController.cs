@@ -42,6 +42,10 @@ public class TransitionController : MonoBehaviour
     }
 
     public void TransitionToNewScene(string newSceneName) {
+        if (isBlackScreenTarget) {
+            return;
+            // to disable repetative use from outside controllers and possible bugs
+        }
         isBlackScreenTarget = true;
         blackScreenFader.color = new Color(blackScreenFader.color.r, blackScreenFader.color.g, blackScreenFader.color.b, 0.001f);
         sceneTransitionTarget = newSceneName;
