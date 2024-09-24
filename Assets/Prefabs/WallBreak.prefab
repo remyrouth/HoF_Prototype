@@ -4513,7 +4513,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: -1, y: -0.88, z: 3.28}
-  m_LocalScale: {x: -0.6856363, y: 0.6856363, z: -0.6856363}
+  m_LocalScale: {x: -0.6856362, y: 0.6856363, z: -0.6856362}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5419935011344753540}
@@ -4590,12 +4590,11 @@ MonoBehaviour:
   - {fileID: 2885909639538432292}
   - {fileID: 1233015275963986950}
   - {fileID: 6466109271255111545}
-  delay: 3
   breakDirection: {x: 3.09, y: 11.4, z: -32.97}
   forceMagnitude: 5
   randomizationDegree: 30
   breakPoint: {x: -1, y: 2.05, z: 4.28}
-  deleteTimer: 10
+  deleteTimer: 4
 --- !u!1 &8577240684866218954
 GameObject:
   m_ObjectHideFlags: 0
