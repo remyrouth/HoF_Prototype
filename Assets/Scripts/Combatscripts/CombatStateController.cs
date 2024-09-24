@@ -34,7 +34,8 @@ public class CombatStateController : MonoBehaviour
     // called by GameStateManager
 
     // Friendlt deceased list
-    private List<string> friendlyDeceasedList;
+    private List<CharacterStats> friendlyDeceasedList;
+    private List<CharacterStats> enemyDeceasedList;
 
     // we input an object to tell how many have called pause. we know we can
     // unpause from other scripts, so we have to know how many scripts
@@ -100,19 +101,23 @@ public class CombatStateController : MonoBehaviour
             currentFriendlyCount++;
         } else {
             if (friendlyDeceasedList == null) {
-                friendlyDeceasedList = new List<string>();
+                friendlyDeceasedList = new List<CharacterStats>();
             }
-            friendlyDeceasedList.Add(name.GetPilotName());
+            friendlyDeceasedList.Add(name);
             currentFriendlyCount--;
             EndLevel();
         }
         // Debug.Log("currentFriendlyCount: " + currentFriendlyCount);
     }
 
-    public void IncreaseEnemyCount(bool increase) {
+    public void IncreaseEnemyCount(bool increase, CharacterStats name) {
         if (increase) {
             currentEnemyCount++;
         } else {
+            if (enemyDeceasedList == null) {
+                enemyDeceasedList = new List<CharacterStats>();
+            }
+            enemyDeceasedList.Add(name);
             currentEnemyCount--;
             EndLevel();
         }
@@ -128,13 +133,13 @@ public class CombatStateController : MonoBehaviour
             SceneManager.LoadScene("Map");
         }
     }
-    
-    public int FinalFriendlyCasualtyCount()
-    {
-        return currentFriendlyCount;
+
+    public List<CharacterStats> DeceasedFriendlyList() {
+        return friendlyDeceasedList;
     }
 
-    public List<string> DeceasedFriendlyList() {
-        return friendlyDeceasedList;
+    public List<CharacterStats> DeceasedEnemyList()
+    {
+        return enemyDeceasedList;
     }
 }

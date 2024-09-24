@@ -27,6 +27,14 @@ public class CharacterStats : ScriptableObject
     [SerializeField]
     private int clarityGainedFromAttacks = 1;
 
+    private enum Faction {
+        PrincipalityOfAmerica, 
+        USA, 
+        NeoDahomey // etc. as decided by story
+    }
+
+    [SerializeField]
+    private Faction pilotFaction;
 
     public string GetPilotName() {
         return pilotName;
@@ -80,5 +88,10 @@ public class CharacterStats : ScriptableObject
 
     public int GetAttackClarity() {
         return clarityGainedFromAttacks;
+    }
+
+    public string GetPilotFaction()
+    {
+        return pilotFaction.ToString();
     }
 }

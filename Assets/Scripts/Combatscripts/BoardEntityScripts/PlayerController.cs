@@ -61,7 +61,7 @@ public class PlayerController : MonoBehaviour
         if (isPlayerEntity) {
             combatStateController.IncreaseFriendlyCount(true, null);
         } else {
-            combatStateController.IncreaseEnemyCount(true);
+            combatStateController.IncreaseEnemyCount(true, null);
         }
 
     }
@@ -130,7 +130,7 @@ public class PlayerController : MonoBehaviour
             if (isPlayerEntity) {
                 combatStateController.IncreaseFriendlyCount(false, pilotInfo);
             } else {
-                combatStateController.IncreaseEnemyCount(false);
+                combatStateController.IncreaseEnemyCount(false, pilotInfo);
             }
             if (deathSound != null) {
                 SoundManager soundManager = FindObjectOfType<SoundManager>();

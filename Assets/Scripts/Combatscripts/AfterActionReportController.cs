@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -8,7 +9,7 @@ public class AfterActionReportController : MonoBehaviour
 {
     [SerializeField] private GameObject gameObject;
     [SerializeField] private Text casualtyReport; 
-    [SerializeField] private Text friendlysList; 
+    [SerializeField] private Text indivCasualtyList;
     
     void Start()
     {
@@ -18,24 +19,49 @@ public class AfterActionReportController : MonoBehaviour
             combatStateController = new GameObject("CombatStateController").AddComponent<CombatStateController>();
             // combatStateController.PauseOrResumeCombat(shouldPause, gameObject);
         }
-        int casualties = combatStateController.FinalFriendlyCasualtyCount();
-        casualtyReport.text = "Casualties: " + casualties.ToString();
+
+        // Retrieve casualties list
+        List<CharacterStats> friendlyCasualties = combatStateController.DeceasedFriendlyList();
+        List<CharacterStats> enemyCasualties = combatStateController.DeceasedEnemyList();
+        if (friendlyCasualties == null) { friendlyCasualties = new List<CharacterStats>(); }
+        if (enemyCasualties == null) { enemyCasualties = new List<CharacterStats>(); }
         
-        /*
-         * Currently represents total Friendly (USA) casualties.
-         * Enemy (Principality of America) are not in this representation.
-         * Possible things to rep for dogtag-esque death report: DOB, Residence, Marital Status, Next of Kin, Origin, etc.
-         * Pay mortuary fee option: two buttons (pay, dont)
-         */
+        // Total casualties
+        int friendlyCasualtiesInt = friendlyCasualties.Count;
+        int enemyCasualtiesInt = enemyCasualties.Count;
+        int totalCasualties = friendlyCasualtiesInt + enemyCasualtiesInt;
         
-        // Use same CSC to report list of deceased. 
-        List<string> friendlyDeceasedNames = combatStateController.DeceasedFriendlyList();
+        casualtyReport.text = "Total Casualties: " + totalCasualties.ToString() + "\n" + 
+        "Friendly Casualties: " + friendlyCasualtiesInt.ToString() + "\n" + 
+        "Enemy Casualties: " + enemyCasualtiesInt.ToString();
+        
+        // Display all casualties
+        // Use same CSC to report list of deceased friendlys.
+        
+        List<CharacterStats> allCasualties = friendlyCasualties.Concat(enemyCasualties).ToList();
+
         string namesText = "None";
-        if (friendlyDeceasedNames != null)
+        if (allCasualties.Count != 0)
         {
-            namesText = string.Join(", ", friendlyDeceasedNames); 
+            List<string> casualtyNames = new List<string>();
+            foreach (CharacterStats name in allCasualties)
+            {
+                casualtyNames.Add(name.GetPilotFaction() + ": " + NameDisplay(name.GetPilotName()));
+            }
+            namesText = string.Join(", \n", casualtyNames); 
         }
-        friendlysList.text = "The deceased: " + namesText;
+        // Test: namesText = NameDisplay("Madeline Engle");
+        
+        indivCasualtyList.text = "The deceased: \n" + namesText;
+    }
+
+    // Official Formatting of Character Names (Last, First)
+    private string NameDisplay(string pilotName)
+    {
+        string[] sections = pilotName.Split(" ");
+        // Are there any names with more than 2 names (first + last)? ex: (first + last last)
+        string formatted = sections[1] + ", " + sections[0];
+        return formatted;
     }
     
     // TellGameManagerPause: Tell game manager to pause in case of (starting) AAR (or something else?)
