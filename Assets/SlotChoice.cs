@@ -60,4 +60,16 @@ public class SlotChoice : MonoBehaviour
         teamSpot.chosenPilot = pilot;
         return teamSpot;
     }
+
+    public bool ContainsMechOrPilot(CharacterStats newPilot, MechStats newMech) {
+        if (newPilot == pilot && newPilot != null) {
+            return true;
+        }
+
+        if (newMech == mech && newMech != null) {
+            return true;
+        }
+
+        return false;
+    }
 }

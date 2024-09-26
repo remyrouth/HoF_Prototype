@@ -10,10 +10,11 @@ public class TeamChooserUI : MonoBehaviour
     [SerializeField] private GameObject slotChoiceObjectsParent;
     [SerializeField] private Text slotText;
 
-
-
-
+    [Header("General Menu Variables")]
     [SerializeField] private GameObject pilotMechFramePrefab;
+    [SerializeField] private float maxSlotFramesPerPage = 4;
+    [SerializeField] private float maxMechPilotFramesPerPage = 8;
+
     [Header("Pilot Menu Variables")]
     [SerializeField] private GameObject pilotChoiceObjectsParent;
     [SerializeField] private Image pilotImageDisplay;
@@ -22,14 +23,14 @@ public class TeamChooserUI : MonoBehaviour
     [SerializeField] private Image mechImageDisplay;
 
     [Header("Persistor Object")]
-    [SerializeField] private GameObject persistorObject;
+    [SerializeField] private GameObject persistorObject; // is not supposed to be a prefab
     // current state variables
 
-    [Header("Current State Variables")]
-    [SerializeField] private currentUIState currentStateOfUI = currentUIState.choosingSlot;
-    [SerializeField] private SlotChoice currentSlot; // doesn't need to be serialized
-    [SerializeField] private MapMarkerController.MapLevel currentLevelInfo; // doesn't need to be serialized
-    [SerializeField] private TeamBuilder availableEntities;
+    // [Header("Current State Variables")]
+    private currentUIState currentStateOfUI = currentUIState.choosingSlot;
+    private SlotChoice currentSlot; // doesn't need to be serialized
+    private MapMarkerController.MapLevel currentLevelInfo; // doesn't need to be serialized
+    private TeamBuilder availableEntities;
     private bool isPaused = false;
     // [SerializeField] private TeamModel currentTeam;
 
@@ -108,12 +109,15 @@ public class TeamChooserUI : MonoBehaviour
             // basically if currentTeam.TeamSpots already has that
             // pilot in it, then do not create it in this UI
             
-            // making object
-            GameObject pilotUIObject = Instantiate(pilotMechFramePrefab, pilotChoiceObjectsParent.transform);
+            if (!IsMechOrPilotAlreadyUsedInSlots(pilot, null)) {
+                // making object
+                GameObject pilotUIObject = Instantiate(pilotMechFramePrefab, pilotChoiceObjectsParent.transform);
 
-            // initalizing script
-            TeamSpotOptionController teamSpot_Pilot = pilotUIObject.GetComponent<TeamSpotOptionController>();
-            teamSpot_Pilot.BecomePilotOption(pilot);
+                // initalizing script
+                TeamSpotOptionController teamSpot_Pilot = pilotUIObject.GetComponent<TeamSpotOptionController>();
+                teamSpot_Pilot.BecomePilotOption(pilot);
+            }
+
         }
     }
 
@@ -127,14 +131,28 @@ public class TeamChooserUI : MonoBehaviour
         foreach(MechStats mech in availableEntities.mechs) {
             // basically if currentTeam.TeamSpots already has that
             // pilot in it, then do not create it in this UI
-            
-            // making object
-            GameObject pilotUIObject = Instantiate(pilotMechFramePrefab, mechChoiceObjectsParent.transform);
+            if (!IsMechOrPilotAlreadyUsedInSlots(null, mech)) {
+                // making object
+                GameObject pilotUIObject = Instantiate(pilotMechFramePrefab, mechChoiceObjectsParent.transform);
 
-            // initalizing script
-            TeamSpotOptionController teamSpot_Pilot = pilotUIObject.GetComponent<TeamSpotOptionController>();
-            teamSpot_Pilot.BecomeMechOption(mech);
+                // initalizing script
+                TeamSpotOptionController teamSpot_Pilot = pilotUIObject.GetComponent<TeamSpotOptionController>();
+                teamSpot_Pilot.BecomeMechOption(mech);
+            }
+
+            
         }
+    }
+
+    private bool IsMechOrPilotAlreadyUsedInSlots(CharacterStats newPilot, MechStats newMech) {
+        foreach (Transform slot in slotChoiceObjectsParent.transform)
+        {
+            SlotChoice slotScript = slot.gameObject.GetComponent<SlotChoice>();
+            if (slotScript.ContainsMechOrPilot(newPilot, newMech)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     // called by Button
