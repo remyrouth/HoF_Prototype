@@ -21,13 +21,19 @@ public class TeamChooserController : MonoBehaviour
 
     public void AccessLevelBasedOnData(MapMarkerController.MapLevel levelInfo)
     {
+        Debug.Log("levelInfo max: " + levelInfo.teamMemberMax);
         if (teamModel != null) {
             teamModel = null;
         }
         teamModel = new TeamModel();
         currentLevel = levelInfo;
         teamModel.InitializeTeamList(currentLevel, mechDisplayManager);
-        teamChooserUI.Initialize(teamModel, availableEntities);
+
+        // availableEntities is just a scriptable object which 
+        // holds all available entities we could ever choose.
+        // In the future, we should replace this with entities 
+        // from a text file
+        teamChooserUI.Initialize(levelInfo, availableEntities);
         OnTeamChanged();
     }
 
@@ -36,16 +42,6 @@ public class TeamChooserController : MonoBehaviour
         // MechStats currentMech = teamModel.TeamSpots[teamModel.CurrentSpotIndex].chosenMech;
         mechDisplayManager.DisplayMech(null);
         // MechDisplayManager
-    }
-
-    public void StartLevel() {
-        GameObject teamPersistorObject = new GameObject("TeamPersistorObject");
-        TeamRosterPersistor roster = teamPersistorObject.AddComponent<TeamRosterPersistor>();
-
-
-        
-        // Debug.Log("TeamSpots Count form controller: " + teamModel.TeamSpots.Count);
-        roster.PrepTeamForLevel(currentLevel.levelStringName, teamModel.TeamSpots, unitPlacementControllerPrefab);
     }
 
 
