@@ -11702,6 +11702,8 @@ MonoBehaviour:
     rightSide: 0
   currentDialogueIndex: 0
   dialogueTextObject: {fileID: 1832411603}
+  duration: 3
+  frameRate: 30
 --- !u!114 &442268950
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -24475,6 +24477,8 @@ MonoBehaviour:
     rightSide: 0
   currentDialogueIndex: 0
   dialogueTextObject: {fileID: 30932652}
+  duration: 1
+  frameRate: 10
 --- !u!1001 &937866317
 PrefabInstance:
   m_ObjectHideFlags: 0

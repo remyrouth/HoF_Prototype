@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEditor;
+using UnityEditor.Build;
 
 public class VNController : MonoBehaviour
 {
@@ -20,7 +21,13 @@ public class VNController : MonoBehaviour
     [SerializeField] private int currentDialogueIndex = 0;
     [SerializeField] private Text dialogueTextObject;
 
+    [Header("Fade in")] 
+    [SerializeField] private float fadeDuration = 3f;
 
+    private bool leftImageHasFaded = false;
+    private bool rightImageHasFaded = false;
+    
+    
     private void Start() {
         leftSpeakerImage.enabled = false;
         rightSpeakerImage.enabled = false;
@@ -28,7 +35,7 @@ public class VNController : MonoBehaviour
             StartFirstDialogue();
         }
     }
-
+    
     private void StartFirstDialogue() {
         if (spokenDialogue.Count > 0) {
             DisplayCurrentInfo();
@@ -48,7 +55,8 @@ public class VNController : MonoBehaviour
         }
     }
 
-    private void DisplayCurrentInfo() {
+    private void DisplayCurrentInfo()
+    {
         // getting text to show up
         dialogueTextObject.text = spokenDialogue[currentDialogueIndex].textSpoken;
 
@@ -63,16 +71,44 @@ public class VNController : MonoBehaviour
             if (spokenDialogue[currentDialogueIndex].rightSide) {
                 rightSpeakerImage.enabled = true;
                 rightSpeakerImage.sprite = dialogueSide[speakerIndex].characterSprite;
+                
+                if (!rightImageHasFaded)
+                {
+                    StartCoroutine(FadeInImage(rightSpeakerImage)); // image only fades in once enabled
+                    rightImageHasFaded = true;
+                }
             } else {
                 leftSpeakerImage.enabled = true;
                 leftSpeakerImage.sprite = dialogueSide[speakerIndex].characterSprite;
+
+                if (!leftImageHasFaded)
+                {
+                    StartCoroutine(FadeInImage(leftSpeakerImage)); // ditto
+                    leftImageHasFaded = true;
+                }
             }
         }
     }
 
-    // private IEnumerator FadeInImage(Image image, Color colorFade) {
-    //     yield return null;
-    // }
+    private IEnumerator FadeInImage(Image image)
+    {
+        // making sure image is transparent at first
+        image.color = new Color(image.color.r, image.color.g, image.color.b, 0);
+        float timeElapsed = 0; 
+
+        while (timeElapsed < fadeDuration) // controls fade duration by slowly increasing alpha of image
+        {
+            float alpha = Mathf.Lerp(0, 1, timeElapsed / fadeDuration); 
+            
+            image.color = new Color(image.color.r, image.color.g, image.color.b, alpha);
+            timeElapsed += Time.deltaTime; // keeps track of how much time has passed
+            
+            yield return null; 
+        }
+        
+        // ensures image is at 100% alpha at the end of the loop
+        image.color = new Color(image.color.r, image.color.g, image.color.b, 1);
+    }
 
     [System.Serializable]
     public class DialogueSpeaker {
