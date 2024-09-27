@@ -9,10 +9,11 @@ public class TeamRosterPersistor : MonoBehaviour
     private CombatStateController combatStateController;
     private static TeamRosterPersistor instance;
 
-    public void PrepTeamForLevel(string sceneName, List<TeamChooserController.TeamSpot> newTeamRoster, GameObject placementPrefab) {
-        unitPlacementControllerPrefab = placementPrefab;
+    public void PrepTeamForLevel(string sceneName, List<TeamChooserController.TeamSpot> newTeamRoster) {
         // Debug.Log("Prepped");
+        DontDestroyOnLoad(gameObject);
         teamSpots = newTeamRoster;
+        Debug.Log("newTeamRoster Length: " + newTeamRoster.Count);
         SceneManager.LoadScene(sceneName);
     }
 
@@ -24,6 +25,25 @@ public class TeamRosterPersistor : MonoBehaviour
             instance = this;
             DontDestroyOnLoad(gameObject);
             SceneManager.sceneLoaded += OnSceneLoaded; // Subscribe to the scene loaded event
+        }
+        else
+        {
+            Destroy(gameObject); // Destroy duplicates
+        }
+    }
+
+    private void Update() {
+        // Debug.Log("Persistor is updating");
+        // Singleton pattern to ensure only one instance
+        if (instance == this)
+        {
+            // Debug.Log("Is the instance");
+            MapMarkerController marker = FindObjectOfType<MapMarkerController>();
+            if (marker == null) {
+                Debug.Log("Placed placement controller canvas in scene, now self deleting");
+                PlaceTeamOnBoard();
+                Destroy(gameObject);
+            }
         }
         else
         {
@@ -80,8 +100,19 @@ public class TeamRosterPersistor : MonoBehaviour
     // unity manager itself using SceneManager.sceneLoaded
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        // PlaceRosterUsingExistingPieces();
-        PlaceTeamOnBoard();
+
+        // this is so fucking jenk I am soooooo fucking sorry if you're looking at this.
+        // basically Team Persistor spawns the placement controller canvas responsible for placing player
+        // pieces on the board. But we already have a persistor in scene (why? see next paragraph), so we need to prevent
+        // it from spawning in the map scene
+
+        // we have TeamRosterPersistor in scene because if this script is created using AddComponent then it doesn't get its
+        // default prefabs from the project window, so it must be manually added into scene. 
+        MapMarkerController marker = FindObjectOfType<MapMarkerController>();
+        if (marker != null) {
+            PlaceTeamOnBoard();
+        }
+        // PlaceTeamOnBoard();
     }
 
 
@@ -103,6 +134,9 @@ public class TeamRosterPersistor : MonoBehaviour
         GameObject unitPlacer = Instantiate(unitPlacementControllerPrefab, new Vector3(0, 0, 0), Quaternion.identity);
         UnitPlacementController unitPlacementController = unitPlacer.GetComponent<UnitPlacementController>();
         unitPlacementController.InitializeFromTeamRosterPersistor(teamSpots);
+        if (teamSpots.Count <= 0) {
+            Debug.LogWarning("teamSpots was given a team length of 0");
+        }
 
     }
 

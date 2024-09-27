@@ -42,6 +42,8 @@ public class MapSelectorController : MonoBehaviour
     // Start is called before the first frame update
     private void Start()
     {
+        lowerTeamChooserObject.SetActive(false);
+
         camScript = FindObjectOfType<CameraController>();
         mainCamera = Camera.main;
         MapMarkerController[] markersArray = FindObjectsOfType<MapMarkerController>();
@@ -101,6 +103,7 @@ public class MapSelectorController : MonoBehaviour
                 Vector3 levelPosition = currentMarker.gameObject.transform.position;
                 GiveLevelToTeamChooser();
                 currentMarker = null;
+                lowerTeamChooserObject.SetActive(true);
                 lowerTeamChooserObject.transform.position = new Vector3(levelPosition.x, levelPosition.y - yLowerOffset, levelPosition.z);
 
 

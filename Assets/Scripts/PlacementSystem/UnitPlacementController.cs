@@ -148,7 +148,7 @@ public class UnitPlacementController : MonoBehaviour
         }
     }
 
-    private void StartGameCheck()  {                        // THIS NEVER SUCCEEDES WTF, FIX THIS U TWAT
+    private void StartGameCheck()  {
         Debug.Log("StartGameCheck method called");
 
         bool canstartGame = HaveAllFramesBeenUsedCheck();

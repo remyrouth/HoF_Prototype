@@ -5,27 +5,28 @@ using UnityEngine.UI;
 
 public class TeamSpotOptionController : MonoBehaviour
 {
-    [SerializeField] private TeamModel teamModel;
+    // this is a script that
+    // holds a pilot or mech 
+    // that the player will select 
+    // in the team chooser
     [SerializeField] private MechStats chosenMech;
     [SerializeField] private CharacterStats chosenPilot;
     [SerializeField] private Image entityPortrait;
-
     private bool isPaused = false;
 
     
 
     // initialized by team chooser
-    public void BecomeMechOption(MechStats mechOption, TeamModel newTeamModel) {
-        teamModel = newTeamModel;
+    public void BecomeMechOption(MechStats mechOption) {
         chosenMech = mechOption;
         chosenPilot = null;
         entityPortrait.gameObject.SetActive(true);
+        Debug.Log("BecomeMechOption method executed: " + mechOption.GetMechSprite() != null);
         entityPortrait.sprite = mechOption.GetMechSprite();
     }
 
     // initialized by team chooser
-    public void BecomePilotOption(CharacterStats pilotOption, TeamModel newTeamModel) {
-        teamModel = newTeamModel;
+    public void BecomePilotOption(CharacterStats pilotOption) {
         chosenMech = null;
         chosenPilot = pilotOption;
         entityPortrait.gameObject.SetActive(true);
@@ -40,23 +41,14 @@ public class TeamSpotOptionController : MonoBehaviour
         
         TeamChooserController teamChooserscript = FindObjectOfType<TeamChooserController>();
         if (teamChooserscript == null) {
-            Debug.LogError("TeamChooserController does not exist. It should though");
+            Debug.LogError("TeamChooserController does not exist. It should though. Designer Fucked up");
         }
-
-
 
         if (chosenMech == null && chosenPilot == null) {
             Debug.LogError("SendEntity should not function before being initialized. Something is wrong");
-        } else if (chosenMech == null && chosenPilot != null) {
-            // teamChooserscript.UpdatePilotCurrentSpotIndex(chosenPilot);
-            teamModel.UpdatePilot(chosenPilot);
+        } else {
             TeamChooserUI teamUIScript = FindObjectOfType<TeamChooserUI>();
-            teamUIScript.UpdatePortraits();
-        } else if (chosenMech != null && chosenPilot == null) {
-            // teamChooserscript.UpdateMechCurrentSpotIndex(chosenMech);
-            teamModel.UpdateMech(chosenMech);
-            TeamChooserUI teamUIScript = FindObjectOfType<TeamChooserUI>();
-            teamUIScript.UpdatePortraits();
+            teamUIScript.UpdateCurrentSlot(chosenPilot, chosenMech);
         }
     }
 

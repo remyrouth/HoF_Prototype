@@ -5,175 +5,298 @@ using UnityEngine.UI;
 
 public class TeamChooserUI : MonoBehaviour
 {
-    [SerializeField] private Text teamSizeText;
-    [SerializeField] private Text levelDescriptionText;
+    [Header("Slot Menu Variables")]
+    [SerializeField] private GameObject SlotChoicePrefab; // a prefab with a script to show a pilot or mech to choose
+    [SerializeField] private GameObject slotChoiceObjectsParent;
+    [SerializeField] private Text slotText;
 
+    [Header("General Menu Variables")]
+    [SerializeField] private GameObject pilotMechFramePrefab;
+    [SerializeField] private float maxSlotFramesPerPage = 4;
+    [SerializeField] private float maxMechPilotFramesPerPage = 8;
+    public int currentPageIndex = 0;
+    [SerializeField] private Text indexPageText;
 
-    [SerializeField] private OptionsArrayHolder pilotArrayHolder;
-    [SerializeField] private OptionsArrayHolder mechArrayHolder;
-    [SerializeField] private GameObject spriteOptionHolderPrefab;
+    [Header("Pilot Menu Variables")]
+    [SerializeField] private GameObject pilotChoiceObjectsParent;
+    [SerializeField] private Image pilotImageDisplay;
+    [Header("Mech Menu Variables")]
+    [SerializeField] private GameObject mechChoiceObjectsParent;
+    [SerializeField] private Image mechImageDisplay;
 
+    [Header("Persistor Object")]
+    [SerializeField] private GameObject persistorObject; // is not supposed to be a prefab
+    // current state variables
 
-    private TeamModel teamModel;
-    private TeamBuilder totalAvailableEntities;
-
+    // [Header("Current State Variables")]
+    private currentUIState currentStateOfUI = currentUIState.choosingSlot;
+    private SlotChoice currentSlot; // doesn't need to be serialized
+    private MapMarkerController.MapLevel currentLevelInfo; // doesn't need to be serialized
+    private TeamBuilder availableEntities;
     private bool isPaused = false;
+    // [SerializeField] private TeamModel currentTeam;
 
-    public void Initialize(TeamModel model, TeamBuilder newEntityList)
+
+    public enum currentUIState {
+        choosingSlot,
+        choosingPilotForSlot,
+        choosingMechForSlot,
+    }
+    public void Initialize(MapMarkerController.MapLevel newLevelInfo, TeamBuilder newEntityList)
     {
-        totalAvailableEntities = newEntityList;
-        teamModel = model;
-        pilotArrayHolder.CreateEntityPortaits(totalAvailableEntities, spriteOptionHolderPrefab, teamModel);
-        mechArrayHolder.CreateEntityPortaits(totalAvailableEntities, spriteOptionHolderPrefab, teamModel);
+        availableEntities = newEntityList;
+        currentLevelInfo = newLevelInfo;
+        MakeSlotsUI();
+        UpdateUI();
     }
 
-    public void UpdatePortraits() {
-        if (isPaused) {
-            return;
+    private void MakeSlotsUI() {
+        foreach (Transform child in slotChoiceObjectsParent.transform)
+        {
+            // Destroy the children of the parent object to clean up
+            Destroy(child.gameObject);
         }
-        TeamChooserController.TeamSpot spot = teamModel.RetriveCurrentTeamSpot();
-            // Finish this
 
-        if (spot.chosenMech) {
-            MechStats mech = spot.chosenMech;
-            string primaryString = "Health: " + mech.GetMechHealth() + "\n" 
-                + "Class: " + mech.GetMechType().ToString()+ "\n"
-                + "Clarity Max: " + mech.GetMechMaxClarity().ToString();
-            string abilities = "Ability1: " + mech.AbilitySlot1.GetAbilityType().ToString() + "\n" + 
-            "Ability2: " + mech.AbilitySlot2.GetAbilityType().ToString() + "\n" + 
-            "Ability3: " + mech.AbilitySlot3.GetAbilityType().ToString();
-            string secondaryString = abilities;
-            Sprite entitySprite = mech.GetMechSprite();
+        for(int i = 0; i < currentLevelInfo.teamMemberMax; i++) {
+            GameObject slotUIObject = Instantiate(SlotChoicePrefab, slotChoiceObjectsParent.transform);
+            SlotChoice slotChoice = slotUIObject.GetComponent<SlotChoice>();
+            int SlotNum = i;
+            slotChoice.InitializeFromTeamChooserUI(SlotNum);
+        }
+    }
 
-            mechArrayHolder.ChangeToPortraitMode(entitySprite, primaryString, secondaryString);
+    // 
+    public void ReceiveSlot(SlotChoice newSlot) {
+        currentSlot = newSlot;
+        currentStateOfUI = currentUIState.choosingPilotForSlot;
+        UpdateUI();
+    }
+
+    // this is called by the TeamSpotOptionController.cs script, which is a script that
+    // holds a pilot or mech that the player will select in the team chooser
+    public void UpdateCurrentSlot(CharacterStats pilot, MechStats mech) {
+        if (currentSlot != null) {
+            currentSlot.UpdateMechAndPilot(pilot, mech);
+        }
+
+        // if we're being sent a pilot but no mech it means we're choosing a pilot
+        // and we should now be choosing mechs, the next part of choosing pairs
+        // for team slots
+        if (pilot != null  && mech == null) {
+            currentStateOfUI = currentUIState.choosingMechForSlot;
+            UpdateUI();
+        }
+
+
+        // if we're being sent a mech but no pilot it means we're choosing a mech
+        // and should switch back to the slot tabs because we've chosen the last
+        // component of a slot
+        if (pilot == null  && mech != null) {
+            currentStateOfUI = currentUIState.choosingSlot;
+            UpdateUI();
+        }
+
+        // having both not be null is impossible, a option frame script
+        // can and will only be initialized with one or the other
+        // and will only send one or the other, not both
+        
+    }
+
+    // must make amount of pilots, and also not use
+    // pilots and mechs that were already used
+    private void MakePilotOptionsUI() {
+        foreach (Transform child in pilotChoiceObjectsParent.transform)
+        {
+            // Destroy the children of the parent object to clean up
+            Destroy(child.gameObject);
+        }
+
+        foreach(CharacterStats pilot in availableEntities.pilots) {
+            // basically if currentTeam.TeamSpots already has that
+            // pilot in it, then do not create it in this UI
+            
+            if (!IsMechOrPilotAlreadyUsedInSlots(pilot, null)) {
+                // making object
+                GameObject pilotUIObject = Instantiate(pilotMechFramePrefab, pilotChoiceObjectsParent.transform);
+
+                // initalizing script
+                TeamSpotOptionController teamSpot_Pilot = pilotUIObject.GetComponent<TeamSpotOptionController>();
+                teamSpot_Pilot.BecomePilotOption(pilot);
+            }
+
+        }
+    }
+
+    private void MakeMechOptionsUI() {
+        foreach (Transform child in mechChoiceObjectsParent.transform)
+        {
+            // Destroy the children of the parent object to clean up
+            Destroy(child.gameObject);
+        }
+
+        foreach(MechStats mech in availableEntities.mechs) {
+            // basically if currentTeam.TeamSpots already has that
+            // pilot in it, then do not create it in this UI
+            if (!IsMechOrPilotAlreadyUsedInSlots(null, mech)) {
+                // making object
+                GameObject pilotUIObject = Instantiate(pilotMechFramePrefab, mechChoiceObjectsParent.transform);
+
+                // initalizing script
+                TeamSpotOptionController teamSpot_Pilot = pilotUIObject.GetComponent<TeamSpotOptionController>();
+                teamSpot_Pilot.BecomeMechOption(mech);
+            }
+
+            
+        }
+    }
+
+    private bool IsMechOrPilotAlreadyUsedInSlots(CharacterStats newPilot, MechStats newMech) {
+        foreach (Transform slot in slotChoiceObjectsParent.transform)
+        {
+            SlotChoice slotScript = slot.gameObject.GetComponent<SlotChoice>();
+            if (slotScript.ContainsMechOrPilot(newPilot, newMech)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // called by Button
+    public void StartLevel() {
+        // If this errors it means there is no UnitPlacemenCanvas
+        // prefab in scene, fix that, just add it to the heirarchy
+        persistorObject.SetActive(true);
+        DontDestroyOnLoad(persistorObject);
+        TeamRosterPersistor persistorScript = persistorObject.GetComponent<TeamRosterPersistor>();
+        List<TeamChooserController.TeamSpot> newTeamRoster = new List<TeamChooserController.TeamSpot>();
+
+        // assemble team here
+        foreach (Transform slot in slotChoiceObjectsParent.transform)
+        {
+            SlotChoice slotScript = slot.gameObject.GetComponent<SlotChoice>();
+            newTeamRoster.Add(slotScript.CreateTeamSpot());
+
+        }
+
+        persistorScript.PrepTeamForLevel(currentLevelInfo.levelStringName, newTeamRoster);
+    }
+
+    private void UpdateMechPilotFrameDisplays() {
+
+        if (currentSlot == null) {
+            pilotImageDisplay.gameObject.SetActive(false);
+            mechImageDisplay.gameObject.SetActive(false);
         } else {
-            mechArrayHolder.CreateEntityPortaits(totalAvailableEntities, spriteOptionHolderPrefab, teamModel);
-        }
+            TeamChooserController.TeamSpot pair = currentSlot.CreateTeamSpot();
+            if (pair.chosenPilot != null) {
+                pilotImageDisplay.gameObject.SetActive(true);
+                pilotImageDisplay.sprite = pair.chosenPilot.GetCharacterSprite();
+            } else {
+                pilotImageDisplay.gameObject.SetActive(false);
+            }
 
-        if (spot.chosenPilot) {
-            CharacterStats pilot = spot.chosenPilot;
-            string primaryString = "Health: " + pilot.GetPilotHealth() + "\n" 
-                + "Speed: " + pilot.ToString()+ "\n"
-                + "Clarity Gain: " + pilot.GetMoveClarity().ToString();
-            string secondaryString = "";
-            Sprite entitySprite = pilot.GetCharacterSprite();
-            pilotArrayHolder.ChangeToPortraitMode(entitySprite, primaryString, secondaryString);
-        } else {
-            pilotArrayHolder.CreateEntityPortaits(totalAvailableEntities, spriteOptionHolderPrefab, teamModel);
+            if (pair.chosenMech != null) {
+                mechImageDisplay.gameObject.SetActive(true);
+                mechImageDisplay.sprite = pair.chosenMech.GetMechSprite();
+            } else {
+                mechImageDisplay.gameObject.SetActive(false);
+            }
         }
 
     }
 
-    // button activated
-    public void CancelPortrait(bool cancelsPilot) {
-        if (isPaused) {
-            return;
+    // increases index of the page we're currently on
+    // so page 1 for example could show page tabs 4-6
+    // depending on the max tabs per page variables.
+    // This method is called by button components
+    // on this canvas.
+public void ChangePage(bool increasePage)
+    {
+        if (increasePage){
+            currentPageIndex++;
         }
-
-        if (cancelsPilot) {
-            teamModel.UpdatePilot(null);
-        } else {
-            teamModel.UpdateMech(null);
+        else {
+            currentPageIndex--;
         }
+        switch (currentStateOfUI) {
+            case currentUIState.choosingSlot:
+                UpdatePageForSlots(slotChoiceObjectsParent, maxSlotFramesPerPage);
+                break;
 
-        UpdatePortraits();
+            case currentUIState.choosingPilotForSlot:
+                UpdatePageForSlots(pilotChoiceObjectsParent, maxMechPilotFramesPerPage);
+                break;
+
+            case currentUIState.choosingMechForSlot:
+                UpdatePageForSlots(mechChoiceObjectsParent, maxMechPilotFramesPerPage);
+                break;
+
+            default:
+                Debug.LogWarning("Unknown state");
+                break;
+        }
     }
 
-    public void UpdateUI() {
-        UpdateTeamSpotText();
+    private void UpdatePageForSlots(GameObject parent, float maxFramesPerPage)
+    {
+        int totalSlots = parent.transform.childCount;
+        int maxPages = Mathf.CeilToInt(totalSlots / maxFramesPerPage);
+        
+        // Ensure currentPageIndex stays within bounds
+        currentPageIndex = Mathf.Clamp(currentPageIndex, 0, maxPages - 1);
+        
+        // Update page text
+        indexPageText.text = $"Page\n{currentPageIndex + 1} / {maxPages}";
+
+        // Manage slot visibility
+        int startIndex = (int)(currentPageIndex * maxFramesPerPage);
+        int endIndex = Mathf.Min(startIndex + (int)maxFramesPerPage, totalSlots);
+
+        int slotIndex = 0;
+        foreach (Transform child in parent.transform)
+        {
+            bool isVisible = slotIndex >= startIndex && slotIndex < endIndex;
+            child.gameObject.SetActive(isVisible);
+            slotIndex++;
+        }
     }
 
-    private void UpdateTeamSpotText() {
-        int currentTeamSpotIndex = teamModel.CurrentSpotIndex;
-        int teamMemberMax = teamModel.TeamSpots.Count;
-        teamSizeText.text = "" + (currentTeamSpotIndex+1).ToString() + " / " + teamMemberMax.ToString();
-    }
 
-    // Methods to handle UI interactions
-    public void OnTeamSpotChangeClicked(bool increase) {
-        if (isPaused) {
-            return;
-        }
-        teamModel.ChangeCurrentSpot(increase);
-        UpdateTeamSpotText();
-        UpdatePortraits();
-    }
+    private void UpdateUI() {
+        currentPageIndex = 0;
+        UpdateMechPilotFrameDisplays();
+        switch(currentStateOfUI) {
+            case currentUIState.choosingSlot:
+                // Debug.Log("ui is in choosing state");
+                // ChangePage(false);
+                slotChoiceObjectsParent.SetActive(true);
+                pilotChoiceObjectsParent.SetActive(false);
+                mechChoiceObjectsParent.SetActive(false);
+                slotText.text = "Max Slots: " + currentLevelInfo.teamMemberMax;
+                // slotText should show how many we have filled so far
+                currentSlot = null;
+                break;
 
+            case currentUIState.choosingPilotForSlot:
+                // Debug.Log("ui is in pilot state");
+                slotChoiceObjectsParent.SetActive(false);
+                pilotChoiceObjectsParent.SetActive(true);
+                mechChoiceObjectsParent.SetActive(false);
+                slotText.text = "" + currentSlot.GetSlotNumText() + "/ " + currentLevelInfo.teamMemberMax;
+                MakePilotOptionsUI();
+                break;
 
-    [System.Serializable]
-    public class OptionsArrayHolder {
-        [SerializeField] private Transform objectToHoldOptions;
-        [SerializeField] private bool isForPilots = true;
+            case currentUIState.choosingMechForSlot:
+                // Debug.Log("ui is in mech state");
+                slotChoiceObjectsParent.SetActive(false);
+                pilotChoiceObjectsParent.SetActive(false);
+                mechChoiceObjectsParent.SetActive(true);
+                MakeMechOptionsUI();
+                break;
 
-        [SerializeField] private GameObject portraitGameObject;
-        [SerializeField] private Image potraitImage;
-        [SerializeField] private Text primaryText;
-        [SerializeField] private Text secondaryText;
-
-
-        public void CleanUpArrayHolder() {
-            // Iterate through all children and destroy them
-            for (int i = objectToHoldOptions.childCount - 1; i >= 0; i--) {
-                // Object.Destroy(objectToHoldOptions.GetChild(i).gameObject);
-                UnityEngine.Object.Destroy(objectToHoldOptions.GetChild(i).gameObject);
-            }
-
-            portraitGameObject.gameObject.SetActive(false);
-            objectToHoldOptions.gameObject.SetActive(true);
-        }
-
-        public void ChangeToPortraitMode(Sprite portaitSprite, string primaryPortraitText, string secondaryPortraitText) {
-            portraitGameObject.gameObject.SetActive(true);
-            objectToHoldOptions.gameObject.SetActive(false);
-
-            primaryText.text = primaryPortraitText;
-            secondaryText.text = secondaryPortraitText;
-            potraitImage.sprite = portaitSprite;
-        }
-
-        public void CreateEntityPortaits(TeamBuilder AvailableEntities, GameObject spriteOptionHolderPrefab, TeamModel teamModel) {
-            CleanUpArrayHolder();
-            int listLength = AvailableEntities.PilotLength();
-            if (!isForPilots) {
-                listLength = AvailableEntities.MechLength();
-            }
-
-            for (int i = 0; i < listLength; i++) {
-                if (isForPilots) {
-                    CharacterStats pilot = AvailableEntities.GetPilot(i);
-                    if (!AlreadyHasPilotUsedOnTeam(pilot, teamModel)) {
-                        GameObject instantiatedObject = Instantiate(spriteOptionHolderPrefab, objectToHoldOptions.position, objectToHoldOptions.rotation, objectToHoldOptions);
-                        TeamSpotOptionController spotOptionObject = instantiatedObject.GetComponent<TeamSpotOptionController>();
-                        spotOptionObject.BecomePilotOption(pilot, teamModel);
-                    }
-                } else {
-                    MechStats mech = AvailableEntities.GetMech(i);
-                    if (!AlreadyHasMechUsedOnTeam(mech, teamModel)) {
-                        GameObject instantiatedObject = Instantiate(spriteOptionHolderPrefab, objectToHoldOptions.position, objectToHoldOptions.rotation, objectToHoldOptions);
-                        TeamSpotOptionController spotOptionObject = instantiatedObject.GetComponent<TeamSpotOptionController>();
-                        spotOptionObject.BecomeMechOption(mech, teamModel);
-                    }
-                }
-            }
-        }
-
-        public bool AlreadyHasPilotUsedOnTeam(CharacterStats pilot, TeamModel teamModel) {
-            foreach (TeamChooserController.TeamSpot spot in teamModel.TeamSpots) {
-                if (spot.chosenPilot == pilot) {
-                    return true;
-                }
-            }
-            return false;
-
-        }
-
-        public bool AlreadyHasMechUsedOnTeam(MechStats mech,TeamModel teamModel) {
-            foreach (TeamChooserController.TeamSpot spot in teamModel.TeamSpots) {
-                if (spot.chosenMech == mech) {
-                    return true;
-                }
-            }
-            return false;
+            default:
+                Debug.LogWarning("Unknown state");
+                break;
         }
     }
 
@@ -181,5 +304,6 @@ public class TeamChooserUI : MonoBehaviour
     public void SetPauseState(bool newPauseState) {
         isPaused = newPauseState;
     }
+
 
 }
