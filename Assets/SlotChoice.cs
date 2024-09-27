@@ -7,14 +7,18 @@ public class SlotChoice : MonoBehaviour
 {
     [SerializeField] private int slotNumIndex = 0;
     [SerializeField] private Text slotNumText;
-    private MechStats mech;
     private CharacterStats pilot;
+    [SerializeField] private Image piloDisplayImage;
+    private MechStats mech;
+    [SerializeField] private Image mechDisplayImage;
 
     // called by TeamChooserUI
     public void InitializeFromTeamChooserUI(int newSlotNum) {
         slotNumIndex = newSlotNum;
         if (slotNumText != null) {
             slotNumText.text = "Slot Number: " + (slotNumIndex + 1);
+            mechDisplayImage.gameObject.SetActive(false);
+            mechDisplayImage.gameObject.SetActive(false);
         }
     }
     // called by TeamChooserUI
@@ -28,11 +32,15 @@ public class SlotChoice : MonoBehaviour
             // TeamSpotOptionController --> TeamChooserUI --> SlotChoice
             // which comes in the form of a !null and null
             pilot = newPilot;
+            piloDisplayImage.gameObject.SetActive(true);
+            piloDisplayImage.sprite = pilot.GetCharacterSprite();
         } else if (newPilot == null && newMech != null) {
             // means we're being sent specifically a mech from
             // TeamSpotOptionController --> TeamChooserUI --> SlotChoice
             // which comes in the form of a null and !null
             mech = newMech;
+            mechDisplayImage.gameObject.SetActive(true);
+            mechDisplayImage.sprite = mech.GetMechSprite();
         }
     }
 
