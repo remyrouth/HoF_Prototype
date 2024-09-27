@@ -14,6 +14,8 @@ public class TeamChooserUI : MonoBehaviour
     [SerializeField] private GameObject pilotMechFramePrefab;
     [SerializeField] private float maxSlotFramesPerPage = 4;
     [SerializeField] private float maxMechPilotFramesPerPage = 8;
+    public int currentPageIndex = 0;
+    [SerializeField] private Text indexPageText;
 
     [Header("Pilot Menu Variables")]
     [SerializeField] private GameObject pilotChoiceObjectsParent;
@@ -93,6 +95,10 @@ public class TeamChooserUI : MonoBehaviour
             currentStateOfUI = currentUIState.choosingSlot;
             UpdateUI();
         }
+
+        // having both not be null is impossible, a option frame script
+        // can and will only be initialized with one or the other
+        // and will only send one or the other, not both
         
     }
 
@@ -199,16 +205,74 @@ public class TeamChooserUI : MonoBehaviour
 
     }
 
+    // increases index of the page we're currently on
+    // so page 1 for example could show page tabs 4-6
+    // depending on the max tabs per page variables.
+    // This method is called by button components
+    // on this canvas.
+public void ChangePage(bool increasePage)
+    {
+        if (increasePage){
+            currentPageIndex++;
+        }
+        else {
+            currentPageIndex--;
+        }
+        switch (currentStateOfUI) {
+            case currentUIState.choosingSlot:
+                UpdatePageForSlots(slotChoiceObjectsParent, maxSlotFramesPerPage);
+                break;
+
+            case currentUIState.choosingPilotForSlot:
+                UpdatePageForSlots(pilotChoiceObjectsParent, maxMechPilotFramesPerPage);
+                break;
+
+            case currentUIState.choosingMechForSlot:
+                UpdatePageForSlots(mechChoiceObjectsParent, maxMechPilotFramesPerPage);
+                break;
+
+            default:
+                Debug.LogWarning("Unknown state");
+                break;
+        }
+    }
+
+    private void UpdatePageForSlots(GameObject parent, float maxFramesPerPage)
+    {
+        int totalSlots = parent.transform.childCount;
+        int maxPages = Mathf.CeilToInt(totalSlots / maxFramesPerPage);
+        
+        // Ensure currentPageIndex stays within bounds
+        currentPageIndex = Mathf.Clamp(currentPageIndex, 0, maxPages - 1);
+        
+        // Update page text
+        indexPageText.text = $"Page\n{currentPageIndex + 1} / {maxPages}";
+
+        // Manage slot visibility
+        int startIndex = (int)(currentPageIndex * maxFramesPerPage);
+        int endIndex = Mathf.Min(startIndex + (int)maxFramesPerPage, totalSlots);
+
+        int slotIndex = 0;
+        foreach (Transform child in parent.transform)
+        {
+            bool isVisible = slotIndex >= startIndex && slotIndex < endIndex;
+            child.gameObject.SetActive(isVisible);
+            slotIndex++;
+        }
+    }
+
 
     private void UpdateUI() {
+        currentPageIndex = 0;
         UpdateMechPilotFrameDisplays();
         switch(currentStateOfUI) {
             case currentUIState.choosingSlot:
                 // Debug.Log("ui is in choosing state");
+                // ChangePage(false);
                 slotChoiceObjectsParent.SetActive(true);
                 pilotChoiceObjectsParent.SetActive(false);
                 mechChoiceObjectsParent.SetActive(false);
-                slotText.text = "_ _ / " + currentLevelInfo.teamMemberMax;
+                slotText.text = "Max Slots: " + currentLevelInfo.teamMemberMax;
                 // slotText should show how many we have filled so far
                 currentSlot = null;
                 break;
