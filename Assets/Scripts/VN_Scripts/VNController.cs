@@ -22,7 +22,8 @@ public class VNController : MonoBehaviour
     [SerializeField] private Text dialogueTextObject;
 
     [Header("Fade in")] 
-    [SerializeField] private float fadeDuration = 3f;
+    [SerializeField] private float fadeInDuration = 3f;
+    [SerializeField] private float fadeOutDuration = 1f;
 
     private bool leftImageHasFaded = false;
     private bool rightImageHasFaded = false;
@@ -49,8 +50,11 @@ public class VNController : MonoBehaviour
                 currentDialogueIndex++;
                 DisplayCurrentInfo();
 
-            } else {
-                Destroy(gameObject);
+            } else
+            {
+                StartCoroutine(FadeOutImage(leftSpeakerImage));
+                StartCoroutine(FadeOutImage(rightSpeakerImage));
+                Destroy(gameObject, fadeOutDuration);
             }
         }
     }
@@ -96,9 +100,9 @@ public class VNController : MonoBehaviour
         image.color = new Color(image.color.r, image.color.g, image.color.b, 0);
         float timeElapsed = 0; 
 
-        while (timeElapsed < fadeDuration) // controls fade duration by slowly increasing alpha of image
+        while (timeElapsed < fadeInDuration) // controls fade duration by slowly increasing alpha of image
         {
-            float alpha = Mathf.Lerp(0, 1, timeElapsed / fadeDuration); 
+            float alpha = Mathf.Lerp(0, 1, timeElapsed / fadeInDuration); 
             
             image.color = new Color(image.color.r, image.color.g, image.color.b, alpha);
             timeElapsed += Time.deltaTime; // keeps track of how much time has passed
@@ -108,6 +112,26 @@ public class VNController : MonoBehaviour
         
         // ensures image is at 100% alpha at the end of the loop
         image.color = new Color(image.color.r, image.color.g, image.color.b, 1);
+    }
+    
+    private IEnumerator FadeOutImage(Image image)
+    {
+        // making sure image is opaque at first
+        image.color = new Color(image.color.r, image.color.g, image.color.b, 1);
+        float timeElapsed = 0; 
+
+        while (timeElapsed < fadeOutDuration) // controls fade duration by slowly decreasing alpha of image
+        {
+            float alpha = Mathf.Lerp(1, 0, timeElapsed / fadeOutDuration); 
+            
+            image.color = new Color(image.color.r, image.color.g, image.color.b, alpha);
+            timeElapsed += Time.deltaTime; // keeps track of how much time has passed
+            
+            yield return null; 
+        }
+        
+        // ensures image is at 0% alpha at the end of the loop
+        image.color = new Color(image.color.r, image.color.g, image.color.b, 0);
     }
 
     [System.Serializable]
