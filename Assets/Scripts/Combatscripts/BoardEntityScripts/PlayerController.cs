@@ -514,7 +514,7 @@ public class PlayerController : MonoBehaviour
         }
         return path;
     }
-    private List<GameObject> GetNeighbors(GameObject tile)
+    public List<GameObject> GetNeighbors(GameObject tile)
     {
         List<GameObject> neighbors = new List<GameObject>();
         float tileSize = 1f; // Adjust this based on your tile size
