@@ -280,8 +280,9 @@ public class SelectionManager : MonoBehaviour
         return null;
     }
 
-    // Cleanup Methods
-    private void Cleanup () { // This is just used for going back to a default state
+    // Cleanup Methods, also called by end turn manager. If we end turn already selecting a unit
+    // they're still highlighted. we need to end that. 
+    public void Cleanup () { // This is just used for going back to a default state
         if (currentSelectedTile != null) {
             currentSelectedTile.GetComponent<TileGraphicsController>().ChangeToDefaultState();
         }

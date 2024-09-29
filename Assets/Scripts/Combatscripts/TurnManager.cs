@@ -153,6 +153,7 @@ public class TurnManager : MonoBehaviour
         isPlayerTurn = false;
         EndTurnCanvas.SetActive(false);
         ccc.MenuCleanup();
+        sm.Cleanup();
         isPaused = false; // Ensure the game is not paused when ending the player's turn
         StartIndividualEnemyAction();
     }

@@ -73,13 +73,6 @@ public class UpgradeMechController : MonoBehaviour
     }
 
 
-    public class UpgradableMechUnit {
-        public MechStats mechBaseModel;
-        public int maxClarityUpgradeCount = 0;
-        public int maxHealthUpgradeCount = 0;
-    }
-
-
 
 
 
@@ -137,4 +130,11 @@ public class UpgradeMechController : MonoBehaviour
             Destroy(child.gameObject);
         }
     }
+
+    public class UpgradableMechUnit {
+        public MechStats mechBaseModel;
+        public int maxClarityUpgradeCount = 0;
+        public int maxHealthUpgradeCount = 0;
+    }
+
 }

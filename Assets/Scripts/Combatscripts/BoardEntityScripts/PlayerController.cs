@@ -116,7 +116,7 @@ public class PlayerController : MonoBehaviour
 
     public void TakeDamage(int damage, bool isMechDamage) {
         if (isMechDamage) {
-            currentMechHealth = Mathf.Clamp(currentMechHealth - damage, 0, RetrieveMechInfo().GetMechHealth());
+            currentMechHealth = Mathf.Clamp(currentMechHealth - damage, 0, GetMechMaxHealth());
         } else {
             // Debug.Log("Pilot took damage: Started at " + currentPlayerHealth);
             currentPlayerHealth = Mathf.Clamp(currentPlayerHealth - damage, 0, RetrievePilotInfo().GetPilotHealth());
@@ -156,8 +156,8 @@ public class PlayerController : MonoBehaviour
         hasAttackedYet = false;
     }
     #endregion Main Actions
-    // Getter Methods
-    #region Getters
+    // Getter Methods ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    #region Getters 
 
     public int GetPilotHealth() {
         return currentPlayerHealth;
@@ -165,6 +165,45 @@ public class PlayerController : MonoBehaviour
 
     public int GetMechHealth() {
         return currentMechHealth;
+    }
+
+    public int GetMechMaxHealth() {
+        return RetrieveMechInfo().GetMechHealth() + GetSavedHealthBonus();
+    }
+
+    private int GetSavedHealthBonus() {
+        // finding save script
+        MechSaveFileInteractor saveScript = FindObjectOfType<MechSaveFileInteractor>();
+        if (saveScript == null) {
+            Debug.LogError("NO SAVE FILE INTERACTOR CREATED IN SCRIPT");
+            // we cannot have the script be created in code beucase it doesn't
+            // inherit the defaults if its created by scripts and not the designer
+            return 0;
+        }
+        // accessing save script data
+        List<UpgradeMechController.UpgradableMechUnit> mechSaves = saveScript.ExtractMechsFromFile();
+
+        // finding information for specific mech
+        UpgradeMechController.UpgradableMechUnit playerMechUpgradeClass = null;
+        foreach(UpgradeMechController.UpgradableMechUnit mechUnit in mechSaves) {
+            if (mechUnit.mechBaseModel == RetrieveMechInfo()) {
+                playerMechUpgradeClass = mechUnit;
+            }
+        }
+
+        // using information for specific mech
+        if (playerMechUpgradeClass != null) {
+            // for each level of upgrade we're simplifying it.
+            // It will only add 10% of the original data per upgrade
+            return (int)(RetrieveMechInfo().GetMechHealth() * 0.1f * playerMechUpgradeClass.maxHealthUpgradeCount);
+        } else {
+            // if there is no saved data, it means we have not gained this character as an ally yet
+            // and therefore have not upgraded this character. There is no bonus to be had here
+            return 0;
+        }
+
+
+        // return 0;
     }
 
     public CharacterStats RetrievePilotInfo() {
@@ -245,7 +284,7 @@ public class PlayerController : MonoBehaviour
         return false;
     }
     #endregion Getters
-    // Setup Methods
+    // Setup Methods  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     #region Setup 
     private void InstantiateMechObject() {
         Vector3 selfPosition = gameObject.transform.position;
@@ -284,32 +323,12 @@ public class PlayerController : MonoBehaviour
 
     private void SetupInfoToScript() {
         currentPlayerHealth = RetrievePilotInfo().GetPilotHealth();
-        currentMechHealth =  RetrieveMechInfo().mechHealth;
+        currentMechHealth =  GetMechMaxHealth();
     }
 
     #endregion Setup 
     // Pathing Methods
     #region Pathing
-    // private IEnumerator MoveAlongTiles(GameObject destinationTile) // IF YOU MOVE AND THEN TELEPORT THIS STILL OPERATES.... 
-    // {
-    //     Debug.Log("Moving");
-    //     List<GameObject> path = FindPath(FindClosestTile(transform.position), destinationTile);
-    //     if (agent == null) {
-    //         agent.GetComponent<NavMeshAgent>();
-    //     }
-    //     if (agent == null) {
-    //         agent = gameObject.AddComponent<NavMeshAgent>();
-    //     }
-
-    //     foreach (GameObject tile in path)
-    //     {
-    //         agent.SetDestination(tile.transform.position + Vector3.up);
-    //         yield return new WaitUntil(() => agent.remainingDistance < 0.1f);
-    //     }
-
-    //     //  Debug.Log("Reached the intended tile: " + destinationTile.name);
-    //     CheckForSteppingOnObstacleTile(destinationTile);
-    // }
 
     private IEnumerator MoveAlongTiles(GameObject destinationTile)
     {
