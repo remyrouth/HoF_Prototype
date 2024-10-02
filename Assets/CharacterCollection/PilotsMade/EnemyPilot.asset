@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pilotName: Enemy Pilot
   laserStrength: 1
-  laserRange: 1
+  laserRange: 20
   ballisticStrength: 1
-  ballisticRange: 1
+  ballisticRange: 2
   speed: 2
   health: 5
   currentExperiencePoint: 0

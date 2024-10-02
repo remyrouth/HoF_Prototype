@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -120,6 +121,7 @@ public class TurnManager : MonoBehaviour
         // choose random enemy that has yet to move
         // move piece
         // Debug.Log("enemyControlled Count: " + enemyControlled.Count);
+        //GameObject bestTileToMoveTo = enemyControlled[0].GetComponent<AIPlayerController>().Move();
         GameObject bestTileToMoveTo = enemyControlled[0].GetComponent<AIPlayerController>().Move();
 
         // wait for piece

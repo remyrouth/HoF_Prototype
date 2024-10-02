@@ -1,24 +1,56 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using Combatscripts.AIScripts;
+using Unity.VisualScripting.Dependencies.Sqlite;
+using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.Analytics;
 
+
+public enum CostByDistance
+{
+    High,
+    Low
+}
 public class AIPlayerController : MonoBehaviour
 {
     PlayerController attachedPlayerController;
+    [SerializeField]
+    private SpatialEvaluation spatialEvaluationComponent;
+    private CombatEvaluation combatEvaluationComponent;
+    public AnimationCurve attackDistancePreferenceCurve;
+    public SpatialFunction[] spatialFunctions;
+    
+    //FOR DEBUGGING
+    private Vector3 targetLocation;
 
     private void Start() {
         attachedPlayerController = GetComponent<PlayerController>();
+        gameObject.AddComponent<SpatialEvaluation>();
+        gameObject.AddComponent<CombatEvaluation>();
+        spatialEvaluationComponent = GetComponent<SpatialEvaluation>();
+        combatEvaluationComponent = GetComponent<CombatEvaluation>();
+        spatialEvaluationComponent.playerController = attachedPlayerController;
+        combatEvaluationComponent.playerController = attachedPlayerController;
+        spatialEvaluationComponent.spatialCurves = spatialFunctions;
+        combatEvaluationComponent.attackDistanceCurve = attackDistancePreferenceCurve;
     }
-
+    
     // This method is called by the turn manager script. This move method must return the tile this AI intends
     // to move to, so that the turn manager knows when it has successfully reached its intended tile.
     // This way, it'll know when to start moving the next enemy
-    public GameObject Move() {
-        return MoveCloserToClosestPlayer();
+    public GameObject Move()
+    {
+        GameObject targetTile = spatialEvaluationComponent.FindBestCell();
+        GameObject bestTile = attachedPlayerController.GetBestReachableTileTowardsTarget(attachedPlayerController.FindClosestTile(targetTile.transform.position), attachedPlayerController.RetrievePilotInfo().GetPilotSpeed());
+        attachedPlayerController.MoveToTile(bestTile);
+        targetLocation = bestTile.transform.position;
+        return bestTile;
     }
 
     private GameObject MoveCloserToClosestPlayer() {
-        // collect all vaible player targets
+        // collect all viable player targets
         GameObject[] playerObjectPiecesArray = GameObject.FindGameObjectsWithTag("Player");
         List<GameObject> playerControlled = new List<GameObject>();
 
@@ -66,12 +98,38 @@ public class AIPlayerController : MonoBehaviour
         
     }
 
-    public void Attack() {
-        AttackClosestPlayer();
+    public void Attack()
+    {
+        Tuple<GameObject,string> attackTargetTuple = combatEvaluationComponent.FindBestCell();
+        GameObject attackTargetTile = attackTargetTuple.Item1;
+        string attackTargetType = attackTargetTuple.Item2;
+        targetLocation = attackTargetTile.transform.position;
+        
+        if (attackTargetTile == null)
+        {
+            return;
+        }
+        
+        switch (attackTargetType)
+        {
+            case("laser"):
+                int laserPower = attachedPlayerController.RetrievePilotInfo().GetLaserStrength();
+                int laserRange = attachedPlayerController.RetrievePilotInfo().GetLaserRange();
+                MechStats.AbilityMechSlot tempLaserSlot = CreateAttackSlotOption(laserPower, laserRange);
+                attachedPlayerController.UseAbility(tempLaserSlot, attackTargetTile);
+                break;
+            case("ballistic"):
+                int ballisticPower = attachedPlayerController.RetrievePilotInfo().GetBallisticStrength();
+                int ballisticRange = attachedPlayerController.RetrievePilotInfo().GetBallisticRange();
+                MechStats.AbilityMechSlot tempBallisticSlot = CreateAttackSlotOption(ballisticPower, ballisticRange);
+                attachedPlayerController.UseAbility(tempBallisticSlot, attackTargetTile);
+                break;
+        }
+        //AttackClosestPlayer();
     }
 
     private void AttackClosestPlayer() {
-        // Debug.Log("Attacking closest player with method");
+        Debug.Log("Attacking closest player with method");
         // collect all vaible player targets
         GameObject[] playerObjectPiecesArray = GameObject.FindGameObjectsWithTag("Player");
         List<GameObject> playerControlled = new List<GameObject>();
@@ -83,12 +141,12 @@ public class AIPlayerController : MonoBehaviour
                 playerControlled.Add(piece);
             }
         }
-        // Debug.Log("playerControlled.Count : " + playerControlled.Count);
+        Debug.Log("playerControlled.Count : " + playerControlled.Count);
 
 
         // find closest player to attack
         if (playerControlled.Count > 0) {
-            // Debug.Log("playerControlled.Count : " + playerControlled.Count);
+            Debug.Log("playerControlled.Count : " + playerControlled.Count);
 
 
             // choose target by calculating which player is the closest
@@ -149,4 +207,9 @@ public class AIPlayerController : MonoBehaviour
         return tempSlot;
     }
 
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.blue;
+        Gizmos.DrawSphere(targetLocation, .5f);
+    }
 }
