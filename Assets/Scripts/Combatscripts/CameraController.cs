@@ -22,10 +22,13 @@ public class CameraController : MonoBehaviour
 
     private void ClampCamera()
     {
-        Vector3 offset = transform.position - originalPosition;
-        float newX = Mathf.Clamp(offset.x, minXZ.x, maxXZ.x);
-        float newZ = Mathf.Clamp(offset.z, minXZ.y, maxXZ.y);
-        transform.position = originalPosition + new Vector3(newX, 0f, newZ);
+        Vector3 currPosition = gameObject.transform.position;
+
+        float newX = Mathf.Clamp(currPosition.x, minXZ.x + originalPosition.x, maxXZ.x + originalPosition.x);
+        float newZ = Mathf.Clamp(currPosition.z, minXZ.y + originalPosition.z, maxXZ.y + originalPosition.z);
+
+        Vector3 newPosition = new Vector3(newX, currPosition.y, newZ);
+        gameObject.transform.position = newPosition;
     }
 
     private void Start()
@@ -76,8 +79,16 @@ public class CameraController : MonoBehaviour
     {
         Gizmos.color = Color.green;
 
-        Vector3 center = originalPosition;
-        Vector3 size = new Vector3(maxXZ.x - minXZ.x, 0f, maxXZ.y - minXZ.y);
-        Gizmos.DrawWireCube(center, size);
+        // Calculate the four corners of the clamping boundary
+        Vector3 bottomLeft = new Vector3(minXZ.x + originalPosition.x, originalPosition.y, minXZ.y + originalPosition.z);
+        Vector3 bottomRight = new Vector3(maxXZ.x + originalPosition.x, originalPosition.y, minXZ.y + originalPosition.z);
+        Vector3 topLeft = new Vector3(minXZ.x + originalPosition.x, originalPosition.y, maxXZ.y + originalPosition.z);
+        Vector3 topRight = new Vector3(maxXZ.x + originalPosition.x, originalPosition.y, maxXZ.y + originalPosition.z);
+
+        // Draw lines between the corners to form a rectangle
+        Gizmos.DrawLine(bottomLeft, bottomRight);
+        Gizmos.DrawLine(bottomRight, topRight);
+        Gizmos.DrawLine(topRight, topLeft);
+        Gizmos.DrawLine(topLeft, bottomLeft);
     }
 }
