@@ -3,7 +3,12 @@ guid: 28b572dda7ba04a2e8e5ecd544679a8d
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: dungeon_arch_mat
+    second: {fileID: 2100000, guid: 9e8bfbb9130e3744c8463e4b46369163, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
