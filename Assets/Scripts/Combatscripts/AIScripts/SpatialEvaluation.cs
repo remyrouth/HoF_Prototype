@@ -5,6 +5,8 @@ using UnityEngine;
 
 namespace Combatscripts.AIScripts
 {
+    
+    //This class is used to store all our vital information for a given spatial curve.
     [System.Serializable]
     public class SpatialFunction
     {
@@ -13,6 +15,7 @@ namespace Combatscripts.AIScripts
         public AnimationCurve curve;
     }
 
+    //This enum is used for determining what parameter we want to analyze.
     public enum Input
     {
         LineOfSight,
@@ -20,6 +23,7 @@ namespace Combatscripts.AIScripts
         PathDistance
     }
 
+    //This enum is used for determining how we want to modify our gridMap.
     public enum Operation
     {
         Multiply,
@@ -31,6 +35,7 @@ namespace Combatscripts.AIScripts
         public PlayerController playerController;
         public SpatialFunction[] spatialCurves;
 
+        //A constructor for SpatialEvaluation, currently not used but could be helpful in the future.
         public SpatialEvaluation(PlayerController playerController)
         {
             if (playerController)
@@ -43,12 +48,19 @@ namespace Combatscripts.AIScripts
             }
         }
 
+        //This method is called in the AIPlayerController script. The purpose of this method is to return the
+        //tile the enemy wants to move to as a GameObject.
         public GameObject FindBestCell()
         {
+            //The reason I use "out" here is so that we don't need to store unnecessary data.
             Dijkstra(out Dictionary<GameObject, float> distanceMap);
+            //The ref key word allows us to pass our distanceMap by reference.
             return Evaluate(ref distanceMap);
         }
 
+        //The purpose of this method is to determine what parameter we want to evaluate for our spatial curve and
+        //call the method associated with that parameter. After the gridMap is populated by the parameter method
+        //the Evaluate method will return the GameObject/tile with the highest score.
         private GameObject Evaluate(ref Dictionary<GameObject, float> distanceDictionary)
         {
             Dictionary<GameObject, float> gridMap = new Dictionary<GameObject, float>();
@@ -70,6 +82,17 @@ namespace Combatscripts.AIScripts
             return gridMap.Aggregate((x, y) => x.Value > y.Value ? x : y).Key; //returns the most promising cell from the grid
         }
 
+        
+        //DISCLAIMER: This code (LineOfSightCalculation) is untested as I am not aware of the utility it would provide to the gameplay of Habit
+        //of Force. That being said, I will leave some comments that will hopefully illuminate how it works.
+        
+        //This method will populate our gridMap with data regarding whether a given tile on the board is within the line
+        //of sight of the current enemy. It does this by ray casting to every tile on the board and returning if the ray
+        //registers a hit.
+        //NOTE: This method can be optimized by getting the farthest unobstructed tile in a given direction and assigning
+        //all tiles that come before it to not being hit. The opposite applies for any tiles behind a tile that has been
+        //hit. I.e. if there is a rock in front of the given enemy it will cast a ray to that rock, register a hit, and
+        //assign any tiles behind that rock to being hit. This saves us from making a ton of ray casts.
         private void LineOfSightCalculation(SpatialFunction spatialFunction, ref Dictionary<GameObject, float> gridMap,
             ref Dictionary<GameObject, float> distanceDictionary)
         {
@@ -114,6 +137,8 @@ namespace Combatscripts.AIScripts
             }
         }
 
+        //The PathDistanceCalculation method will run all the values calculated in Dijkstra's algorithm through our curve
+        //and store the score returned from the curve in our gridMap.
         private void PathDistanceCalculation(SpatialFunction spatialFunction, ref Dictionary<GameObject, float> gridMap,
             ref Dictionary<GameObject, float> distanceDictionary)
         {
@@ -139,7 +164,8 @@ namespace Combatscripts.AIScripts
             }
         }
 
-        //for now: just grabs the closest player character
+        //The TargetRangeCalculation method will assign our target as the closest player entity and based on the distance
+        //between the enemy and the closest player will rank the tiles on the board based on our target range curve.
         private void TargetRangeCalculation(SpatialFunction spatialFunction, ref Dictionary<GameObject, float> gridMap,
             ref Dictionary<GameObject, float> distanceDictionary)
         {
@@ -189,6 +215,11 @@ namespace Combatscripts.AIScripts
             }
         }
 
+        //This is a standard implementation of Dijkstra's algorithm. This method returns a Dictionary that maps
+        //a tile to a float value that represents how far away from the player the given tile is.
+        //Here are some good resources for understanding Dijkstra's:
+        // https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm
+        // https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm
         private void Dijkstra(out Dictionary<GameObject, float> distanceMap)
         {
             distanceMap = new Dictionary<GameObject, float>();

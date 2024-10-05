@@ -49,57 +49,12 @@ public class AIPlayerController : MonoBehaviour
         return bestTile;
     }
 
-    private GameObject MoveCloserToClosestPlayer() {
-        // collect all viable player targets
-        GameObject[] playerObjectPiecesArray = GameObject.FindGameObjectsWithTag("Player");
-        List<GameObject> playerControlled = new List<GameObject>();
-
-        foreach (GameObject piece in playerObjectPiecesArray) {
-            AIPlayerController aattachedPlayerController = piece.GetComponent<AIPlayerController>();
-
-            if (aattachedPlayerController == null) {
-                playerControlled.Add(piece);
-            }
-        }
-
-
-        if (playerControlled.Count > 0) {
-
-
-            // choose target by calculating which player is the closest
-            GameObject currentPositionalTile = attachedPlayerController.FindClosestTile(transform.position);
-            GameObject closestTarget = playerControlled[0];
-
-            foreach (GameObject targetObject in playerControlled) {
-                // get tile of each, new and old, compared distances to current positional tile
-
-                GameObject oldTile = attachedPlayerController.FindClosestTile(closestTarget.transform.position);
-                int oldTileDistance = attachedPlayerController.GetTileDistance(currentPositionalTile, oldTile);
-
-                GameObject newTile = attachedPlayerController.FindClosestTile(targetObject.transform.position);
-                int newTileDistance = attachedPlayerController.GetTileDistance(currentPositionalTile, newTile);
-
-                if (oldTileDistance > newTileDistance) {
-                    closestTarget = targetObject;
-                }
-
-            }
-
-
-            // Find best tile AI can travel to
-            GameObject bestTile = attachedPlayerController.GetBestReachableTileTowardsTarget(attachedPlayerController.FindClosestTile(closestTarget.transform.position), attachedPlayerController.RetrievePilotInfo().GetPilotSpeed());
-            attachedPlayerController.MoveToTile(bestTile);
-
-            return bestTile;
-
-        }
-
-        return null;
-        
-    }
-
+    //This method is called by the turn manager script. This method communicates with the combatEvaluationComponent
+    //to find the best cell to attack based on the attackDistancePreferenceCurve and the parameters given to the
+    //enemy AIs pilot (laser range and ballistic range, for example).
     public void Attack()
     {
+        //Logic for finding the best tile is offloaded to the combatEvaluationComponent here.
         Tuple<GameObject,string> attackTargetTuple = combatEvaluationComponent.FindBestCell();
         GameObject attackTargetTile = attackTargetTuple.Item1;
         string attackTargetType = attackTargetTuple.Item2;
@@ -110,6 +65,8 @@ public class AIPlayerController : MonoBehaviour
             return;
         }
         
+        //Once we have determined which tile to attack and what attack to use (from the combatEvaluationComponent)
+        //we use this switch statement to execute the attack.
         switch (attackTargetType)
         {
             case("laser"):
@@ -124,71 +81,12 @@ public class AIPlayerController : MonoBehaviour
                 MechStats.AbilityMechSlot tempBallisticSlot = CreateAttackSlotOption(ballisticPower, ballisticRange);
                 attachedPlayerController.UseAbility(tempBallisticSlot, attackTargetTile);
                 break;
-        }
-        //AttackClosestPlayer();
-    }
-
-    private void AttackClosestPlayer() {
-        Debug.Log("Attacking closest player with method");
-        // collect all vaible player targets
-        GameObject[] playerObjectPiecesArray = GameObject.FindGameObjectsWithTag("Player");
-        List<GameObject> playerControlled = new List<GameObject>();
-
-        foreach (GameObject piece in playerObjectPiecesArray) {
-            AIPlayerController aattachedPlayerController = piece.GetComponent<AIPlayerController>();
-
-            if (aattachedPlayerController == null) {
-                playerControlled.Add(piece);
-            }
-        }
-        Debug.Log("playerControlled.Count : " + playerControlled.Count);
-
-
-        // find closest player to attack
-        if (playerControlled.Count > 0) {
-            Debug.Log("playerControlled.Count : " + playerControlled.Count);
-
-
-            // choose target by calculating which player is the closest
-            GameObject currentPositionalTile = attachedPlayerController.FindClosestTile(transform.position);
-            GameObject closestTarget = playerControlled[0];
-
-            foreach (GameObject targetObject in playerControlled) {
-                // get tile of each, new and old, compared distances to current positional tile
-
-                GameObject oldTile = attachedPlayerController.FindClosestTile(closestTarget.transform.position);
-                int oldTileDistance = attachedPlayerController.GetTileDistance(currentPositionalTile, oldTile);
-
-                GameObject newTile = attachedPlayerController.FindClosestTile(targetObject.transform.position);
-                int newTileDistance = attachedPlayerController.GetTileDistance(currentPositionalTile, newTile);
-
-                if (oldTileDistance > newTileDistance) {
-                    closestTarget = targetObject;
-                }
-
-            }
-
-
-            // if player is in range, attack
-            GameObject playerTile = attachedPlayerController.FindClosestTile(closestTarget.transform.position);
-            List<GameObject> reachableTile = attachedPlayerController.GetAttackableTiles(attachedPlayerController.RetrievePilotInfo().GetLaserRange());
-
-            if (reachableTile.Contains(playerTile)) {
-                // Debug.Log("Attacked player tile");
-                // attachedPlayerController.AttackTile(playerTile);
-
-                // same lines as in character canvas controller in the BeginAttackSystem method
-                int laserPower = attachedPlayerController.RetrievePilotInfo().GetLaserStrength();
-                int laserRange = attachedPlayerController.RetrievePilotInfo().GetLaserRange();
-                MechStats.AbilityMechSlot tempLaserSlot = CreateAttackSlotOption(laserPower, laserRange);
-                attachedPlayerController.UseAbility(tempLaserSlot, playerTile);
-            } else {
-                // Debug.Log("player tile not attacked");
-            }
-
+            default:
+                Debug.LogError("No attack target type chosen in AIPlayerController.Attack()!");
+                break;
         }
     }
-
+    
     // this exact method is currently in the character canvas controller, we can this somewhere more unified for optimization
     // we could probably move this method directly to the player, but it might create a bloat of code, but would be more clear
     // this change would be suggested. If this change is needed, desired, urgent, (anything), remind remy to do this.
@@ -207,6 +105,7 @@ public class AIPlayerController : MonoBehaviour
         return tempSlot;
     }
 
+    //This is simply for debugging purposes! Feel free to add more debugging visualization here!
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.blue;
