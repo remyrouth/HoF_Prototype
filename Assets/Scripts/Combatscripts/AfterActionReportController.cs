@@ -7,44 +7,43 @@ using UnityEngine.UI;
 
 public class AfterActionReportController : MonoBehaviour
 {
-    [SerializeField] private GameObject gameObject;
+    [SerializeField] private GameObject backgroundObject; // Used for actual background
     [SerializeField] private Text casualtyReport; 
     [SerializeField] private Text indivCasualtyList;
+    private CombatStateController combatStateController; 
     
-    void Start()
+	private void Start() {
+		backgroundObject.SetActive(false);
+	}
+
+    public void AARStart()
     {
-        CombatStateController combatStateController = FindObjectOfType<CombatStateController>();
+        combatStateController = FindObjectOfType<CombatStateController>();
         if (combatStateController == null) {
             Debug.Log("Start method called from unit After Action Report controller");
             combatStateController = new GameObject("CombatStateController").AddComponent<CombatStateController>();
             // combatStateController.PauseOrResumeCombat(shouldPause, gameObject);
         }
-
-        // Retrieve casualties list
-        List<CharacterStats> friendlyCasualties = combatStateController.DeceasedFriendlyList();
-        List<CharacterStats> enemyCasualties = combatStateController.DeceasedEnemyList();
-        if (friendlyCasualties == null) { friendlyCasualties = new List<CharacterStats>(); }
-        if (enemyCasualties == null) { enemyCasualties = new List<CharacterStats>(); }
+		
+		backgroundObject.SetActive(true);
+        
+        PauseThroughCombatManager();
+		FindObjectOfType<TurnManager>().gameObject.SetActive(false);
+        Debug.LogWarning("AfterActionReportConotroller has set the end turn manager to inactive");
+        List<CharacterStats> deceased = combatStateController.GetDeceased();
         
         // Total casualties
-        int friendlyCasualtiesInt = friendlyCasualties.Count;
-        int enemyCasualtiesInt = enemyCasualties.Count;
-        int totalCasualties = friendlyCasualtiesInt + enemyCasualtiesInt;
+        int totalCasualties = deceased.Count;
         
-        casualtyReport.text = "Total Casualties: " + totalCasualties.ToString() + "\n" + 
-        "Friendly Casualties: " + friendlyCasualtiesInt.ToString() + "\n" + 
-        "Enemy Casualties: " + enemyCasualtiesInt.ToString();
+        casualtyReport.text = "Total Casualties: " + totalCasualties.ToString();
         
-        // Display all casualties
+        // Display all individual casualties
         // Use same CSC to report list of deceased friendlys.
-        
-        List<CharacterStats> allCasualties = friendlyCasualties.Concat(enemyCasualties).ToList();
-
         string namesText = "None";
-        if (allCasualties.Count != 0)
+        if (totalCasualties != 0)
         {
             List<string> casualtyNames = new List<string>();
-            foreach (CharacterStats name in allCasualties)
+            foreach (CharacterStats name in deceased)
             {
                 casualtyNames.Add(name.GetPilotFaction() + ": " + NameDisplay(name.GetPilotName()));
             }
@@ -55,25 +54,23 @@ public class AfterActionReportController : MonoBehaviour
         indivCasualtyList.text = "The deceased: \n" + namesText;
     }
 
-    // Official Formatting of Character Names (Last, First)
+    // Formatting of Character Names (Last, First)
     private string NameDisplay(string pilotName)
     {
         string[] sections = pilotName.Split(" ");
-        // Are there any names with more than 2 names (first + last)? ex: (first + last last)
         string formatted = sections[1] + ", " + sections[0];
         return formatted;
     }
     
     // TellGameManagerPause: Tell game manager to pause in case of (starting) AAR (or something else?)
-    private void PauseThroughCombatManager(bool shouldPause) {
-        CombatStateController combatStateController = FindObjectOfType<CombatStateController>();
-        if (combatStateController == null) {
-            Debug.Log("PauseThroughCombatManager method called from After Action Report controller");
-            combatStateController = new GameObject("CombatStateController").AddComponent<CombatStateController>();
-            // combatStateController.PauseOrResumeCombat(shouldPause, gameObject);
-        }
-        combatStateController.PauseOrResumeCombat(shouldPause, gameObject);
+    private void PauseThroughCombatManager() {
+        combatStateController.PauseOrResumeCombat(true, gameObject);
     }
+
+	public void ContinueToLevel() {
+		Debug.Log("Clicking Level Menu");
+		FindObjectOfType<PauseMenuController>().GoToLevelChooser();
+	}
 
     
 }

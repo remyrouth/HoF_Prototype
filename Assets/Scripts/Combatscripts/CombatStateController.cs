@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -19,8 +21,8 @@ public class CombatStateController : MonoBehaviour
         FlagCapture
     }
 
-    private int currentEnemyCount = 0;
-    private int currentFriendlyCount = 0;
+    private int currentEnemyCount;
+    private int currentFriendlyCount;
 
 
     // Controllers
@@ -33,9 +35,23 @@ public class CombatStateController : MonoBehaviour
     [SerializeField] private List<GameObject> pauseCallerNames = new List<GameObject>();
     // called by GameStateManager
 
-    // Friendlt deceased list
-    private List<CharacterStats> friendlyDeceasedList;
-    private List<CharacterStats> enemyDeceasedList;
+    // list of deceased
+    private List<CharacterStats> deceasedList;
+    private AfterActionReportController afterActionReportController;
+    
+    // Start
+    private void Start()
+    {
+        // Debug.Log("start aar");
+        afterActionReportController = FindObjectOfType<AfterActionReportController>();
+        if (afterActionReportController == null)
+        {
+            afterActionReportController =  new GameObject("AfterActionReportController").AddComponent<AfterActionReportController>();
+        }
+        // afterActionReportController.GameObject().SetActive(false);
+        
+        deceasedList = new List<CharacterStats>();
+    }
 
     // we input an object to tell how many have called pause. we know we can
     // unpause from other scripts, so we have to know how many scripts
@@ -69,6 +85,7 @@ public class CombatStateController : MonoBehaviour
 
     private void Resume() {
         Debug.Log("Resume called");
+        
         bool playerTurnCheck = turnManager.IsPlayerTurnCheck(); // this will tell us when we're resuming,
         // if we go back to AI turn, or back to player controls
 
@@ -94,52 +111,44 @@ public class CombatStateController : MonoBehaviour
         }
     }
 
-    // Currently takes in character stats to get info to add to list of deceased names(string). 
-    // Can be swapped to CharacterStats at lines 26 & 137 (declaration and friendlydeceasedlist). 
+    // Currently takes in character stats to get info to add to list of deceased names(CharacterStats). 
     public void IncreaseFriendlyCount(bool increase, CharacterStats name) {
         if (increase) {
             currentFriendlyCount++;
         } else {
-            if (friendlyDeceasedList == null) {
-                friendlyDeceasedList = new List<CharacterStats>();
-            }
-            friendlyDeceasedList.Add(name);
+            deceasedList.Add(name);
             currentFriendlyCount--;
             EndLevel();
         }
         // Debug.Log("currentFriendlyCount: " + currentFriendlyCount);
     }
 
-    public void IncreaseEnemyCount(bool increase, CharacterStats name) {
+    public void IncreaseEnemyCount(bool increase, CharacterStats name)
+    {
         if (increase) {
             currentEnemyCount++;
         } else {
-            if (enemyDeceasedList == null) {
-                enemyDeceasedList = new List<CharacterStats>();
-            }
-            enemyDeceasedList.Add(name);
+            deceasedList.Add(name);
             currentEnemyCount--;
             EndLevel();
         }
-
-        // Debug.Log("currentEnemyCount: " + currentEnemyCount);
     }
 
     private void EndLevel() {
-        if (currentEnemyCount <= 0 || currentFriendlyCount <= 0) {
-            // Debug.Log("currentEnemyCount: " + currentEnemyCount + "  currentFriendlyCount: " + currentFriendlyCount);
-            // Debug.Log("GAME HAS ENEDED NOW");
+        Debug.Log("Checking end of level");
+        if (currentEnemyCount <= 0 || currentFriendlyCount <= 0)
+        {
+            Debug.Log("Calling AARStart");
+            afterActionReportController.AARStart();
+            // afterActionReportController.GameObject().SetActive(true);
+
             // Map
-            SceneManager.LoadScene("Map");
+            // SceneManager.LoadScene("Map");
         }
     }
 
-    public List<CharacterStats> DeceasedFriendlyList() {
-        return friendlyDeceasedList;
-    }
-
-    public List<CharacterStats> DeceasedEnemyList()
+    public List<CharacterStats> GetDeceased()
     {
-        return enemyDeceasedList;
+        return deceasedList;
     }
 }

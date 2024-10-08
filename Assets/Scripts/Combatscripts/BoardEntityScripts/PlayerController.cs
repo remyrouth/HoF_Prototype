@@ -60,7 +60,9 @@ public class PlayerController : MonoBehaviour
         }
         if (isPlayerEntity) {
             combatStateController.IncreaseFriendlyCount(true, null);
-        } else {
+        } 
+        else
+        {
             combatStateController.IncreaseEnemyCount(true, null);
         }
 

@@ -30,7 +30,10 @@ public class CharacterStats : ScriptableObject
     private enum Faction {
         PrincipalityOfAmerica, 
         USA, 
-        NeoDahomey // etc. as decided by story
+        // NeoDahomey, Alter name to new African Union Faction Title
+        SolInvicti, 
+        Evolites, 
+        Morningstars // etc. as decided by story
     }
 
     [SerializeField]
@@ -93,5 +96,12 @@ public class CharacterStats : ScriptableObject
     public string GetPilotFaction()
     {
         return pilotFaction.ToString();
+    }
+    
+    // Placeholder for changing factions (defect)
+    public void swapPilotFaction(string faction)
+    {
+        // Change faction based on input. Set to Bell's faction?
+        // EX: pilotFaction = Faction.PrincipalityOfAmerica;
     }
 }
