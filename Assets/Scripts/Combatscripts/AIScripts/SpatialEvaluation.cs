@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -191,7 +192,8 @@ namespace Combatscripts.AIScripts
 
                 foreach (KeyValuePair<GameObject, float> pair in distanceDictionary)
                 {
-                    float distanceToTarget = Vector3.Distance(pair.Key.transform.position, target.transform.position);
+                    //the reason I am taking the floor of this value is b/c each tile is 1.5 units apart, by taking the floor we can just think of our curve as 1 unit per 1 tile
+                    float distanceToTarget = Mathf.Floor(Vector3.Distance(pair.Key.transform.position, target.transform.position));
                     curveValue = spatialFunction.curve.Evaluate(distanceToTarget);
                     gridMap.TryAdd(pair.Key, 0f);
 
