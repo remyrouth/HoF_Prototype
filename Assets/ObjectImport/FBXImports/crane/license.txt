@@ -1,0 +1,11 @@
+Model Information:
+* title:	Crane
+* source:	https://sketchfab.com/3d-models/crane-5eae572703f34fa0ae060bc30111c6a9
+* author:	aksinia0987 (https://sketchfab.com/aksinia0987)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Crane" (https://sketchfab.com/3d-models/crane-5eae572703f34fa0ae060bc30111c6a9) by aksinia0987 (https://sketchfab.com/aksinia0987) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
