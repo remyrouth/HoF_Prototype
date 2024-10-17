@@ -87,15 +87,13 @@ public class CharacterStats : ScriptableObject
         return clarityGainedFromMovements;
     }
 
-
-
     public int GetAttackClarity() {
         return clarityGainedFromAttacks;
     }
 
     public string GetPilotFaction()
     {
-        return pilotFaction.ToString();
+        return formatFaction(pilotFaction);
     }
     
     // Placeholder for changing factions (defect)
@@ -103,5 +101,21 @@ public class CharacterStats : ScriptableObject
     {
         // Change faction based on input. Set to Bell's faction?
         // EX: pilotFaction = Faction.PrincipalityOfAmerica;
+        Debug.Log("swapPilotFaction in CharacterStats not implemented.");
+    }
+
+    private string formatFaction(Faction unfor)
+    {
+        switch (unfor)
+        {
+            case Faction.USA:
+                return "United States of America";
+            case Faction.PrincipalityOfAmerica:
+                return "Principality of America";
+            case Faction.SolInvicti:
+                return "Sol-Invicti";
+            default:
+                return unfor.ToString();
+        }
     }
 }

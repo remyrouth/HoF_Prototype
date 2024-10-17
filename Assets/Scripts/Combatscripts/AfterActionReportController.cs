@@ -12,8 +12,13 @@ public class AfterActionReportController : MonoBehaviour
     [SerializeField] private Text indivCasualtyList;
     private CombatStateController combatStateController; 
     
+    // Contain a CharacterDisplay
+    [SerializeField] private GameObject characterDisplay;
+    private CharacterDisplayController characterDisplayController;
+    
 	private void Start() {
 		backgroundObject.SetActive(false);
+		characterDisplay.SetActive(false);
 	}
 
     public void AARStart()
@@ -31,6 +36,8 @@ public class AfterActionReportController : MonoBehaviour
 		FindObjectOfType<TurnManager>().gameObject.SetActive(false);
         Debug.LogWarning("AfterActionReportConotroller has set the end turn manager to inactive");
         List<CharacterStats> deceased = combatStateController.GetDeceased();
+        
+        
         
         // Total casualties
         int totalCasualties = deceased.Count;
@@ -50,15 +57,35 @@ public class AfterActionReportController : MonoBehaviour
             namesText = string.Join(", \n", casualtyNames); 
         }
         // Test: namesText = NameDisplay("Madeline Engle");
-        
         indivCasualtyList.text = "The deceased: \n" + namesText;
+        
+        
+        // Character Display
+        characterDisplayController = characterDisplay.GetComponent<CharacterDisplayController>();
+	    characterDisplay.SetActive(true);
+	    if (deceased.Count > 0)
+	    {
+		    characterDisplayController.DisplayDeceased(deceased.FirstOrDefault()); // deceased.FirstOrDefault()
+	    }
+                
+	    
+        
     }
 
     // Formatting of Character Names (Last, First)
     private string NameDisplay(string pilotName)
     {
         string[] sections = pilotName.Split(" ");
-        string formatted = sections[1] + ", " + sections[0];
+
+		// Use this line if all names are inputted as First Last
+        // string formatted = sections[1] + ", " + sections[0];
+		if (sections.Count() > 2) { Debug.Log("More than 2 names provided instead of First Last"); }
+
+		// If names are first last
+		string testone = sections[1].ToCharArray()[0].ToString();
+		string formatted = testone.ToUpper() + sections[1].Substring(1); 
+		string test = sections[0].ToCharArray()[0].ToString();
+		formatted += ", " + test.ToUpper() + sections[0].Substring(1);
         return formatted;
     }
     
