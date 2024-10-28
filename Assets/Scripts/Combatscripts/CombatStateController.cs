@@ -27,6 +27,7 @@ public class CombatStateController : MonoBehaviour
     private TurnManager turnManager;
     private CharacterCanvasController characterCanvasController;
     private SelectionManager selectionManager;
+    private ScrapManager scrapManager;
 
 
     // [SerializeField] private List<string> pauseCallerNames = new List<string>();
@@ -87,6 +88,11 @@ public class CombatStateController : MonoBehaviour
         }
         if (selectionManager == null) {
             selectionManager = FindObjectOfType<SelectionManager>();
+        }
+
+        if (scrapManager == null)
+        {
+            scrapManager = FindObjectOfType<ScrapManager>();
         }
     }
 
