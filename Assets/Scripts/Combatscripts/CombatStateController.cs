@@ -28,7 +28,7 @@ public class CombatStateController : MonoBehaviour
     private CharacterCanvasController characterCanvasController;
     private SelectionManager selectionManager;
     private ScrapManager scrapManager;
-
+ 
 
     // [SerializeField] private List<string> pauseCallerNames = new List<string>();
     [SerializeField] private List<GameObject> pauseCallerNames = new List<GameObject>();
