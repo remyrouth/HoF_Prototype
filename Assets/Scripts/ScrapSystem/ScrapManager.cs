@@ -71,24 +71,29 @@ public class ScrapManager : MonoBehaviour
     {
         string path = "Assets/SaveFiles/ScrapSaveFile.txt";
         
-        Debug.Log("dataPath: " + Application.dataPath);
+        // Debug.Log("dataPath: " + Application.dataPath);
+        //
+        // if (!File.Exists(path))
+        // {
+        //     string text = "";
+        //     
+        //     if (_scrapAvailable.Count == 0)
+        //     {
+        //         text += "Hello there you're reading my text";
+        //     }
+        //
+        //     foreach (var pair in _scrapAvailable)
+        //     {
+        //         text += "Mech: " + pair.Key + ", Scrap value: " + pair.Value + Environment.NewLine;
+        //     }
+        //     
+        //     File.WriteAllText(path, text, Encoding.UTF8);
+        // }
+        StreamWriter writer = new StreamWriter(path, true);
         
-        if (!File.Exists(path))
-        {
-            string text = "";
-            
-            if (_scrapAvailable.Count == 0)
-            {
-                text += "Hello there you're reading my text";
-            }
-    
-            foreach (var pair in _scrapAvailable)
-            {
-                text += "Mech: " + pair.Key + ", Scrap value: " + pair.Value + Environment.NewLine;
-            }
-            
-            File.WriteAllText(path, text, Encoding.UTF8);
-        }
+        writer.WriteLine("Testing testing one two three");
+        
+        writer.Close();
     }
     
     
