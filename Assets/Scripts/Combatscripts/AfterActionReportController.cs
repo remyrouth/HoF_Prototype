@@ -9,16 +9,30 @@ public class AfterActionReportController : MonoBehaviour
 {
     [SerializeField] private GameObject backgroundObject; // Used for actual background
     [SerializeField] private Text casualtyReport; 
-    [SerializeField] private Text indivCasualtyList;
-    private CombatStateController combatStateController; 
+    private CombatStateController combatStateController;
+
+    private List<CharacterStats> deceased;
     
     // Contain a CharacterDisplay
-    [SerializeField] private GameObject characterDisplay;
-    private CharacterDisplayController characterDisplayController;
+    [SerializeField] private Button refreshCharacterDisplays;
+    
+    [SerializeField] private GameObject characterDisplayOne;
+    private CharacterDisplayController characterDisplayControllerOne;
+    [SerializeField] private GameObject characterDisplayTwo;
+    private CharacterDisplayController characterDisplayControllerTwo;
+    [SerializeField] private GameObject characterDisplayThree;
+    private CharacterDisplayController characterDisplayControllerThree;
+    [SerializeField] private GameObject characterDisplayFour;
+    private CharacterDisplayController characterDisplayControllerFour;
+    
+    private int start;
     
 	private void Start() {
 		backgroundObject.SetActive(false);
-		characterDisplay.SetActive(false);
+		characterDisplayOne.SetActive(false);
+		characterDisplayTwo.SetActive(false);
+		characterDisplayThree.SetActive(false);
+		characterDisplayFour.SetActive(false);
 	}
 
     public void AARStart()
@@ -27,66 +41,34 @@ public class AfterActionReportController : MonoBehaviour
         if (combatStateController == null) {
             Debug.Log("Start method called from unit After Action Report controller");
             combatStateController = new GameObject("CombatStateController").AddComponent<CombatStateController>();
-            // combatStateController.PauseOrResumeCombat(shouldPause, gameObject);
         }
 		
 		backgroundObject.SetActive(true);
         
+		// Pause
         PauseThroughCombatManager();
 		FindObjectOfType<TurnManager>().gameObject.SetActive(false);
         Debug.LogWarning("AfterActionReportConotroller has set the end turn manager to inactive");
-        List<CharacterStats> deceased = combatStateController.GetDeceased();
         
-        
+        deceased = combatStateController.GetDeceased();
         
         // Total casualties
         int totalCasualties = deceased.Count;
-        
         casualtyReport.text = "Total Casualties: " + totalCasualties.ToString();
         
-        // Display all individual casualties
-        // Use same CSC to report list of deceased friendlys.
-        string namesText = "None";
-        if (totalCasualties != 0)
-        {
-            List<string> casualtyNames = new List<string>();
-            foreach (CharacterStats name in deceased)
-            {
-                casualtyNames.Add(name.GetPilotFaction() + ": " + NameDisplay(name.GetPilotName()));
-            }
-            namesText = string.Join(", \n", casualtyNames); 
-        }
-        // Test: namesText = NameDisplay("Madeline Engle");
-        indivCasualtyList.text = "The deceased: \n" + namesText;
-        
-        
         // Character Display
-        characterDisplayController = characterDisplay.GetComponent<CharacterDisplayController>();
-	    characterDisplay.SetActive(true);
-	    if (deceased.Count > 0)
-	    {
-		    characterDisplayController.DisplayDeceased(deceased.FirstOrDefault()); // deceased.FirstOrDefault()
-	    }
-                
-	    
         
-    }
-
-    // Formatting of Character Names (Last, First)
-    private string NameDisplay(string pilotName)
-    {
-        string[] sections = pilotName.Split(" ");
-
-		// Use this line if all names are inputted as First Last
-        // string formatted = sections[1] + ", " + sections[0];
-		if (sections.Count() > 2) { Debug.Log("More than 2 names provided instead of First Last"); }
-
-		// If names are first last
-		string testone = sections[1].ToCharArray()[0].ToString();
-		string formatted = testone.ToUpper() + sections[1].Substring(1); 
-		string test = sections[0].ToCharArray()[0].ToString();
-		formatted += ", " + test.ToUpper() + sections[0].Substring(1);
-        return formatted;
+        characterDisplayControllerOne = characterDisplayOne.GetComponent<CharacterDisplayController>();
+	    characterDisplayOne.SetActive(true);
+	    characterDisplayControllerTwo = characterDisplayTwo.GetComponent<CharacterDisplayController>();
+	    characterDisplayTwo.SetActive(true);
+	    characterDisplayControllerThree = characterDisplayThree.GetComponent<CharacterDisplayController>();
+	    characterDisplayThree.SetActive(true);
+	    characterDisplayControllerFour = characterDisplayFour.GetComponent<CharacterDisplayController>();
+	    characterDisplayFour.SetActive(true);
+	    start = 0;
+	    
+	    DisplayUpdate();
     }
     
     // TellGameManagerPause: Tell game manager to pause in case of (starting) AAR (or something else?)
@@ -99,5 +81,34 @@ public class AfterActionReportController : MonoBehaviour
 		FindObjectOfType<PauseMenuController>().GoToLevelChooser();
 	}
 
+	// Display format helpers.
+	private CharacterStats DisplayEnsure(int ind)
+	{
+		if (ind >= deceased.Count)
+		{
+			return null;
+		}
+		return deceased[ind];
+	}
+
+	public void DisplayUpdate()
+	{
+		// update displays
+		characterDisplayControllerOne.DisplayDeceased(DisplayEnsure(start));
+		characterDisplayControllerTwo.DisplayDeceased(DisplayEnsure(start + 1));
+		characterDisplayControllerThree.DisplayDeceased(DisplayEnsure(start + 2));
+		characterDisplayControllerFour.DisplayDeceased(DisplayEnsure(start + 3));
+		
+		// if start still valid, add.
+		if (deceased.Count > start + 4)
+		{
+			start = start + 4;
+		}
+		// if start no longer valid, disable button. 
+		else
+		{
+			refreshCharacterDisplays.gameObject.SetActive(false);
+		}
+	}
     
 }

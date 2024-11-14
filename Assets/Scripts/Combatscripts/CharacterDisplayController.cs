@@ -13,32 +13,32 @@ public class CharacterDisplayController : MonoBehaviour
     [SerializeField] private Text causeOfDeath;
     [SerializeField] private Image pilotImage;
     [SerializeField] private Button dogtagPurchase;
-    // [SerializeField] private GameObject backgroundScreen;
+    [SerializeField] private GameObject backgroundScreen;
     private CharacterStats deceasedPilot;
     
     /*
      * Display notes:
      * Option One: 2 x 2 of displays, displaying 4 deceased at a time. Scroll buttons.
-     * Option Two: 1 display, Left Scroll of deceased to select.
-     *
+     * 
      * Basic display:
      * Sprite display
      * Name of Pilot
      * Faction of pilot (colors added?)
      * Cause of Death (via list provided by design).
      *
-     * Bug: Why are texts not running through? What is not hooked up correctly?
-     * Could swap to TextMeshPro
+     * Could swap to TextMeshPro - Samik
      */
     
     public void DisplayDeceased(CharacterStats deceased)
     {
         if (deceased == null)
         {
+            this.gameObject.SetActive(false);
             Debug.Log("deceased is null. Display default empty display.");
             return;
         }
-        
+
+        backgroundScreen.SetActive(true);
         deceasedPilot = deceased;
         Debug.Log("Character Stats passed into DisplayDeceased: " + deceased.GetPilotName());
         // Name
@@ -54,9 +54,9 @@ public class CharacterDisplayController : MonoBehaviour
     public void purchaseDogtag()
     {
         Debug.Log("purchase the dogtag of " + deceasedPilot.GetPilotName());
-        Debug.Log("Currently not doing anything (purchasing dogtag). Currency must be implemented.");
-        // Disable button after. May only be clicked once. 
+        Debug.LogWarning("Currently not doing anything (purchasing dogtag). Currency must be implemented.");
         // Should affect the currency balance. Would need to save dogtag as possesion? 
+        // Should this affect the storyline?
         dogtagPurchase.interactable = false;
         Debug.Log("Dogtag button is now not interactable.");
     }
@@ -81,10 +81,9 @@ public class CharacterDisplayController : MonoBehaviour
     // Cause of Death
     private string CauseOfDeath()
     {
-        List<string> deathCauses = new List<string>();
-        deathCauses.Add("Toilet procedure error");
-        deathCauses.Add("Struck by micrometeoroid");
-        deathCauses.Add("Burned to death by exposure to direct sunlight");
+        List<string> deathCauses = new List<string>{ "Suffocation", "Exsanguination", "Hypothermia", 
+            "Brain Hemmorage", "Dismemberment", "Struck by micrometeoroid", "Burned to death" } ; 
+        //, "Mid-life crisis", "example #16", "NOT THE TOILET THING" };
         Random rnd = new Random(); 
         int rand = rnd.Next(0, deathCauses.Count); // rnd.Next(deathCauses.Count);
         return deathCauses[rand];

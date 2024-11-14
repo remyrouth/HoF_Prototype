@@ -38,7 +38,7 @@ Material:
     m_TexEnvs: []
     m_Ints: []
     m_Floats:
-    - _DissolvePower: 1
+    - _DissolvePower: 0
     - _Smoothness: 0
     m_Colors:
     - _Color: {r: 0.3019608, g: 0.3019608, b: 0.3019608, a: 1}
