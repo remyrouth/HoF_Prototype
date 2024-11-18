@@ -4,50 +4,62 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Scrap Manager SO", menuName = "Scriptable Objects/ScrapManagerSO", order = 1)]
 public class ScrapManager : ScriptableObject
 {
-    public int scrapAvailable;
-
-    public int initialValue;
-    public int currentValue;
+    [Tooltip("Current amount of scrap")] [SerializeField] private int scrapAvailable;
+    [Tooltip("Scrap amount you'll start the game with")] [SerializeField] private int initialValue;
     public bool resetScrap;
+    
+    /*
+     * script is called at the start of combat
+     * - grab all enemy mechs, goes through each enemy at the end and sees if it has enough health so that the player can use it.
+     *      - yes: if you have enough health to use the mech -> use as scrap OR mech
+     *      - no: use it as scrap (if it's dead, you would just get zero scrap)
+     *      --> should be done somewhere else, not the scrapmanager
+     * 
+     *      - when the method AddScrap is called, assign scrap based on some function of the health of the mechs
+     *          - a mech's scrap value would have to be determined by a specific mech
+     */
     
     // Start is called before the first frame update
     void Start()
     {
         
     }
-
+    
     // Update is called once per frame
     void Update()
     {
         
     }
     
-    // Updates the dictionary with a new mech and its corresponding scrap value
-    private void UpdateScrapAvailable(int mechValue)
-    {
-        scrapAvailable += mechValue;
-        currentValue = scrapAvailable;
-    }
-    
-    // Removes a mech from the scrap available
-    private void RemoveMech(int mechValue)
-    {
-        if (scrapAvailable - mechValue < 0)
-        {
-            Console.Error.WriteLine("Not enough scrap available for this purchase");
-        }
-        else
-        {
-            scrapAvailable -= mechValue;
-        }
-    }
-
-    private void resetScrapAmount()
+    private void OnEnable()
     {
         if (resetScrap)
         {
-            scrapAvailable = 0;
-            currentValue = 0;
+            ResetScrapAmount();
         }
+    }
+
+    public void ResetScrapAmount()
+    {
+        if (resetScrap)
+        {
+            scrapAvailable = initialValue;
+        }
+    }
+
+    public int GetScrapValue()
+    {
+        // TODO: returns how much a scrap a mech is worth 
+        return 0;
+    }
+
+    public int GetScrapAvailable()
+    {
+        return scrapAvailable;
+    }
+
+    public void SetScrapAvailable(int newScrapAvailable)
+    {
+        scrapAvailable = newScrapAvailable;
     }
 }

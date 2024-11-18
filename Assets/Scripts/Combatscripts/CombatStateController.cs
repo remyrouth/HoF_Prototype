@@ -116,6 +116,18 @@ public class CombatStateController : MonoBehaviour
             // Debug.Log("currentEnemyCount: " + currentEnemyCount + "  currentFriendlyCount: " + currentFriendlyCount);
             // Debug.Log("GAME HAS ENEDED NOW");
             // Map
+
+            ScrapCollector scrapCollector = FindObjectOfType<ScrapCollector>();
+
+            if (scrapCollector != null)
+            {
+                scrapCollector.SetScrapPostCombat();
+            }
+            else
+            {
+                Debug.LogWarning("Can't find the Scrap Collector.");
+            }
+            
             SceneManager.LoadScene("Map");
         }
     }

@@ -91,7 +91,6 @@ public class MechStats : ScriptableObject
             type = newType;
         }
 
-
         public bool IsNotNoneType() {
             return type != AbilityType.None;
         }
