@@ -47,12 +47,6 @@ public class ScrapManager : ScriptableObject
         }
     }
 
-    public int GetScrapValue()
-    {
-        // TODO: returns how much a scrap a mech is worth 
-        return 0;
-    }
-
     public int GetScrapAvailable()
     {
         return scrapAvailable;
