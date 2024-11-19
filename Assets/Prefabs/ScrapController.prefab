@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5124217318817346567}
   - component: {fileID: 6453397223799725778}
   m_Layer: 0
-  m_Name: ScrapCollector
+  m_Name: ScrapController
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -44,4 +44,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 19221e428768e9642a908784b50ef373, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ScrapManager: {fileID: 11400000, guid: f04f82add8164054eb15b689dc7331b7, type: 2}
+  scrapManager: {fileID: 11400000, guid: f04f82add8164054eb15b689dc7331b7, type: 2}
+  enemyMecha: []
+  highHealthMecha: []
+  scrapThreshold: 0.5
+  scrapConversion: 0.25

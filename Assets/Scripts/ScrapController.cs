@@ -1,13 +1,12 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ScrapCollector : MonoBehaviour
+public class ScrapController : MonoBehaviour
 {
     [SerializeField] private ScrapManager scrapManager;
     [SerializeField] private List<PlayerController> enemyMecha;
-    [SerializeField] private List<PlayerController> highHealthMecha;
+    [SerializeField] private List<PlayerController> playableMecha;
     [SerializeField] private float scrapThreshold = 0.5f;
     [SerializeField] private float scrapConversion = 0.25f;
     private int scrapAvailable;
@@ -18,7 +17,7 @@ public class ScrapCollector : MonoBehaviour
         CollectEnemyMecha();
     }
 
-    public void CollectEnemyMecha()
+    private void CollectEnemyMecha()
     {
         GameObject[] boardEntities = GameObject.FindGameObjectsWithTag("Player");
 
@@ -75,7 +74,7 @@ public class ScrapCollector : MonoBehaviour
             } else if (mechHealth > enemyMech.GetMechMaxHealth() * scrapThreshold) // mech has decent health
             {
                 Debug.LogError("This mech can be used as scrap or on the team.");
-                highHealthMecha.Add(enemyMech);
+                playableMecha.Add(enemyMech);
             }
         }
     }

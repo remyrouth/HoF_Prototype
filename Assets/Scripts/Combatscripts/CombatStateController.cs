@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -24,10 +25,11 @@ public class CombatStateController : MonoBehaviour
 
 
     // Controllers
+    [SerializeField] public ScrapController scrapController;
     private TurnManager turnManager;
     private CharacterCanvasController characterCanvasController;
     private SelectionManager selectionManager;
- 
+    
 
     // [SerializeField] private List<string> pauseCallerNames = new List<string>();
     [SerializeField] private List<GameObject> pauseCallerNames = new List<GameObject>();
@@ -117,11 +119,9 @@ public class CombatStateController : MonoBehaviour
             // Debug.Log("GAME HAS ENEDED NOW");
             // Map
 
-            ScrapCollector scrapCollector = FindObjectOfType<ScrapCollector>();
-
-            if (scrapCollector != null)
+            if (scrapController != null)
             {
-                scrapCollector.SetScrapPostCombat();
+                scrapController.SetScrapPostCombat();
             }
             else
             {
