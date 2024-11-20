@@ -8,7 +8,7 @@ public class ScrapController : MonoBehaviour
     [SerializeField] private List<PlayerController> enemyMecha;
     [SerializeField] private List<PlayerController> playableMecha;
     [SerializeField] private float scrapThreshold = 0.5f;
-    [SerializeField] private float scrapConversion = 0.25f;
+    [SerializeField] private float scrapMultiplier = 0.25f;
     private int scrapAvailable;
     
     // Start is called before the first frame update
@@ -19,6 +19,8 @@ public class ScrapController : MonoBehaviour
 
     private void CollectEnemyMecha()
     {
+        // There might be non-player controlled allies to be aware of later on. 
+        
         GameObject[] boardEntities = GameObject.FindGameObjectsWithTag("Player");
 
         foreach (GameObject entity in boardEntities)
@@ -53,7 +55,7 @@ public class ScrapController : MonoBehaviour
     // Calculates scrap based on the mech's current health 
     private int CalculateScrapValue(PlayerController mech)
     {
-        return (int)Math.Floor(mech.GetMechHealth() * scrapConversion);
+        return (int)Math.Floor(mech.GetMechHealth() * scrapMultiplier);
     }
 
     // Once Combat ends, this method is called in order to calculate the scrap available

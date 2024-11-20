@@ -118,14 +118,14 @@ public class CombatStateController : MonoBehaviour
             // Debug.Log("currentEnemyCount: " + currentEnemyCount + "  currentFriendlyCount: " + currentFriendlyCount);
             // Debug.Log("GAME HAS ENEDED NOW");
             // Map
-
+            
             if (scrapController != null)
             {
                 scrapController.SetScrapPostCombat();
             }
             else
             {
-                Debug.LogWarning("Can't find the Scrap Collector.");
+                Debug.LogWarning("You forgot to attach the ScrapCollector.cs component, the game will not reward players scrap without this script being on this same object. Please fix this.");
             }
             
             SceneManager.LoadScene("Map");

@@ -17,7 +17,6 @@ public class GameStateManager : MonoBehaviour
     }
     private CombatStateController combatStateController;
     private CameraController cameraController;
-    [SerializeField] private ScrapController scrapController;
 
     private void Awake() {
         combatStateController = FindObjectOfType<CombatStateController>();
@@ -25,8 +24,8 @@ public class GameStateManager : MonoBehaviour
             Debug.LogWarning("combatStateController does not exist, and was created by a game state manager object object");
             GameObject combatObject = new GameObject("CombatStateController");
             combatStateController = combatObject.AddComponent<CombatStateController>();
-            combatStateController.scrapController = scrapController;
         }
+        
     }
 
     public GameSceneType GetSceneType() {
