@@ -5,6 +5,7 @@ using UnityEngine;
 public class ScrapController : MonoBehaviour
 {
     [SerializeField] private ScrapManager scrapManager;
+    [SerializeField] private MechSaveFileInteractor saveFileInteractor;
     [SerializeField] private List<PlayerController> enemyMecha;
     [SerializeField] private List<PlayerController> playableMecha;
     [SerializeField] private float scrapThreshold = 0.5f;
@@ -66,10 +67,10 @@ public class ScrapController : MonoBehaviour
             if (enemyMech.currentMechHealth == 0) // mech is dead 
             {
                 Debug.LogError("This mech cannot be used as scrap or as a part of the team");
-            } else if (enemyMech.currentPlayerHealth == 0 && enemyMech.currentMechHealth > 0)
+            } else if (enemyMech.currentPlayerHealth == 0 && enemyMech.currentMechHealth > 0) // pilot is dead
             {
                 Debug.LogError("This mech can be used as scrap or on the team.");
-                playableMecha.Add(enemyMech);
+                saveFileInteractor.LogMechStatsToFile(enemyMech); // mech is saved as playable on your team now
             }
         }
     }
@@ -78,11 +79,11 @@ public class ScrapController : MonoBehaviour
     public void UseAsScrap(PlayerController mech)
     {
         AddScrap(scrapManager.GetScrapAvailable(), CalculateScrapValue(mech));
-        // TODO: should also update "units available to use during combat" list as well
+        mech.currentMechHealth = 0; // now this mech won't be available to use during combat
     }
     
     // Allows you to make repairs to damaged mechs
-    public void MakeRepair(PlayerController mech)
+    public void MakeRepairs(PlayerController mech)
     {
         SubtractScrap(scrapManager.GetScrapAvailable(), CalculateScrapValue(mech));
     }
