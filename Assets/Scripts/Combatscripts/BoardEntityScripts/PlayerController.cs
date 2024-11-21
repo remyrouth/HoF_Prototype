@@ -89,7 +89,7 @@ public class PlayerController : MonoBehaviour
     }
 
     public bool canReplacePlayerEntity() {
-        return grantedOnBoard;
+        return !grantedOnBoard;
     }
 
     // Main Action Methods

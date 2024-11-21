@@ -57,6 +57,8 @@ public class TeamRosterPersistor : MonoBehaviour
         List<PlayerController> playersToReplace = new List<PlayerController>();
         foreach (PlayerController player in players) {
             if (player.canReplacePlayerEntity()) {
+                // Example use case : during the first mission, bell can't be placed because we first earn him on the board
+                // the first mission we get bell, winning gets us bell as a placeable unit
                 playersToReplace.Add(player);
             }
         }
