@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BoostAllyDefense : MonoBehaviour
+public class BoostAllyDefense : MonoBehaviour, IAbilitySettings
 {
     public GameObject emptyPrefab; // Assign this in the Inspector
     public MechStats.AbilityType Type = MechStats.AbilityType.RockSummon;

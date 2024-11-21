@@ -18,6 +18,7 @@ public class AbilityExecutionManager : MonoBehaviour
         _abilityFactories[MechStats.AbilityType.Heal] = childObject.AddComponent<HealAllyAbilitySettings>();
         _abilityFactories[MechStats.AbilityType.Ballistic] = childObject.AddComponent<BallisticAbilitySettings>();
         _abilityFactories[MechStats.AbilityType.Combo] = childObject.AddComponent<ComboAbilitySettings>();
+        _abilityFactories[MechStats.AbilityType.AllyDefenseBoost] = childObject.AddComponent<BoostAllyDefense>();
     }
 
     private void UseSoundEffect(IAbilitySettings settingsOutput) {

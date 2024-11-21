@@ -129,13 +129,14 @@ public class PlayerController : MonoBehaviour
     }
 
     public bool ReceiveBuff(BuffType buffType, BuffInfo buffInfo) {
-        // check do we have a buff in that catafory already? if so return false
-        // if the result is empty, then fill it in and return true
-        // after each turn is complete (when reset happens), subtract 1 from each turn lasting in the buff info
-        // then, if we reach zero, delete it from the dictionary
+        // Check if we already have a buff of this type
+        if (buffs.ContainsKey(buffType)) {
+            return false;
+        }
 
-
-        return false;
+        // If the buff doesn't exist, add it to the dictionary
+        buffs[buffType] = buffInfo;
+        return true;
     }
 
     public void TakeDamage(int damage, bool isMechDamage) {

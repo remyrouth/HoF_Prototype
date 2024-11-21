@@ -9,7 +9,6 @@ using UnityEngine;
 public class GenericAbilityStrategy : IAbilityStrategy
 {
     protected AbilityTraits _traits;
-        // [SerializeField] private Sound deathSound;
     // protected Indiv
 
     public GenericAbilityStrategy(AbilityTraits traits)
@@ -31,7 +30,7 @@ public class GenericAbilityStrategy : IAbilityStrategy
         SummonPrefab(character, tileTarget);
         // if we return false it means the effect cannot be complete and the ability execution should not be using a turn
         // to the player controller
-        if (!ApplyDefenseEffect(character, tileTarget)) {
+        if (!ApplyDefenseEffect(ability, character, tileTarget)) {
             return false;
         }
 
@@ -39,9 +38,21 @@ public class GenericAbilityStrategy : IAbilityStrategy
         return true;
     }
 
-    private bool ApplyDefenseEffect(PlayerController character, GameObject tileTarget) {
-        // first check if the tile target already has a buff
-        // second 
+    private bool ApplyDefenseEffect(MechStats.AbilityMechSlot slot, PlayerController character, GameObject tileTarget) {
+        GameObject matchingObject = character.FindMatchingObjectToTile(tileTarget);
+        PlayerController tempPC = matchingObject.GetComponent<PlayerController>();
+        int powerInt = 0;
+        if (tempPC != null) {
+            powerInt = -slot.GetIntPower();
+            PlayerController.BuffType type = PlayerController.BuffType.Defense;
+            PlayerController.BuffInfo buffInfo = new PlayerController.BuffInfo();
+            buffInfo.power = powerInt;
+
+            tempPC.ReceiveBuff(type, buffInfo);
+        } else {
+            return false;
+        }
+
         return true;
     }
 

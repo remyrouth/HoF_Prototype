@@ -139,8 +139,10 @@ public class MechStats : ScriptableObject
                     return "Strikes the enemy with lightning, frying the mechs components";
                 case AbilityType.Artillery:
                     return "Fires an artillery charge at a target enemy, damaging the mech";
+                case AbilityType.AllyDefenseBoost:
+                    return "Boost the defense of an ally. A temporary health boost equivalent";
                 default:
-                    return "Ability Description not \nwritten yet. \nLook Into MechStats.cs file.";
+                    return "Ability Description not \nwritten yet. \nLook Into MechStats.cs file...";
             }
         }
 
