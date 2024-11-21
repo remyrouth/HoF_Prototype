@@ -156,7 +156,8 @@ public class MechStats : ScriptableObject
         RockSummon,
         ConvertEnemy,
         LightningStrike,
-        Artillery
+        Artillery,
+        AllyDefenseBoost
     }
 
 

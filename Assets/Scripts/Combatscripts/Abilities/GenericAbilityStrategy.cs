@@ -19,17 +19,29 @@ public class GenericAbilityStrategy : IAbilityStrategy
 
     public virtual bool Execute(MechStats.AbilityMechSlot ability, PlayerController character, GameObject tileTarget)
     {
-        // Debug.Log("Calling Execute command");
+        // we do the checking here
         if (!CheckRequirements(ability, character, tileTarget)) {
             // Debug.Log("was not a legal use of ability");
             return false;
         }
 
+        // we do not do any checking here, we just execute the ability onto target
         ApplyHealthEffect(ability, character, tileTarget);
         ApplyMovementEffect(character, tileTarget);
         SummonPrefab(character, tileTarget);
+        // if we return false it means the effect cannot be complete and the ability execution should not be using a turn
+        // to the player controller
+        if (!ApplyDefenseEffect(character, tileTarget)) {
+            return false;
+        }
 
         // Debug.Log("returning true for Execute command");
+        return true;
+    }
+
+    private bool ApplyDefenseEffect(PlayerController character, GameObject tileTarget) {
+        // first check if the tile target already has a buff
+        // second 
         return true;
     }
 
