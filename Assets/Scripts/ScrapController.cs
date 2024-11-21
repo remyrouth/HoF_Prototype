@@ -34,21 +34,21 @@ public class ScrapController : MonoBehaviour
     }
     
     // Updates the dictionary with a new mech and its corresponding scrap value
-    private void AddScrap(int currentScrapAvailable, int scrapToAdd)
+    private void AddScrap(int totalScrap, int scrapToAdd)
     {
-        scrapManager.SetScrapAvailable(currentScrapAvailable += scrapToAdd);
+        scrapManager.SetScrapAvailable(totalScrap += scrapToAdd);
     }
     
     // Removes a mech from the scrap available
-    public void SubtractScrap(int currentScrapAvailable, int scrapToSubtract)
+    public void SubtractScrap(int totalScrap, int scrapToSubtract)
     {
-        if (currentScrapAvailable - scrapToSubtract < 0)
+        if (totalScrap - scrapToSubtract < 0)
         {
             Debug.LogError("Not enough scrap available for this purchase.");
         }
         else
         {
-            scrapManager.SetScrapAvailable(currentScrapAvailable += scrapToSubtract);
+            scrapManager.SetScrapAvailable(totalScrap += scrapToSubtract);
         }
     }
 
@@ -63,17 +63,10 @@ public class ScrapController : MonoBehaviour
     {
         foreach (PlayerController enemyMech in enemyMecha)
         {
-            int mechHealth = enemyMech.GetMechHealth();
-
-            if (mechHealth == 0) // mech is dead 
+            if (enemyMech.currentMechHealth == 0) // mech is dead 
             {
                 Debug.LogError("This mech cannot be used as scrap or as a part of the team");
-            } else if (mechHealth < enemyMech.GetMechMaxHealth() * scrapThreshold) // mech has low health
-            {
-                Debug.LogError("This mech can only be used as scrap.");
-                AddScrap(scrapManager.GetScrapAvailable(), CalculateScrapValue(enemyMech));
-                // TODO: should also update "units available to use during combat" list as well
-            } else if (mechHealth > enemyMech.GetMechMaxHealth() * scrapThreshold) // mech has decent health
+            } else if (enemyMech.currentPlayerHealth == 0 && enemyMech.currentMechHealth > 0)
             {
                 Debug.LogError("This mech can be used as scrap or on the team.");
                 playableMecha.Add(enemyMech);
@@ -84,7 +77,13 @@ public class ScrapController : MonoBehaviour
     // Allows you to use a mech as scrap instead of using it during Combat later on
     public void UseAsScrap(PlayerController mech)
     {
-        SubtractScrap(scrapManager.GetScrapAvailable(), CalculateScrapValue(mech));
+        AddScrap(scrapManager.GetScrapAvailable(), CalculateScrapValue(mech));
         // TODO: should also update "units available to use during combat" list as well
+    }
+    
+    // Allows you to make repairs to damaged mechs
+    public void MakeRepair(PlayerController mech)
+    {
+        SubtractScrap(scrapManager.GetScrapAvailable(), CalculateScrapValue(mech));
     }
 } 
