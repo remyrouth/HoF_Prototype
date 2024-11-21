@@ -26,9 +26,10 @@ public class MechSaveFileInteractor : MonoBehaviour
     // Call this method to log the mech stats
     public void LogMechStatsToFile(PlayerController currentPlayerStatusReference)
     {
+        MechStats individualMech = currentPlayerStatusReference.RetrieveMechInfo();
         // Prepare the string with the data
         string dataToWrite = $"Mech Name: {individualMech.GetMechName()} [ " +
-                            $"Current Mech Health: {0} " +       // we need need to change this method to accept player controllers instead
+                            $"Current Mech Health: {currentPlayerStatusReference.GetMechHealth()} " +       // we need need to change this method to accept player controllers instead
                             $"Mech Health Upgrade Count: {0} " +
                             $"Max Clarity Upgrade Count: {0} ]\n";
 
