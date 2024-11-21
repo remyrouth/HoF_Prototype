@@ -21,7 +21,9 @@ public class PlayerController : MonoBehaviour
     [Header("Player Sources")]
     public CharacterStats pilotInfo;
     public MechStats mechInfo;
-    public bool isPlayerEntity = true;
+    public bool isPlayerEntity = true; // this means player real person can move it and attack with it
+    public bool grantedOnBoard = false; // this means the board piece is first earned from this combat
+    // player pieces can be first encountered on the baord, and so if they're on your team, you earn them once you win the combat with them surviving
 
 
     [Header("Current Stats")]

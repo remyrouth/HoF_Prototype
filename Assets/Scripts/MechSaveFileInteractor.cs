@@ -24,7 +24,7 @@ public class MechSaveFileInteractor : MonoBehaviour
     }
 
     // Call this method to log the mech stats
-    public void LogMechStatsToFile(MechStats individualMech)
+    public void LogMechStatsToFile(MechStats individualMech, PlayerController currentPlayerStatusReference)
     {
         // Prepare the string with the data
         string dataToWrite = $"Mech Name: {individualMech.GetMechName()} [ " +
