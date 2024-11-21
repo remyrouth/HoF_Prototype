@@ -20,12 +20,13 @@ public class GameStateManager : MonoBehaviour
 
     private void Awake() {
         combatStateController = FindObjectOfType<CombatStateController>();
-        if (combatStateController) {
-            Debug.LogWarning("combatStateController does not exist, and was created by a game state manager object object");
+        if (combatStateController)
+        {
+            Debug.LogWarning(
+                "combatStateController does not exist, and was created by a game state manager object object");
             GameObject combatObject = new GameObject("CombatStateController");
             combatStateController = combatObject.AddComponent<CombatStateController>();
         }
-        
     }
 
     public GameSceneType GetSceneType() {
