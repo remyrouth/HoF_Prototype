@@ -14,4 +14,5 @@ public class AbilityTraits
     public bool RequiresLineOfSight { get; set; }
     public AbilityRules.EntityHealthTargetType HealthTarget { get; set; }
     public GameObject PrefabToSummon { get; set; }
+    public bool addsToMechDefense = false;
 }

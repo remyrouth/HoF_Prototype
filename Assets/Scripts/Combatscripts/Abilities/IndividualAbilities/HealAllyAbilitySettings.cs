@@ -14,6 +14,7 @@ public class HealAllyAbilitySettings : MonoBehaviour, IAbilitySettings
     public bool RequiresLineOfSight = true;
     public AbilityRules.EntityHealthTargetType HealthTarget = AbilityRules.EntityHealthTargetType.Pilot;
     public Sound activationSFX;
+    public bool doesThisAbilityAddToDefense = false;
 
 
 
@@ -28,7 +29,8 @@ public class HealAllyAbilitySettings : MonoBehaviour, IAbilitySettings
             MovementEffect = MovementEffect,
             RequiresLineOfSight = RequiresLineOfSight,
             HealthTarget = HealthTarget,
-            PrefabToSummon = healingPrefab // Use prefab from component
+            PrefabToSummon = healingPrefab, // Use prefab from component
+            addsToMechDefense = doesThisAbilityAddToDefense // adds to defense
         };
 
         return new GenericAbilityStrategy(traits);

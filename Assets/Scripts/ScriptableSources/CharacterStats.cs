@@ -3,33 +3,28 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "NewCharacterStats", menuName = "Character/NewPilot")]
 public class CharacterStats : ScriptableObject
 {
-    [SerializeField]
-    private string pilotName; 
-    [SerializeField]
-    private int laserStrength;
-    [SerializeField]
-    private int laserRange;
-    [SerializeField]
-    private int ballisticStrength;
-    [SerializeField]
-    private int ballisticRange;
-    [SerializeField]
-    private int speed;
-    [SerializeField]
-    private int health;
-    [SerializeField]
-    private int currentExperiencePoint = 0;
-    [SerializeField]
-    private Sprite characterSprite;
+    [SerializeField] private string pilotName; 
+    [SerializeField] private int laserStrength;
+    [SerializeField] private int laserRange;
+    [SerializeField] private int ballisticStrength;
+    [SerializeField] private int ballisticRange;
+    [SerializeField] private int speed;
+    [Range(0f, 1f)] [SerializeField] private float dodgeChance;
+    [SerializeField] private int health;
+    [SerializeField] private int currentExperiencePoint = 0;
+    [SerializeField] private Sprite characterSprite;
 
-    [SerializeField]
-    private int clarityGainedFromMovements = 1;
-    [SerializeField]
-    private int clarityGainedFromAttacks = 1;
+
+    [SerializeField] private int clarityGainedFromMovements = 1;
+    [SerializeField] private int clarityGainedFromAttacks = 1;
 
 
     public string GetPilotName() {
         return pilotName;
+    }
+
+    public float GetDodgeChance() {
+        return dodgeChance;
     }
 
     public int GetPilotHealth()

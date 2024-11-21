@@ -6,6 +6,16 @@ using UnityEngine.AI;
 
 public class PlayerController : MonoBehaviour
 {
+    public enum BuffType {
+        Defense, 
+        Healing,
+        Attack
+    }
+    public class BuffInfo {
+        public int power = 1;
+        // the
+        public int lastingTurns = 1;
+    }
     public GameObject chosenTile;
 
     [Header("Player Sources")]
@@ -27,6 +37,10 @@ public class PlayerController : MonoBehaviour
 
     [Header("Sound variable")]
     [SerializeField] private Sound deathSound;
+
+    [Header("Buff variable")]
+    [SerializeField] private Dictionary<BuffType, BuffInfo> buffs = new Dictionary<BuffType, BuffInfo>();
+
 
 
 
@@ -114,7 +128,23 @@ public class PlayerController : MonoBehaviour
         return abilityUsedCheck;
     }
 
+    public bool ReceiveBuff(BuffType buffType, BuffInfo buffInfo) {
+        // check do we have a buff in that catafory already? if so return false
+        // if the result is empty, then fill it in and return true
+        // after each turn is complete (when reset happens), subtract 1 from each turn lasting in the buff info
+        // then, if we reach zero, delete it from the dictionary
+
+
+        return false;
+    }
+
     public void TakeDamage(int damage, bool isMechDamage) {
+        float retreivedDodgeChance = RetrievePilotInfo().GetDodgeChance();
+        float randomValue = Random.Range(0f, 1f);
+        if (retreivedDodgeChance >= randomValue) {
+            return;
+        }
+
         if (isMechDamage) {
             currentMechHealth = Mathf.Clamp(currentMechHealth - damage, 0, GetMechMaxHealth());
         } else {
@@ -154,6 +184,7 @@ public class PlayerController : MonoBehaviour
         // Debug.Log("reset");
         hasMovedYet = false;
         hasAttackedYet = false;
+        DecrementBuffDurations();
     }
     #endregion Main Actions
     // Getter Methods ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -634,5 +665,24 @@ public class PlayerController : MonoBehaviour
         return combinedArray;
     }
     #endregion Pathing
+
+    #region helpers
+    private void DecrementBuffDurations() {
+        List<BuffType> expiredBuffs = new List<BuffType>();
+        
+        foreach (var buff in buffs) {
+            buff.Value.lastingTurns--;
+            if (buff.Value.lastingTurns <= 0) {
+                expiredBuffs.Add(buff.Key);
+            }
+        }
+        
+        // Remove expired buffs
+        foreach (var buffType in expiredBuffs) {
+            buffs.Remove(buffType);
+        }
+    }
+
+    #endregion helpers
 
 }

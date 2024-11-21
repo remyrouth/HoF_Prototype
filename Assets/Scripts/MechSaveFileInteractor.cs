@@ -13,13 +13,13 @@ public class MechSaveFileInteractor : MonoBehaviour
 
     private void Start()
     {
-        if (restartSaveFile) {
-            ClearFileContents();
-            for (int i = 0; i < defaultAvailableUnits.MechLength(); i++)
-            {
-                LogMechStatsToFile(defaultAvailableUnits.GetMech(i));
-            }
-        }
+        // if (restartSaveFile) {
+        //     ClearFileContents();
+        //     for (int i = 0; i < defaultAvailableUnits.MechLength(); i++)
+        //     {
+        //         LogMechStatsToFile(defaultAvailableUnits.GetMech(i));
+        //     }
+        // }
 
     }
 
@@ -28,8 +28,9 @@ public class MechSaveFileInteractor : MonoBehaviour
     {
         // Prepare the string with the data
         string dataToWrite = $"Mech Name: {individualMech.GetMechName()} [ " +
-                             $"Mech Health Upgrade Count: {0} " +
-                             $"Max Clarity Upgrade Count: {0} ]\n";
+                            $"Current Mech Health: {0} " +       // we need need to change this method to accept player controllers instead
+                            $"Mech Health Upgrade Count: {0} " +
+                            $"Max Clarity Upgrade Count: {0} ]\n";
 
         // Write the data to the file
         WriteToFile(dataToWrite);
@@ -72,7 +73,23 @@ public class MechSaveFileInteractor : MonoBehaviour
         }
         return null; // Return null if the name cannot be extracted
     }
-    private int ExtractMechHealth(string line)
+
+    private int ExtractCurrentMechhealth(string line)
+    {
+        int healthStartIndex = line.IndexOf("Current Mech Health: ") + "Current Mech Health: ".Length;
+        int healthEndIndex = line.IndexOf(" Mech Health Upgrade Count:", healthStartIndex);
+
+        if (healthStartIndex >= 0 && healthEndIndex > healthStartIndex)
+        {
+            string healthStr = line.Substring(healthStartIndex, healthEndIndex - healthStartIndex).Trim();
+            if (int.TryParse(healthStr, out int currentMechHealth))
+            {
+                return currentMechHealth;
+            }
+        }
+        return -1; // Return -1 if current health cannot be parsed
+    }
+    private int ExtractMechHealthUpgrades(string line)
     {
         int healthStartIndex = line.IndexOf("Mech Health Upgrade Count: ") + "Mech Health Upgrade Count: ".Length;
         int healthEndIndex = line.IndexOf(" Max Clarity Upgrade Count:", healthStartIndex);
@@ -131,16 +148,17 @@ public class MechSaveFileInteractor : MonoBehaviour
         foreach (string line in lines)
         {
             string mechName = ExtractMechName(line);
-            int mechHealth = ExtractMechHealth(line);
+            int mechHealthUpgrades = ExtractMechHealthUpgrades(line);
+            int mechHealthCurrent = ExtractCurrentMechhealth(line);
             int mechMaxClarity = ExtractMechMaxClarity(line);
-            if (mechName != null && mechHealth != -1 && mechMaxClarity != -1)
+            if (mechName != null && mechHealthUpgrades != -1 && mechHealthCurrent != -1 && mechMaxClarity != -1)
             {
                 // Debug.Log($"Mech Name: {mechName}, Mech Health: {mechHealth}, Max Clarity: {mechMaxClarity}");
                 MechStats mech = GetSpecificMech(mechName);
                 if (mech != null) {
                     UpgradeMechController.UpgradableMechUnit mechUnit = new UpgradeMechController.UpgradableMechUnit();
                     mechUnit.mechBaseModel = mech;
-                    mechUnit.maxHealthUpgradeCount = mechHealth;
+                    mechUnit.maxHealthUpgradeCount = mechHealthUpgrades;
                     mechUnit.maxClarityUpgradeCount = mechMaxClarity;
 
                     extractedMechs.Add(mechUnit);

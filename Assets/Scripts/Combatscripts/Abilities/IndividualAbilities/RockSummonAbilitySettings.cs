@@ -14,6 +14,7 @@ public class RockSummonAbilitySettings : MonoBehaviour, IAbilitySettings
     public bool RequiresLineOfSight = false;
     public AbilityRules.EntityHealthTargetType HealthTarget = AbilityRules.EntityHealthTargetType.None;
     public Sound activationSFX;
+    public bool doesThisAbilityAddToDefense = false;
 
 
 
@@ -28,7 +29,8 @@ public class RockSummonAbilitySettings : MonoBehaviour, IAbilitySettings
             MovementEffect = MovementEffect,
             RequiresLineOfSight = RequiresLineOfSight,
             HealthTarget = HealthTarget,
-            PrefabToSummon = rockPrefab // Use prefab from component
+            PrefabToSummon = rockPrefab, // Use prefab from component
+            addsToMechDefense = doesThisAbilityAddToDefense // adds to defense
         };
 
         return new GenericAbilityStrategy(traits);

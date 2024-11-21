@@ -14,6 +14,7 @@ public class BallisticAbilitySettings : MonoBehaviour, IAbilitySettings
     public bool RequiresLineOfSight = true;
     public AbilityRules.EntityHealthTargetType HealthTarget = AbilityRules.EntityHealthTargetType.Mech;
     public Sound activationSFX;
+    public bool doesThisAbilityAddToDefense = false;
 
 
 
@@ -28,7 +29,8 @@ public class BallisticAbilitySettings : MonoBehaviour, IAbilitySettings
             MovementEffect = MovementEffect,
             RequiresLineOfSight = RequiresLineOfSight,
             HealthTarget = HealthTarget,
-            PrefabToSummon = attackPrefab // Use prefab from component
+            PrefabToSummon = attackPrefab, // Use prefab from component
+            addsToMechDefense = doesThisAbilityAddToDefense // adds to defense
         };
 
         return new GenericAbilityStrategy(traits);

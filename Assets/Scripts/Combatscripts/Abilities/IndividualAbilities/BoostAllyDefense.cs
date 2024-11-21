@@ -2,20 +2,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LaserAbilitySettings : MonoBehaviour, IAbilitySettings
+public class BoostAllyDefense : MonoBehaviour
 {
-    public GameObject laserPrefab; // Assign this in the Inspector
-    public MechStats.AbilityType Type = MechStats.AbilityType.Laser;
-    public AbilityRules.DamageType HealthEffect = AbilityRules.DamageType.Damages;
+    public GameObject emptyPrefab; // Assign this in the Inspector
+    public MechStats.AbilityType Type = MechStats.AbilityType.RockSummon;
+    public AbilityRules.DamageType HealthEffect = AbilityRules.DamageType.None;
     public AbilityRules.ScalingType ScalingMethod = AbilityRules.ScalingType.Singular;
-    public AbilityRules.TileTargetType TileTargetingMethod = AbilityRules.TileTargetType.Enemy;
+    public AbilityRules.TileTargetType TileTargetingMethod = AbilityRules.TileTargetType.Ally;
     public AbilityRules.PrefabSummoningPlacement PrefabPlacementMethod = AbilityRules.PrefabSummoningPlacement.None;
     public AbilityRules.MovementImpactType MovementEffect = AbilityRules.MovementImpactType.None;
-    public bool RequiresLineOfSight = true;
-    public AbilityRules.EntityHealthTargetType HealthTarget = AbilityRules.EntityHealthTargetType.Pilot;
-
+    public bool RequiresLineOfSight = false;
+    public AbilityRules.EntityHealthTargetType HealthTarget = AbilityRules.EntityHealthTargetType.None;
     public Sound activationSFX;
-    public bool doesThisAbilityAddToDefense = false;
+    public bool doesThisAbilityAddToDefense = true;
 
 
 
@@ -30,7 +29,7 @@ public class LaserAbilitySettings : MonoBehaviour, IAbilitySettings
             MovementEffect = MovementEffect,
             RequiresLineOfSight = RequiresLineOfSight,
             HealthTarget = HealthTarget,
-            PrefabToSummon = laserPrefab, // Use prefab from component
+            PrefabToSummon = emptyPrefab, // Use prefab from component
             addsToMechDefense = doesThisAbilityAddToDefense // adds to defense
         };
 
