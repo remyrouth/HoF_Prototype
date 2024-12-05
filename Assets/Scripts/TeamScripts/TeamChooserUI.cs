@@ -127,12 +127,16 @@ public class TeamChooserUI : MonoBehaviour
         }
     }
 
+    // we need to edit this so it uses mechsavefileinteractor.cs to tell which mechs are available
     private void MakeMechOptionsUI() {
         foreach (Transform child in mechChoiceObjectsParent.transform)
         {
             // Destroy the children of the parent object to clean up
             Destroy(child.gameObject);
         }
+
+        MechSaveFileInteractor mechSaveFileScript = gameObject.AddComponent<MechSaveFileInteractor>();
+        
 
         foreach(MechStats mech in availableEntities.mechs) {
             // basically if currentTeam.TeamSpots already has that

@@ -7,6 +7,8 @@ namespace Combatscripts.AIScripts
 {
     public class CombatEvaluation : MonoBehaviour
     {
+        // this is a bad class name. It should be named something that related to tile evaluation
+        // combat is too vague and general. The naming convention is poor
         public AnimationCurve attackDistanceCurve;
         public PlayerController playerController;
         

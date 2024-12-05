@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 using UnityEngine.SceneManagement;
 
 public class CombatStateController : MonoBehaviour
@@ -118,7 +119,20 @@ public class CombatStateController : MonoBehaviour
             // Debug.Log("currentEnemyCount: " + currentEnemyCount + "  currentFriendlyCount: " + currentFriendlyCount);
             // Debug.Log("GAME HAS ENEDED NOW");
             // Map
+
+            // handles saving granted mechs to the team text file
+            MechSaveFileInteractor saveFileScript = gameObject.AddComponent<MechSaveFileInteractor>();
+            // saveFileScript.LogMechStatsToFile();
+            List<GameObject> players = GameObject.FindGameObjectsWithTag("Player").ToList();
+            foreach(GameObject player in players) {
+                PlayerController playerScript = player.GetComponent<PlayerController>();
+                if (playerScript.grantedOnBoard) {
+                    saveFileScript.LogMechStatsToFile(playerScript);
+                }
+            }
             
+
+            // handles adding scrap
             if (scrapController != null)
             {
                 scrapController.SetScrapPostCombat();
