@@ -137,6 +137,38 @@ public class MechSaveFileInteractor : MonoBehaviour
         return foundMech;
     }
 
+    // called by TeamChooserUI.cs
+    public List<MechStats> ExtractMechsFromFileToChooseFrom() {
+        List<MechStats> extractedMechs = new List<MechStats>();
+        if (!CheckForFileExistence()) {
+            return extractedMechs;
+        }
+
+        // Read each line from the file
+        string[] lines = File.ReadAllLines(filePath);
+        foreach (string line in lines)
+        {
+            string mechName = ExtractMechName(line);
+            if (mechName != null)
+            {
+                MechStats mech = GetSpecificMech(mechName);
+                if (mech != null) {
+                    extractedMechs.Add(mech);
+                } else {
+                    Debug.LogWarning("Could not find mech named: " + mechName);
+                }
+
+            }
+            else
+            {
+                Debug.LogWarning("Failed to parse line: " + line + " for mech: " + mechName);
+            }
+        }
+
+        return extractedMechs;
+        
+    }
+
     // called by upgrade mech controller script
     public List<UpgradeMechController.UpgradableMechUnit> ExtractMechsFromFile()
     {

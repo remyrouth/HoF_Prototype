@@ -135,10 +135,13 @@ public class TeamChooserUI : MonoBehaviour
             Destroy(child.gameObject);
         }
 
-        MechSaveFileInteractor mechSaveFileScript = gameObject.AddComponent<MechSaveFileInteractor>();
-        
+        MechSaveFileInteractor mechSaveFileScript = GetComponent<MechSaveFileInteractor>();
 
-        foreach(MechStats mech in availableEntities.mechs) {
+        List<MechStats> mechsFromSaveFile = mechSaveFileScript.ExtractMechsFromFileToChooseFrom();
+        Debug.Log("mechsFromSaveFile lenth: " + mechsFromSaveFile.Count);
+
+        // foreach(MechStats mech in availableEntities.mechs) {
+        foreach(MechStats mech in mechsFromSaveFile) {
             // basically if currentTeam.TeamSpots already has that
             // pilot in it, then do not create it in this UI
             if (!IsMechOrPilotAlreadyUsedInSlots(null, mech)) {
