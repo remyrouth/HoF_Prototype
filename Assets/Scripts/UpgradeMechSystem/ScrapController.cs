@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class ScrapController : MonoBehaviour
 {
-    [SerializeField] private ScrapManager scrapManager;
+    [SerializeField] private Scrap scrapManager;
     [SerializeField] private MechSaveFileInteractor saveFileInteractor;
     [SerializeField] private List<PlayerController> enemyMecha;
     [SerializeField] private List<PlayerController> playableMecha;
@@ -13,7 +13,7 @@ public class ScrapController : MonoBehaviour
     private int scrapAvailable;
     
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         CollectEnemyMecha();
     }
@@ -34,14 +34,14 @@ public class ScrapController : MonoBehaviour
         }
     }
     
-    // Updates the dictionary with a new mech and its corresponding scrap value
+    // Increases & updates the current scrap value
     private void AddScrap(int totalScrap, int scrapToAdd)
     {
         scrapManager.SetScrapAvailable(totalScrap += scrapToAdd);
     }
     
-    // Removes a mech from the scrap available
-    public void SubtractScrap(int totalScrap, int scrapToSubtract)
+    // Decreases & updates the current scrap value
+    private void SubtractScrap(int totalScrap, int scrapToSubtract)
     {
         if (totalScrap - scrapToSubtract < 0)
         {

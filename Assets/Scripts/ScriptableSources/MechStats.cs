@@ -141,6 +141,8 @@ public class MechStats : ScriptableObject
                     return "Fires an artillery charge at a target enemy, damaging the mech";
                 case AbilityType.AllyDefenseBoost:
                     return "Boost the defense of an ally. A temporary health boost equivalent";
+                case AbilityType.Hail:
+                    return "Defects an enemy to your side if successful.";
                 default:
                     return "Ability Description not \nwritten yet. \nLook Into MechStats.cs file...";
             }
@@ -159,8 +161,7 @@ public class MechStats : ScriptableObject
         ConvertEnemy,
         LightningStrike,
         Artillery,
-        AllyDefenseBoost
+        AllyDefenseBoost,
+        Hail
     }
-
-
 }

@@ -8,9 +8,10 @@ using UnityEngine;
 // to run sounds, which the manager has access to
 public class GenericAbilityStrategy : IAbilityStrategy
 {
+    public bool wasHailUsedSuccessfully = false;
     protected AbilityTraits _traits;
     // protected Indiv
-
+    
     public GenericAbilityStrategy(AbilityTraits traits)
     {
         _traits = traits;
@@ -18,7 +19,7 @@ public class GenericAbilityStrategy : IAbilityStrategy
 
     public virtual bool Execute(MechStats.AbilityMechSlot ability, PlayerController character, GameObject tileTarget)
     {
-        // we do the checking here
+        // we do the checking here.
         if (!CheckRequirements(ability, character, tileTarget)) {
             // Debug.Log("was not a legal use of ability");
             return false;
@@ -28,6 +29,8 @@ public class GenericAbilityStrategy : IAbilityStrategy
         ApplyHealthEffect(ability, character, tileTarget);
         ApplyMovementEffect(character, tileTarget);
         SummonPrefab(character, tileTarget);
+        ApplyHailEffect(ability, character, tileTarget);
+        
         // if we return false it means the effect cannot be complete and the ability execution should not be using a turn
         // to the player controller
         if (!ApplyDefenseEffect(ability, character, tileTarget)) {
@@ -186,9 +189,33 @@ public class GenericAbilityStrategy : IAbilityStrategy
         }
     }
 
+    private void ApplyHailEffect(MechStats.AbilityMechSlot slot, PlayerController character, GameObject tileTarget)
+    {
+        if (CanHailBeUsed(slot, character, tileTarget))
+        {
+            /*
+             * TODO:
+             * 1. Move the enemy-now-friendly unit to the player's side
+             *      (sidenote - i just need to change a boolean and remove a script for them to be playable.
+             *      a system checks to see which units have these characteristics to determine if it is an enemy)
+             * 2. Get list of all the enemy units in the scene
+             * 3. Increase hail resistance value for all of them
+             *      (sidenote - this could be determined by some random value maybe?)
+             * 4. Increase the amount of recruitment points based on how high the unit's resistance value was. The
+             *    higher the resistance, the more exp you gain from the hailing. 
+             */
+        }
+    }
 
-
-
+    // Decides if an enemy can be hailed. Determines threshold using random int between 0 and 100 (inclusive). 
+    private bool CanHailBeUsed(MechStats.AbilityMechSlot slot, PlayerController character, GameObject tileTarget)
+    {
+        var possibleTarget = tileTarget.GetComponent<PlayerController>();
+        bool canTargetBeHailed = possibleTarget.pilotInfo.GetHailResistance() < (Random.Range(0, 100));
+        bool isTargetAnEnemy = !possibleTarget.isPlayerEntity;
+        
+        return canTargetBeHailed && isTargetAnEnemy;
+    }
 
 
 
@@ -198,8 +225,16 @@ public class GenericAbilityStrategy : IAbilityStrategy
         bool clarityCheck = ClarityCheck(ability, character);
         bool rangeCheck = RangeCheck(ability, character, tileTarget);
         bool sightCheck = CanSeeEachOther(character, tileTarget);
-
+        bool isCharacterBell = ability.GetAbilityType() == MechStats.AbilityType.Hail && 
+                      character.RetrievePilotInfo().GetPilotName().Contains("Bell");
         // Debug.Log("clarityCheck: " + clarityCheck + " | rangeCheck: " + rangeCheck + " | sightCheck: " + sightCheck);
+
+        // Ensures that only Bell is allowed to use the Hail Ability
+        if (ability.GetAbilityType() == MechStats.AbilityType.Hail)
+        {
+            return clarityCheck && rangeCheck && sightCheck && isCharacterBell;
+        }
+        
         return clarityCheck && rangeCheck && sightCheck;
     }
 
@@ -254,6 +289,5 @@ public class GenericAbilityStrategy : IAbilityStrategy
         // Return the updated list
         return updatedList;
     }
-
 
 }

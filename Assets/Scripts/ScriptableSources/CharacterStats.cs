@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SocialPlatforms;
 
 [CreateAssetMenu(fileName = "NewCharacterStats", menuName = "Character/NewPilot")]
 public class CharacterStats : ScriptableObject
@@ -10,10 +11,11 @@ public class CharacterStats : ScriptableObject
     [SerializeField] private int ballisticRange;
     [SerializeField] private int speed;
     [Range(0f, 1f)] [SerializeField] private float dodgeChance;
+    [Range(0, 100)] [SerializeField] private int hailResistance;
     [SerializeField] private int health;
     [SerializeField] private int currentExperiencePoint = 0;
     [SerializeField] private Sprite characterSprite;
-
+    
 
     [SerializeField] private int clarityGainedFromMovements = 1;
     [SerializeField] private int clarityGainedFromAttacks = 1;
@@ -27,6 +29,11 @@ public class CharacterStats : ScriptableObject
         return dodgeChance;
     }
 
+    public int GetHailResistance()
+    {
+        return hailResistance;
+    }
+    
     public int GetPilotHealth()
     {
         return health;

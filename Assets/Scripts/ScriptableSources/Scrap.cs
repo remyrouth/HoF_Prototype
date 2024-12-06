@@ -1,11 +1,11 @@
 using System;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Scrap Manager SO", menuName = "Scriptable Objects/ScrapManagerSO", order = 1)]
-public class ScrapManager : ScriptableObject
+[CreateAssetMenu(fileName = "Scrap SO", menuName = "Scriptable Objects/ScrapSO", order = 1)]
+public class Scrap : ScriptableObject
 {
     [Tooltip("Current amount of scrap")] [SerializeField] private int scrapAvailable;
-    [Tooltip("Scrap amount you'll start the game with")] [SerializeField] private int initialValue;
+    [Tooltip("Amount of Scrap you'll start the game with")] [SerializeField] private int initialValue;
     public bool resetScrap;
     
     /*
@@ -19,31 +19,14 @@ public class ScrapManager : ScriptableObject
      *          - a mech's scrap value would have to be determined by a specific mech
      */
     
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-    
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-    
     private void OnEnable()
     {
         if (resetScrap)
         {
-            ResetScrapAmount();
-        }
-    }
-
-    public void ResetScrapAmount()
-    {
-        if (resetScrap)
-        {
-            scrapAvailable = initialValue;
+            if (resetScrap)
+            {
+                scrapAvailable = initialValue;
+            }
         }
     }
 
@@ -52,8 +35,8 @@ public class ScrapManager : ScriptableObject
         return scrapAvailable;
     }
 
-    public void SetScrapAvailable(int newScrapAvailable)
+    public void SetScrapAvailable(int newValue)
     {
-        scrapAvailable = newScrapAvailable;
+        scrapAvailable = newValue;
     }
 }
