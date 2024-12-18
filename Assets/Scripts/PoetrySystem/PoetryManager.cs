@@ -11,6 +11,9 @@ public class PoetryManager : MonoBehaviour
     [SerializeField] private List<Decision> options = new();
     
     [SerializeField] private string poem;
+    [SerializeField] private Button nextSceneButton;
+
+    [SerializeField] private GameObject poetryBackground;
             
     /** Poetry Key
      * Poetry string input format:
@@ -19,6 +22,21 @@ public class PoetryManager : MonoBehaviour
      * words = standard words
      * [ = start button set
      * ] = end button set
+     *
+     *
+     * For each [] used, there should be a decision set within the Poetry Manager.
+     * Whichever of the choices that is clicked in that decision set will replace [] with the selected word.
+     *
+     * Decision + Choice set up:
+     * Add a decision within the background poetry manager attatchment.
+     * Within that decision add as many choices as you'd like represented.
+     * Each choice should be attached to a button.
+     * Set the button colors to be transparent.
+     * In the Text change the wording to be the choice's string.
+     * In on click set a singular Update Display(text) with the string desired. This input should match Text.
+     * In on click add as many plot weights (PlotWeightSO functions) as you'd like.
+     * If not editing any plots, one Change value is still required, with a value of 0.
+     *
      * 
      */
 
@@ -29,6 +47,29 @@ public class PoetryManager : MonoBehaviour
     {
         Debug.Log("Starting game. Buttons under each decision should be disabled.");
         DisableOptions();
+        nextSceneButton.gameObject.SetActive(false);
+    }
+    
+    // move to next scene. 
+    public void NextScene(string scene)
+    {
+        Debug.LogWarning("Currently moving to map when next scene is selected.");
+        Debug.Log("NextScene needs to load precombat or alternate scene following gameplay.");
+        // If mult options needed, fuction could take in a string that directs to the intended scene.
+        Time.timeScale = 1;
+        switch (scene)
+        {
+            case "Map":
+                SceneManager.LoadScene("Map");
+                break;
+            case "Combat":
+                SceneManager.LoadScene("Combat");
+                break;
+            default:
+                Debug.LogWarning("This string not implemented in NextScene as progression. Doing nothing.");
+                break;
+        }
+        
     }
 
     #endregion
@@ -73,6 +114,7 @@ public class PoetryManager : MonoBehaviour
             {
                 poemDisplay.text = poem;
                 Time.timeScale = 0;
+                nextSceneButton.gameObject.SetActive(true);
             }
             else
             {
@@ -103,6 +145,16 @@ public class PoetryManager : MonoBehaviour
                         pos.y += scrollDelta;
 
                         poemDisplay.transform.position = pos;
+                        
+                        // Moving background
+
+                        if (poetryBackground != null)
+                        {
+                            Vector3 posB = poetryBackground.transform.position; 
+                            posB.y += scrollDelta;
+                            
+                            poetryBackground.transform.position = pos;
+                        }
                     }
                     else
                     {
@@ -133,9 +185,7 @@ public class PoetryManager : MonoBehaviour
         {
             return choices;
         }
-        
     }
-    
     
     
     #endregion 
@@ -150,8 +200,6 @@ public class PoetryManager : MonoBehaviour
     {
         
         // Display the options within the button set
-        Debug.Log("Slowly Implementing UpdateButtonDisplays to debug.");
-        Debug.Log("Update button displays currently sets buttons active. Does not place.");
 
         // activate buttons in this decision set
         Decision decision = options[buttonSet];
@@ -162,10 +210,17 @@ public class PoetryManager : MonoBehaviour
         
         foreach (Button b in decision.GetChoices())
         {
-            Vector3 pos = new Vector3(0.0f, 203.0f, 0.0f);// b.gameObject.transform.position;
+            Vector3 pos = new Vector3(0.0f, 210.0f, 0.0f);
+            
             // Alters the x coord of button to be aligned to poetry and then evenly spaced. 
             // buttons currently left aligned.
-            pos.x = 350 + 100 * (choicesInd - 1); // (.5f * pos.x) + (choicesInd * choicesX);
+            pos.x = 350 + 100 * (choicesInd - 1); 
+            
+            if (!shifting) // If not at center:
+            {
+                pos.y += (10 - countEnts) * 15; // Move buttons up to below where text is currently. 
+            }
+            
             
             b.transform.position = pos;
             b.gameObject.SetActive(true);
@@ -201,7 +256,7 @@ public class PoetryManager : MonoBehaviour
         Debug.Log("Update display has been called. Button properly clicked.");
         if (string.IsNullOrEmpty(display))
         {
-            //
+            Debug.LogWarning("Why'd you supply a blank option? Either supply the word represented in text or change.");
         }
         
         // inserting the word into the poem. 

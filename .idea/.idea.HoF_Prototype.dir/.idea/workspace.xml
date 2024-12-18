@@ -5,16 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="055d3345-2e04-4c99-9566-4057830e8e7b" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/PoetrySystem.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/PoetrySystem/PlotWeightSO.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/PoetrySystem/PlotWeightSO.cs.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/PoetrySystem/PoetryManager.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/PoetrySystem/PoetryManager.cs.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Combat/Combat1.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Combat/Combat1.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Packages/manifest.json" beforeDir="false" afterPath="$PROJECT_DIR$/Packages/manifest.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Packages/packages-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/Packages/packages-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProjectSettings/EditorBuildSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/EditorBuildSettings.asset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProjectSettings/ProjectVersion.txt" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/ProjectVersion.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/README.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.HoF_Prototype.dir/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.HoF_Prototype.dir/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/PoetrySystem.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/PoetrySystem.unity" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/PoetrySystem.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/PoetrySystem.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/PoetrySystem/Plot Weight SO.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/PoetrySystem/Plot Weight SO.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/PoetrySystem/PoetryManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/PoetrySystem/PoetryManager.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -47,7 +43,7 @@
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/PoetrySystem/PlotWeightSO.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/PoetrySystem/PoetryManager.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/ScriptableSources/CharacterStats.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/ScriptableSources/ScrapManager.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/ScriptableSources/ScrapManager.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/UpgradeMechSystem/UpgradeMechController.cs" root0="SKIP_HIGHLIGHTING" />
   </component>
   <component name="ProjectColorInfo">{
@@ -78,11 +74,11 @@
     ]
   }
 }</component>
-  <component name="RunManager" selected="Attach to Unity Editor.Attach to Unity Editor">
-    <configuration name="Attach to Unity Editor" type="UNITY_DEBUG_RUN_CONFIGURATION" factoryName="Unity Debug" show_console_on_std_err="false" show_console_on_std_out="false" port="50000" address="localhost" ignored-value-for-modified-check="29544">
+  <component name="RunManager">
+    <configuration name="Attach to Unity Editor" type="UNITY_DEBUG_RUN_CONFIGURATION" factoryName="Unity Debug" show_console_on_std_err="false" show_console_on_std_out="false" port="50000" address="localhost">
       <option name="allowRunningInParallel" value="false" />
       <option name="listenPortForConnections" value="false" />
-      <option name="pid" value="29544" />
+      <option name="pid" />
       <option name="projectPathOnTarget" />
       <option name="selectedOptions">
         <list />
@@ -118,6 +114,9 @@
       <workItem from="1732206021381" duration="29672000" />
       <workItem from="1733339422269" duration="384000" />
       <workItem from="1733339958844" duration="3226000" />
+      <workItem from="1733420880751" duration="310000" />
+      <workItem from="1733421229552" duration="6284000" />
+      <workItem from="1734034440776" duration="305000" />
     </task>
     <servers />
   </component>

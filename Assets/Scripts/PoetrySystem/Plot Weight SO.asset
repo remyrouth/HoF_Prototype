@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8dbfcc6e4a6a4ce194e78ab49dd60798, type: 3}
   m_Name: Plot Weight SO
   m_EditorClassIdentifier: 
-  max: 2
+  max: 1
   wynnter: 3
-  aurelio: 1
+  aurelio: 2
   startWeight: 0
   resetOnStart: 1
